@@ -2,7 +2,7 @@
 
 > A comprehensive enterprise office operations management platform built with React and modern web technologies.
 
-![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![React](https://img.shields.io/badge/react-18.2.0-blue.svg)
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
@@ -76,11 +76,17 @@ OfficeOps Platform is a modern, **fully functional** enterprise management syste
 - **Search capabilities**: Advanced document search and filtering
 
 ### ⚠️ Risk Assessment
-- **Risk identification**: Comprehensive risk cataloging
-- **Impact analysis**: Quantitative risk assessment
-- **Mitigation planning**: Risk response strategies
-- **Review scheduling**: Automated risk review reminders
-- **Reporting dashboards**: Visual risk analytics
+- **Complete CRUD operations**: Create, read, update, and delete risk assessments
+- **Multi-step risk creation**: Comprehensive 4-step risk assessment wizard
+- **Risk editing capability**: Full edit functionality with pre-populated data
+- **Risk identification**: Comprehensive risk cataloging with asset integration
+- **Impact analysis**: Quantitative risk assessment with pre/post treatment scoring
+- **Mitigation planning**: Detailed risk response strategies and treatment planning
+- **Treatment tracking**: Progress monitoring and status management
+- **Review scheduling**: Automated risk review reminders with customizable frequency
+- **Risk register management**: Sortable table with bulk operations and filtering
+- **Visual risk analytics**: Interactive heat maps and comprehensive reporting dashboards
+- **Template support**: CSV template download and risk register upload functionality
 
 ### 🎓 Learning Management
 - **Course creation**: Interactive learning content
@@ -345,6 +351,18 @@ The platform includes several pre-configured demo accounts for comprehensive tes
 - **Status Management**: Comprehensive status and condition tracking
 - **Admin-only Controls**: Edit and delete buttons restricted to administrators
 
+#### ⚠️ **Risk Assessment System**
+- **Complete CRUD Operations**: Create, Read, Update, Delete functionality for risk assessments
+- **Multi-step Risk Creation**: 4-step wizard for comprehensive risk assessment creation
+- **Smart Edit Modal**: Full editing capability with pre-populated form data
+- **Risk Register Management**: Sortable table with filtering, bulk operations, and CSV export
+- **Treatment Planning**: Detailed treatment action planning with progress tracking
+- **Risk Scoring**: Automatic pre/post treatment risk score calculation
+- **Visual Analytics**: Interactive heat maps and dashboard views
+- **Asset Integration**: Direct integration with Asset Management system
+- **Template Support**: CSV template download and bulk upload functionality
+- **Review Management**: Automated scheduling and review frequency configuration
+
 #### 🔄 **System Integration**
 - **Role-based Access Control**: Different UI elements based on user permissions
 - **Debug Mode**: Role switcher for testing different user levels (development)
@@ -386,6 +404,19 @@ The platform includes several pre-configured demo accounts for comprehensive tes
 4. Try to delete assigned asset (should prevent)
 5. Delete available asset (red icon, confirm with Asset ID)
 6. Verify real-time updates in asset catalog
+```
+
+#### **Risk Assessment Testing (All Users)**
+```bash
+# Login with any demo account
+1. Navigate to Risk Assessment
+2. Create new risk assessment using 4-step wizard
+3. Edit existing risk using edit button in register table
+4. View risk details and analytics in dashboard
+5. Download CSV template and test bulk upload
+6. Filter and sort risks in register table
+7. View interactive heat map visualization
+8. Test treatment planning and progress tracking
 ```
 
 ### 🔧 **Technical Implementation**
@@ -450,6 +481,19 @@ interface AccessRequest {
 ```
 
 ## 🐳 Docker Deployment
+
+### Quick Start with Docker
+
+```bash
+# Production deployment
+docker-compose up -d
+
+# Development with hot reload
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --profile dev
+
+# Include development tools (Adminer, MailHog)
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --profile dev --profile tools
+```
 
 ### Development Environment
 
@@ -588,10 +632,11 @@ For enterprise support, custom development, or consulting services, please conta
 - **Response Time**: Within 24 hours for urgent issues
 
 ### Current Development Status
-- **Version**: 2.2.0 (Latest)
+- **Version**: 2.3.0 (Latest)
 - **Last Updated**: January 2025
 - **Status**: Active Development
 - **Demo URL**: http://localhost:4028
+- **Latest Feature**: Complete Risk Assessment CRUD with EditRiskModal
 
 ## 📄 License
 
@@ -608,14 +653,28 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Thanks to all the contributors who have helped make OfficeOps Platform better:
 
+- **Risk Assessment System** - Complete CRUD implementation with EditRiskModal and multi-step wizards
 - **Profile Management System** - Complete implementation with avatar upload and password management
 - **Asset Management CRUD** - Full create, read, update, delete functionality with smart validation
 - **UI/UX Enhancements** - Modern responsive design with comprehensive user experience
+- **Docker & DevOps** - Enhanced containerization with development and production configurations
 - **Debug Tools** - Role switching functionality for easy testing and development
 
 ## 🎉 Changelog
 
-### Version 2.2.0 (Latest)
+### Version 2.3.0 (Latest)
+- ✅ **NEW**: Complete Risk Assessment CRUD operations with EditRiskModal
+- ✅ **NEW**: Multi-step risk assessment creation and editing wizards
+- ✅ **NEW**: Risk register management with advanced filtering and sorting
+- ✅ **NEW**: Treatment planning with progress tracking and status management
+- ✅ **NEW**: Risk analytics dashboard with interactive heat maps
+- ✅ **NEW**: CSV template support for bulk risk register operations
+- ✅ **ENHANCED**: Asset integration with risk assessment workflows
+- ✅ **IMPROVED**: Risk scoring algorithms with pre/post treatment calculations
+- ✅ **UPDATED**: Docker configuration with development environment support
+- ✅ **UPDATED**: Environment variables cleanup and optimization
+
+### Version 2.2.0
 - ✅ **NEW**: Complete Profile Settings with avatar upload and password management
 - ✅ **FIXED**: Asset Management edit and delete functionality
 - ✅ **ENHANCED**: Real-time updates across all components

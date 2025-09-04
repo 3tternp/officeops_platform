@@ -11,6 +11,7 @@ import RiskFilters from './components/RiskFilters';
 import RiskMetrics from './components/RiskMetrics';
 import TreatmentPlanning from './components/TreatmentPlanning';
 import CreateRiskAssessmentModal from './components/CreateRiskAssessmentModal';
+import EditRiskModal from './components/EditRiskModal';
 import UploadRiskRegisterModal from './components/UploadRiskRegisterModal';
 import dataService from '../../services/DataService';
 import { generateRiskRegisterTemplate } from '../../utils/riskRegisterTemplate';
@@ -25,6 +26,8 @@ const RiskAssessment = () => {
   const [showTreatmentPlanning, setShowTreatmentPlanning] = useState(false);
   const [filters, setFilters] = useState({});
   const [createAssessmentModalOpen, setCreateAssessmentModalOpen] = useState(false);
+  const [editRiskModalOpen, setEditRiskModalOpen] = useState(false);
+  const [riskToEdit, setRiskToEdit] = useState(null);
   const [uploadRegisterModalOpen, setUploadRegisterModalOpen] = useState(false);
 
   const [risks, setRisks] = useState([]);
@@ -108,8 +111,8 @@ const RiskAssessment = () => {
   };
 
   const handleEditRisk = (risk) => {
-    setSelectedRisk(risk);
-    setShowTreatmentPlanning(true);
+    setRiskToEdit(risk);
+    setEditRiskModalOpen(true);
   };
 
   const handleDeleteRisk = (risk) => {
@@ -128,6 +131,21 @@ const RiskAssessment = () => {
     setRisks(prev => prev?.map(r => r?.id === updatedRisk?.id ? updatedRisk : r));
     setShowTreatmentPlanning(false);
     setSelectedRisk(null);
+  };
+
+  const handleEditRiskSave = (updatedRisk) => {
+    try {
+      // Update in DataService
+      dataService.updateRisk(updatedRisk?.id, updatedRisk);
+      // Update local state
+      setRisks(prev => prev?.map(r => r?.id === updatedRisk?.id ? updatedRisk : r));
+      setEditRiskModalOpen(false);
+      setRiskToEdit(null);
+      toast.success('Risk assessment updated successfully!');
+    } catch (error) {
+      console.error('Error updating risk:', error);
+      toast.error('Failed to update risk assessment. Please try again.');
+    }
   };
 
   const handleFiltersChange = (newFilters) => {
@@ -520,6 +538,17 @@ const RiskAssessment = () => {
         isOpen={createAssessmentModalOpen}
         onClose={() => setCreateAssessmentModalOpen(false)}
         onSubmit={handleSubmitNewRisk}
+      />
+      
+      {/* Edit Risk Modal */}
+      <EditRiskModal
+        isOpen={editRiskModalOpen}
+        onClose={() => {
+          setEditRiskModalOpen(false);
+          setRiskToEdit(null);
+        }}
+        onSubmit={handleEditRiskSave}
+        risk={riskToEdit}
       />
       
       {/* Upload Risk Register Modal */}

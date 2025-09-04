@@ -3,7 +3,7 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import { hasPermission, PERMISSIONS } from '../../../utils/permissions';
 
-const DocumentCard = ({ document, onView, onAcknowledge, onDelete, userRole }) => {
+const DocumentCard = ({ document, onView, onAcknowledge, onEdit, onDelete, userRole }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getDocumentIcon = (type) => {
@@ -197,6 +197,22 @@ const DocumentCard = ({ document, onView, onAcknowledge, onDelete, userRole }) =
                 Acknowledge
               </Button>
             )}
+          </div>
+
+          {/* Admin Actions */}
+          <div className="flex items-center space-x-2">
+            {hasPermission(userRole, PERMISSIONS.DOCUMENT_CREATE) && onEdit && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEdit(document)}
+                iconName="Edit"
+                iconPosition="left"
+                className="text-accent hover:text-accent hover:bg-accent/10"
+              >
+                Edit
+              </Button>
+            )}
             
             {hasPermission(userRole, PERMISSIONS.DOCUMENT_DELETE) && (
               <Button
@@ -215,25 +231,26 @@ const DocumentCard = ({ document, onView, onAcknowledge, onDelete, userRole }) =
               </Button>
             )}
           </div>
+        </div>
 
-          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-            {document?.isRequired && (
-              <span className="flex items-center space-x-1 text-error">
-                <Icon name="AlertCircle" size={12} />
-                <span>Required</span>
-              </span>
-            )}
-            {document?.hasESignature && (
-              <span className="flex items-center space-x-1 text-success">
-                <Icon name="FileSignature" size={12} />
-                <span>E-Signature</span>
-              </span>
-            )}
-            <span className="flex items-center space-x-1">
-              <Icon name="Eye" size={12} />
-              <span>{document?.viewCount} views</span>
+        {/* Document Info */}
+        <div className="flex items-center justify-end space-x-4 text-xs text-muted-foreground mt-2">
+          {document?.isRequired && (
+            <span className="flex items-center space-x-1 text-error">
+              <Icon name="AlertCircle" size={12} />
+              <span>Required</span>
             </span>
-          </div>
+          )}
+          {document?.hasESignature && (
+            <span className="flex items-center space-x-1 text-success">
+              <Icon name="FileSignature" size={12} />
+              <span>E-Signature</span>
+            </span>
+          )}
+          <span className="flex items-center space-x-1">
+            <Icon name="Eye" size={12} />
+            <span>{document?.viewCount} views</span>
+          </span>
         </div>
       </div>
     </div>

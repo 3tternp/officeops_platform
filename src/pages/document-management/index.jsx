@@ -12,6 +12,7 @@ import AcknowledgmentModal from './components/AcknowledgmentModal';
 import DocumentStats from './components/DocumentStats';
 import BulkActions from './components/BulkActions';
 import CreateDocumentModal from './components/CreateDocumentModal';
+import EditDocumentModal from './components/EditDocumentModal';
 import UploadDocumentModal from './components/UploadDocumentModal';
 import dataService from '../../services/DataService';
 import { hasPermission, PERMISSIONS, getRolePermissions } from '../../utils/permissions';
@@ -35,6 +36,8 @@ const DocumentManagement = () => {
     sortBy: 'date_desc'
   });
   const [createDocumentModalOpen, setCreateDocumentModalOpen] = useState(false);
+  const [editDocumentModalOpen, setEditDocumentModalOpen] = useState(false);
+  const [documentToEdit, setDocumentToEdit] = useState(null);
   const [uploadDocumentModalOpen, setUploadDocumentModalOpen] = useState(false);
 
   // Mock data
@@ -309,6 +312,98 @@ const DocumentManagement = () => {
     setAcknowledgmentModalOpen(true);
   };
 
+
+  const handleEditDocument = (documentToEdit) => {
+    setDocumentToEdit(documentToEdit);
+    setEditDocumentModalOpen(true);
+  };
+
+  const handleEditDocumentSave = (updatedDocument) => {
+    try {
+      // Update in DataService
+      dataService.updateDocument(updatedDocument.id, updatedDocument);
+      
+      // Update local state
+      const updatedDocuments = documents.map(doc => 
+        doc.id === updatedDocument.id ? updatedDocument : doc
+      );
+      setDocuments(updatedDocuments);
+      
+      // Save to DataService
+      dataService.saveModuleData('documents', updatedDocuments);
+      
+      // Create notification
+      dataService.addNotification({
+        type: 'document_updated',
+        title: 'Document Updated',
+        message: `Document updated: ${updatedDocument.title}`,
+        recipientRole: 'admin',
+        priority: 'normal',
+        documentId: updatedDocument.id
+      });
+      
+      setEditDocumentModalOpen(false);
+      setDocumentToEdit(null);
+      
+      // Show success notification
+      const successDialog = document.createElement('div');
+      successDialog.className = 'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4';
+      successDialog.innerHTML = `
+        <div class="bg-card border border-border rounded-lg shadow-enterprise-lg p-6 max-w-md w-full">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="p-2 bg-success/10 rounded-full">
+              <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-foreground">Document Updated</h3>
+          </div>
+          <p class="text-muted-foreground mb-6">Document "${updatedDocument.title}" has been updated successfully.</p>
+          <button onclick="this.closest('.fixed').remove()" class="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg font-medium transition-colors">
+            OK
+          </button>
+        </div>
+      `;
+      document.body.appendChild(successDialog);
+      
+      // Remove after 3 seconds if not manually closed
+      setTimeout(() => {
+        if (document.body.contains(successDialog)) {
+          successDialog.remove();
+        }
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error updating document:', error);
+      // Show error notification
+      const errorDialog = document.createElement('div');
+      errorDialog.className = 'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4';
+      errorDialog.innerHTML = `
+        <div class="bg-card border border-border rounded-lg shadow-enterprise-lg p-6 max-w-md w-full">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="p-2 bg-error/10 rounded-full">
+              <svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-foreground">Error Updating Document</h3>
+          </div>
+          <p class="text-muted-foreground mb-6">There was an error updating the document. Please try again.</p>
+          <button onclick="this.closest('.fixed').remove()" class="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg font-medium transition-colors">
+            OK
+          </button>
+        </div>
+      `;
+      document.body.appendChild(errorDialog);
+      
+      // Remove after 5 seconds if not manually closed
+      setTimeout(() => {
+        if (document.body.contains(errorDialog)) {
+          errorDialog.remove();
+        }
+      }, 5000);
+    }
+  };
 
   const handleDeleteDocument = (documentToDelete) => {
     try {
@@ -905,6 +1000,7 @@ const DocumentManagement = () => {
                     document={document}
                     onView={handleDocumentView}
                     onAcknowledge={handleDocumentAcknowledge}
+                    onEdit={handleEditDocument}
                     onDelete={handleDeleteDocument}
                     userRole={currentUser?.role}
                   />
@@ -943,6 +1039,17 @@ const DocumentManagement = () => {
         isOpen={createDocumentModalOpen}
         onClose={() => setCreateDocumentModalOpen(false)}
         onSubmit={handleSubmitNewDocument}
+      />
+      
+      {/* Edit Document Modal */}
+      <EditDocumentModal
+        isOpen={editDocumentModalOpen}
+        onClose={() => {
+          setEditDocumentModalOpen(false);
+          setDocumentToEdit(null);
+        }}
+        onSubmit={handleEditDocumentSave}
+        document={documentToEdit}
       />
       
       {/* Upload Document Modal - Always available */}

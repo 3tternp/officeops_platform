@@ -61,7 +61,7 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD:-redis123}
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key}
-      CORS_ORIGIN: ${FRONTEND_URL:-http://localhost:3000}
+      CORS_ORIGIN: ${FRONTEND_URL:-http://localhost:4028}
     ports:
       - "${BACKEND_PORT:-3001}:3001"
     depends_on:
@@ -87,11 +87,16 @@ services:
     container_name: officeops-frontend
     restart: unless-stopped
     ports:
-      - "${FRONTEND_PORT:-3000}:80"
+      - "${FRONTEND_PORT:-4028}:80"
     depends_on:
       - backend
     networks:
       - officeops-network
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - VITE_APP_NAME=${APP_NAME:-OfficeOps Platform}
+      - VITE_APP_VERSION=${APP_VERSION:-2.3.0}
+      - VITE_API_URL=${BACKEND_URL:-http://localhost:3001}/api
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 30s

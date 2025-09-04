@@ -7,33 +7,25 @@ plugins = []
 [functions."*"]
 
 [build]
-publish = "C:\\Users\\Astra\\Downloads\\officeops_platform-main\\officeops_platform-main\\dist"
+publish = "C:\\Users\\Astra\\Documents\\GitHub\\officeops_platform-main\\dist"
 publishOrigin = "config"
 commandOrigin = "config"
 command = "npm run build"
-base = "C:\\Users\\Astra\\Downloads\\officeops_platform-main\\officeops_platform-main"
 
 [build.environment]
 NODE_VERSION = "18"
-NPM_VERSION = "8"
+NPM_VERSION = "9"
 CI = "false"
 
 [build.processing]
-skip_processing = false
 
 [build.processing.css]
-bundle = true
-minify = true
 
 [build.processing.html]
-pretty_urls = true
 
 [build.processing.images]
-compress = true
 
 [build.processing.js]
-bundle = true
-minify = true
 
 [build.services]
 
@@ -50,7 +42,7 @@ X-Robots-Tag = "noindex, nofollow"
 Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
 [[headers]]
-for = "/static/*"
+for = "/assets/*"
 
 [headers.values]
 Cache-Control = "public, max-age=31536000, immutable"

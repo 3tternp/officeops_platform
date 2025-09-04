@@ -1682,6 +1682,143 @@ class DataService {
     
     return false;
   }
+
+  // Document Management CRUD
+  getDocuments() {
+    return JSON.parse(localStorage.getItem('documents') || '[]');
+  }
+
+  saveDocuments(documents) {
+    localStorage.setItem('documents', JSON.stringify(documents));
+  }
+
+  addDocument(document) {
+    const documents = this.getDocuments();
+    const newDocument = {
+      ...document,
+      id: `doc${Date.now()}`,
+      version: '1.0',
+      createdDate: new Date().toISOString(),
+      updatedDate: new Date().toISOString(),
+      status: 'active'
+    };
+    documents.push(newDocument);
+    this.saveDocuments(documents);
+    return newDocument;
+  }
+
+  updateDocument(documentId, updates) {
+    const documents = this.getDocuments();
+    const updatedDocuments = documents.map(doc => 
+      doc.id === documentId ? { 
+        ...doc, 
+        ...updates, 
+        updatedDate: new Date().toISOString(),
+        version: this.incrementVersion(doc.version)
+      } : doc
+    );
+    this.saveDocuments(updatedDocuments);
+    return updatedDocuments.find(doc => doc.id === documentId);
+  }
+
+  deleteDocument(documentId) {
+    const documents = this.getDocuments();
+    const filteredDocuments = documents.filter(doc => doc.id !== documentId);
+    this.saveDocuments(filteredDocuments);
+  }
+
+  getDocumentById(documentId) {
+    const documents = this.getDocuments();
+    return documents.find(doc => doc.id === documentId);
+  }
+
+  incrementVersion(currentVersion) {
+    const parts = currentVersion.split('.');
+    const major = parseInt(parts[0]) || 1;
+    const minor = parseInt(parts[1]) || 0;
+    return `${major}.${minor + 1}`;
+  }
+
+  // Learning Management CRUD
+  getCourses() {
+    return JSON.parse(localStorage.getItem('learningCourses') || '[]');
+  }
+
+  saveCourses(courses) {
+    localStorage.setItem('learningCourses', JSON.stringify(courses));
+  }
+
+  addCourse(course) {
+    const courses = this.getCourses();
+    const newCourse = {
+      ...course,
+      id: `course${Date.now()}`,
+      createdDate: new Date().toISOString(),
+      updatedDate: new Date().toISOString(),
+      status: 'draft',
+      enrolledCount: 0,
+      completedCount: 0
+    };
+    courses.push(newCourse);
+    this.saveCourses(courses);
+    return newCourse;
+  }
+
+  updateCourse(courseId, updates) {
+    const courses = this.getCourses();
+    const updatedCourses = courses.map(course => 
+      course.id === courseId ? { 
+        ...course, 
+        ...updates, 
+        updatedDate: new Date().toISOString()
+      } : course
+    );
+    this.saveCourses(updatedCourses);
+    return updatedCourses.find(course => course.id === courseId);
+  }
+
+  deleteCourse(courseId) {
+    const courses = this.getCourses();
+    const filteredCourses = courses.filter(course => course.id !== courseId);
+    this.saveCourses(filteredCourses);
+  }
+
+  getCourseById(courseId) {
+    const courses = this.getCourses();
+    return courses.find(course => course.id === courseId);
+  }
+
+  // Access Request Update and Delete
+  updateAccessRequest(requestId, updates) {
+    const requests = this.getAccessRequests();
+    const updatedRequests = requests.map(req => 
+      req.id === requestId ? { 
+        ...req, 
+        ...updates, 
+        updatedDate: new Date().toISOString()
+      } : req
+    );
+    this.saveAccessRequests(updatedRequests);
+    return updatedRequests.find(req => req.id === requestId);
+  }
+
+  deleteAccessRequest(requestId) {
+    const requests = this.getAccessRequests();
+    const filteredRequests = requests.filter(req => req.id !== requestId);
+    this.saveAccessRequests(filteredRequests);
+  }
+
+  getAccessRequestById(requestId) {
+    const requests = this.getAccessRequests();
+    return requests.find(req => req.id === requestId);
+  }
+
+
+  calculateRiskScore(impact, likelihood) {
+    const impactScore = { 'very low': 1, 'low': 2, 'medium': 3, 'high': 4, 'very high': 5 }[impact.toLowerCase()];
+    const likelihoodScore = { 'very low': 1, 'low': 2, 'medium': 3, 'high': 4, 'very high': 5 }[likelihood.toLowerCase()];
+    return impactScore * likelihoodScore;
+  }
 }
 
 // Create singleton instance
