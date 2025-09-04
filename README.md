@@ -171,14 +171,60 @@ npm run dev
 
 ## 📦 Installation
 
-### 1. Clone the Repository
+### 🚀 Quick Start (Recommended)
+
+#### One-Line Installation
+
+**Linux/macOS:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/yourusername/officeops-platform/main/install.sh | sudo bash
+```
+
+**Windows PowerShell (Run as Administrator):**
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+iwr -useb https://raw.githubusercontent.com/yourusername/officeops-platform/main/install.ps1 | iex
+```
+
+#### Automated Installation Scripts
+
+**Linux/Unix:**
+```bash
+# Download and run installer
+wget https://raw.githubusercontent.com/yourusername/officeops-platform/main/install.sh
+chmod +x install.sh
+sudo ./install.sh
+
+# Development mode
+sudo ./install.sh --dev
+
+# Custom options
+sudo ./install.sh --no-docker --ssl
+```
+
+**Windows:**
+```powershell
+# Download and run installer
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yourusername/officeops-platform/main/install.ps1" -OutFile "install.ps1"
+.\install.ps1
+
+# Development mode
+.\install.ps1 -Development
+
+# Custom options
+.\install.ps1 -NoDocker -SSL
+```
+
+### 🔧 Manual Installation
+
+#### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/yourusername/officeops-platform.git
 cd officeops-platform
 ```
 
-### 2. Install Dependencies
+#### 2. Install Dependencies
 
 Using npm:
 ```bash
@@ -190,7 +236,7 @@ Using yarn:
 yarn install
 ```
 
-### 3. Environment Configuration
+#### 3. Environment Configuration
 
 ```bash
 # Copy the example environment file
@@ -417,6 +463,21 @@ The platform includes several pre-configured demo accounts for comprehensive tes
 6. Filter and sort risks in register table
 7. View interactive heat map visualization
 8. Test treatment planning and progress tracking
+```
+
+#### **System Health Checks**
+```bash
+# Run comprehensive health check (Linux/macOS)
+./health-check.sh
+
+# Run health check (Windows)
+.\health-check.ps1
+
+# Detailed health check with more information
+.\health-check.ps1 -Detailed
+
+# Health check with custom installation path
+.\health-check.ps1 -InstallPath "D:\OfficeOps"
 ```
 
 ### 🔧 **Technical Implementation**
