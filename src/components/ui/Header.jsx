@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Button from './Button';
 import { useUser } from '../../contexts/UserContext';
@@ -10,6 +10,7 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
   const { currentUser, logout } = useUser();
 
   const notifications = [
@@ -60,13 +61,13 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
     switch(action) {
       case 'logout':
         logout();
-        window.location.href = '/login';
+        navigate('/login');
         break;
       case 'profile':
-        window.location.href = '/profile';
+        navigate('/profile');
         break;
       case 'preferences':
-        window.location.href = '/settings';
+        navigate('/settings');
         break;
       case 'help':
         window.open('/help', '_blank');
@@ -196,8 +197,16 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
               onClick={() => setProfileOpen(!profileOpen)}
               className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             >
-              <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-                <Icon name="User" size={18} color="white" />
+              <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+                {currentUser?.profilePicture ? (
+                  <img 
+                    src={currentUser.profilePicture} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Icon name="User" size={18} color="white" />
+                )}
               </div>
               <div className="hidden sm:block text-left">
                 <p className="text-sm font-semibold text-gray-900">{currentUser?.name || 'User'}</p>
@@ -210,8 +219,16 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
               <div className="absolute right-0 top-full mt-3 w-64 bg-white border border-gray-200 rounded-2xl shadow-2xl z-90 overflow-hidden">
                 <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-gray-200">
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-                      <Icon name="User" size={20} color="white" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+                      {currentUser?.profilePicture ? (
+                        <img 
+                          src={currentUser.profilePicture} 
+                          alt="Profile" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Icon name="User" size={20} color="white" />
+                      )}
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900">{currentUser?.name || 'User'}</p>
