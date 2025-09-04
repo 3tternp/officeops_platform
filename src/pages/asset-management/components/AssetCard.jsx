@@ -3,7 +3,7 @@ import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 import Button from '../../../components/ui/Button';
 
-const AssetCard = ({ asset, onViewDetails, onAssign, onReturn, onEdit, currentUser }) => {
+const AssetCard = ({ asset, onViewDetails, onAssign, onReturn, onEdit, onDelete, currentUser }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'available': return 'bg-success text-success-foreground';
@@ -148,12 +148,22 @@ const AssetCard = ({ asset, onViewDetails, onAssign, onReturn, onEdit, currentUs
           )}
 
           {currentUser?.role === 'admin' && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onEdit(asset)}
-              iconName="Edit"
-            />
+            <div className="flex space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEdit(asset)}
+                iconName="Edit"
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDelete(asset)}
+                iconName="Trash2"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              />
+            </div>
           )}
         </div>
       </div>

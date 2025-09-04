@@ -16,6 +16,8 @@ import AssetAssignmentModal from './components/AssetAssignmentModal';
 import AssetReturnModal from './components/AssetReturnModal';
 import BulkOperationsPanel from './components/BulkOperationsPanel';
 import AddAssetModal from './components/AddAssetModal';
+import EditAssetModal from './components/EditAssetModal';
+import DeleteConfirmationModal from './components/DeleteConfirmationModal';
 import dataService from '../../services/DataService';
 import { hasPermission, PERMISSIONS, getRolePermissions } from '../../utils/permissions';
 import { ensureDemoUser } from '../../utils/demoUser';
@@ -34,6 +36,8 @@ const AssetManagement = () => {
   const [assignmentModalOpen, setAssignmentModalOpen] = useState(false);
   const [returnModalOpen, setReturnModalOpen] = useState(false);
   const [addAssetModalOpen, setAddAssetModalOpen] = useState(false);
+  const [editAssetModalOpen, setEditAssetModalOpen] = useState(false);
+  const [deleteConfirmModalOpen, setDeleteConfirmModalOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState(null);
 
   // Filters
@@ -48,6 +52,7 @@ const AssetManagement = () => {
   // Get current user from localStorage or default to employee
   const [currentUser, setCurrentUser] = useState(null);
   const [allAssets, setAllAssets] = useState([]);
+  const [mockAssets, setMockAssets] = useState([]);
   
   // Watch for user changes
   useEffect(() => {
@@ -90,173 +95,176 @@ const AssetManagement = () => {
     // Get assets from DataService
     const assets = dataService.getAssets();
     setAllAssets(assets);
+    
+    // Initialize mock assets
+    const initialMockAssets = [
+      {
+        id: 'asset001',
+        assetId: 'LAP-2024-001',
+        name: 'MacBook Pro 16"',
+        category: 'laptop',
+        brand: 'Apple',
+        model: 'MacBook Pro',
+        serialNumber: 'C02XJ0AAJGH5',
+        status: 'assigned',
+        condition: 'excellent',
+        location: 'headquarters',
+        image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
+        assignedTo: {
+          id: 'emp001',
+          name: 'John Doe',
+          email: 'john.doe@company.com'
+        },
+        assignedDate: '2024-08-15',
+        purchaseDate: '2024-07-01',
+        purchaseCost: '$2,499',
+        warrantyExpiry: '2027-07-01',
+        qrCode: true,
+        specifications: {
+          processor: 'M3 Pro',
+          memory: '16GB RAM',
+          storage: '512GB SSD',
+          display: '16.2" Liquid Retina XDR'
+        }
+      },
+      {
+        id: 'asset002',
+        assetId: 'MON-2024-002',
+        name: 'Dell UltraSharp 27"',
+        category: 'monitor',
+        brand: 'Dell',
+        model: 'U2723QE',
+        serialNumber: 'CN-0H7H8J-74180-25A-0001',
+        status: 'available',
+        condition: 'good',
+        location: 'warehouse',
+        image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400',
+        assignedTo: null,
+        assignedDate: null,
+        purchaseDate: '2024-06-15',
+        purchaseCost: '$599',
+        warrantyExpiry: '2027-06-15',
+        qrCode: true,
+        specifications: {
+          resolution: '4K UHD (3840x2160)',
+          panelType: 'IPS',
+          connectivity: 'USB-C, HDMI, DisplayPort',
+          colorGamut: '98% DCI-P3'
+        }
+      },
+      {
+        id: 'asset003',
+        assetId: 'PHN-2024-003',
+        name: 'iPhone 15 Pro',
+        category: 'phone',
+        brand: 'Apple',
+        model: 'iPhone 15 Pro',
+        serialNumber: 'F2LN3LL/A',
+        status: 'assigned',
+        condition: 'excellent',
+        location: 'remote',
+        image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+        assignedTo: {
+          id: 'emp002',
+          name: 'Jane Smith',
+          email: 'jane.smith@company.com'
+        },
+        assignedDate: '2024-08-10',
+        purchaseDate: '2024-08-01',
+        purchaseCost: '$999',
+        warrantyExpiry: '2025-08-01',
+        qrCode: true,
+        specifications: {
+          storage: '256GB',
+          display: '6.1" Super Retina XDR',
+          camera: '48MP Main, 12MP Ultra Wide',
+          connectivity: '5G, Wi-Fi 6E'
+        }
+      },
+      {
+        id: 'asset004',
+        assetId: 'PRT-2024-004',
+        name: 'HP LaserJet Pro',
+        category: 'printer',
+        brand: 'HP',
+        model: 'LaserJet Pro 4301dw',
+        serialNumber: 'VNC3K25001',
+        status: 'maintenance',
+        condition: 'fair',
+        location: 'headquarters',
+        image: 'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=400',
+        assignedTo: null,
+        assignedDate: null,
+        purchaseDate: '2024-05-20',
+        purchaseCost: '$299',
+        warrantyExpiry: '2026-05-20',
+        qrCode: true,
+        specifications: {
+          printSpeed: '35 ppm',
+          printResolution: '1200 x 1200 dpi',
+          connectivity: 'Wi-Fi, Ethernet, USB',
+          paperCapacity: '300 sheets'
+        }
+      },
+      {
+        id: 'asset005',
+        assetId: 'TAB-2024-005',
+        name: 'iPad Pro 12.9"',
+        category: 'tablet',
+        brand: 'Apple',
+        model: 'iPad Pro',
+        serialNumber: 'DMPH2LL/A',
+        status: 'available',
+        condition: 'excellent',
+        location: 'branch-office-1',
+        image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400',
+        assignedTo: null,
+        assignedDate: null,
+        purchaseDate: '2024-07-15',
+        purchaseCost: '$1,099',
+        warrantyExpiry: '2025-07-15',
+        qrCode: true,
+        specifications: {
+          display: '12.9" Liquid Retina XDR',
+          storage: '256GB',
+          processor: 'M2 chip',
+          connectivity: 'Wi-Fi 6E, 5G'
+        }
+      },
+      {
+        id: 'asset006',
+        assetId: 'CAM-2024-006',
+        name: 'Canon EOS R6',
+        category: 'camera',
+        brand: 'Canon',
+        model: 'EOS R6 Mark II',
+        serialNumber: '013021000001',
+        status: 'assigned',
+        condition: 'good',
+        location: 'headquarters',
+        image: 'https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400',
+        assignedTo: {
+          id: 'emp003',
+          name: 'Mike Johnson',
+          email: 'mike.johnson@company.com'
+        },
+        assignedDate: '2024-08-05',
+        purchaseDate: '2024-06-01',
+        purchaseCost: '$2,499',
+        warrantyExpiry: '2026-06-01',
+        qrCode: true,
+        specifications: {
+          sensor: '24.2MP Full-Frame CMOS',
+          videoRecording: '4K UHD at 60fps',
+          isoRange: '100-102400',
+          connectivity: 'Wi-Fi, Bluetooth'
+        }
+      }
+    ];
+    setMockAssets(initialMockAssets);
   }, []);
 
-  // Mock assets data
-  const mockAssets = [
-    {
-      id: 'asset001',
-      assetId: 'LAP-2024-001',
-      name: 'MacBook Pro 16"',
-      category: 'laptop',
-      brand: 'Apple',
-      model: 'MacBook Pro',
-      serialNumber: 'C02XJ0AAJGH5',
-      status: 'assigned',
-      condition: 'excellent',
-      location: 'headquarters',
-      image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
-      assignedTo: {
-        id: 'emp001',
-        name: 'John Doe',
-        email: 'john.doe@company.com'
-      },
-      assignedDate: '2024-08-15',
-      purchaseDate: '2024-07-01',
-      purchaseCost: '$2,499',
-      warrantyExpiry: '2027-07-01',
-      qrCode: true,
-      specifications: {
-        processor: 'M3 Pro',
-        memory: '16GB RAM',
-        storage: '512GB SSD',
-        display: '16.2" Liquid Retina XDR'
-      }
-    },
-    {
-      id: 'asset002',
-      assetId: 'MON-2024-002',
-      name: 'Dell UltraSharp 27"',
-      category: 'monitor',
-      brand: 'Dell',
-      model: 'U2723QE',
-      serialNumber: 'CN-0H7H8J-74180-25A-0001',
-      status: 'available',
-      condition: 'good',
-      location: 'warehouse',
-      image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400',
-      assignedTo: null,
-      assignedDate: null,
-      purchaseDate: '2024-06-15',
-      purchaseCost: '$599',
-      warrantyExpiry: '2027-06-15',
-      qrCode: true,
-      specifications: {
-        resolution: '4K UHD (3840x2160)',
-        panelType: 'IPS',
-        connectivity: 'USB-C, HDMI, DisplayPort',
-        colorGamut: '98% DCI-P3'
-      }
-    },
-    {
-      id: 'asset003',
-      assetId: 'PHN-2024-003',
-      name: 'iPhone 15 Pro',
-      category: 'phone',
-      brand: 'Apple',
-      model: 'iPhone 15 Pro',
-      serialNumber: 'F2LN3LL/A',
-      status: 'assigned',
-      condition: 'excellent',
-      location: 'remote',
-      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
-      assignedTo: {
-        id: 'emp002',
-        name: 'Jane Smith',
-        email: 'jane.smith@company.com'
-      },
-      assignedDate: '2024-08-10',
-      purchaseDate: '2024-08-01',
-      purchaseCost: '$999',
-      warrantyExpiry: '2025-08-01',
-      qrCode: true,
-      specifications: {
-        storage: '256GB',
-        display: '6.1" Super Retina XDR',
-        camera: '48MP Main, 12MP Ultra Wide',
-        connectivity: '5G, Wi-Fi 6E'
-      }
-    },
-    {
-      id: 'asset004',
-      assetId: 'PRT-2024-004',
-      name: 'HP LaserJet Pro',
-      category: 'printer',
-      brand: 'HP',
-      model: 'LaserJet Pro 4301dw',
-      serialNumber: 'VNC3K25001',
-      status: 'maintenance',
-      condition: 'fair',
-      location: 'headquarters',
-      image: 'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=400',
-      assignedTo: null,
-      assignedDate: null,
-      purchaseDate: '2024-05-20',
-      purchaseCost: '$299',
-      warrantyExpiry: '2026-05-20',
-      qrCode: true,
-      specifications: {
-        printSpeed: '35 ppm',
-        printResolution: '1200 x 1200 dpi',
-        connectivity: 'Wi-Fi, Ethernet, USB',
-        paperCapacity: '300 sheets'
-      }
-    },
-    {
-      id: 'asset005',
-      assetId: 'TAB-2024-005',
-      name: 'iPad Pro 12.9"',
-      category: 'tablet',
-      brand: 'Apple',
-      model: 'iPad Pro',
-      serialNumber: 'DMPH2LL/A',
-      status: 'available',
-      condition: 'excellent',
-      location: 'branch-office-1',
-      image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400',
-      assignedTo: null,
-      assignedDate: null,
-      purchaseDate: '2024-07-15',
-      purchaseCost: '$1,099',
-      warrantyExpiry: '2025-07-15',
-      qrCode: true,
-      specifications: {
-        display: '12.9" Liquid Retina XDR',
-        storage: '256GB',
-        processor: 'M2 chip',
-        connectivity: 'Wi-Fi 6E, 5G'
-      }
-    },
-    {
-      id: 'asset006',
-      assetId: 'CAM-2024-006',
-      name: 'Canon EOS R6',
-      category: 'camera',
-      brand: 'Canon',
-      model: 'EOS R6 Mark II',
-      serialNumber: '013021000001',
-      status: 'assigned',
-      condition: 'good',
-      location: 'headquarters',
-      image: 'https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400',
-      assignedTo: {
-        id: 'emp003',
-        name: 'Mike Johnson',
-        email: 'mike.johnson@company.com'
-      },
-      assignedDate: '2024-08-05',
-      purchaseDate: '2024-06-01',
-      purchaseCost: '$2,499',
-      warrantyExpiry: '2026-06-01',
-      qrCode: true,
-      specifications: {
-        sensor: '24.2MP Full-Frame CMOS',
-        videoRecording: '4K UHD at 60fps',
-        isoRange: '100-102400',
-        connectivity: 'Wi-Fi, Bluetooth'
-      }
-    }
-  ];
+  // Mock user assets (assets assigned to current user)
 
   // Mock user assets (assets assigned to current user)
   const userAssets = mockAssets?.filter(asset => 
@@ -335,8 +343,13 @@ const AssetManagement = () => {
   };
 
   const handleEditAsset = (asset) => {
-    console.log('Edit asset:', asset);
-    // Navigate to edit form or open edit modal
+    setSelectedAsset(asset);
+    setEditAssetModalOpen(true);
+  };
+
+  const handleDeleteAsset = (asset) => {
+    setSelectedAsset(asset);
+    setDeleteConfirmModalOpen(true);
   };
 
   const handleRequestAsset = (asset = null) => {
@@ -396,9 +409,37 @@ const AssetManagement = () => {
   const handleSubmitAddAsset = async (assetData) => {
     console.log('Adding new asset:', assetData);
     // Here you would typically send the data to your backend API
-    // For now, we'll just simulate success
+    // For now, we'll just simulate success by adding to mockAssets
+    const newAsset = {
+      ...assetData,
+      id: `asset${Date.now()}`,
+      assetId: `${assetData.category?.toUpperCase().slice(0,3)}-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}`,
+      assignedTo: null,
+      assignedDate: null,
+      qrCode: true
+    };
+    
+    setMockAssets(prev => [...prev, newAsset]);
     alert('Asset added successfully!');
     return new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  const handleSubmitEditAsset = async (updatedAssetData) => {
+    console.log('Updating asset:', updatedAssetData);
+    // Update the asset in mockAssets
+    setMockAssets(prev => prev.map(asset => 
+      asset.id === updatedAssetData.id ? updatedAssetData : asset
+    ));
+    alert('Asset updated successfully!');
+    return new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  const handleConfirmDeleteAsset = async (assetToDelete) => {
+    console.log('Deleting asset:', assetToDelete);
+    // Remove the asset from mockAssets
+    setMockAssets(prev => prev.filter(asset => asset.id !== assetToDelete.id));
+    alert(`Asset ${assetToDelete.name} (${assetToDelete.assetId}) has been deleted successfully.`);
+    return new Promise(resolve => setTimeout(resolve, 500));
   };
 
   const renderAssetCatalog = () => (
@@ -541,6 +582,7 @@ const AssetManagement = () => {
                 onAssign={handleAssignAsset}
                 onReturn={handleReturnAsset}
                 onEdit={handleEditAsset}
+                onDelete={handleDeleteAsset}
                 currentUser={currentUser}
               />
             </div>
@@ -647,6 +689,7 @@ const AssetManagement = () => {
         onEdit={handleEditAsset}
         onAssign={handleAssignAsset}
         onReturn={handleReturnAsset}
+        onDelete={handleDeleteAsset}
         currentUser={currentUser}
       />
       <AssetAssignmentModal
@@ -665,6 +708,18 @@ const AssetManagement = () => {
         isOpen={addAssetModalOpen}
         onClose={() => setAddAssetModalOpen(false)}
         onSubmit={handleSubmitAddAsset}
+      />
+      <EditAssetModal
+        isOpen={editAssetModalOpen}
+        onClose={() => setEditAssetModalOpen(false)}
+        onSubmit={handleSubmitEditAsset}
+        asset={selectedAsset}
+      />
+      <DeleteConfirmationModal
+        isOpen={deleteConfirmModalOpen}
+        onClose={() => setDeleteConfirmModalOpen(false)}
+        onConfirm={handleConfirmDeleteAsset}
+        asset={selectedAsset}
       />
       {/* Bulk Operations Panel */}
       <BulkOperationsPanel

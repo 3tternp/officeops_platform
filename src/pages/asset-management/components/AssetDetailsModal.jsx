@@ -3,7 +3,7 @@ import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 import Button from '../../../components/ui/Button';
 
-const AssetDetailsModal = ({ isOpen, onClose, asset, onEdit, onAssign, onReturn, currentUser }) => {
+const AssetDetailsModal = ({ isOpen, onClose, asset, onEdit, onAssign, onReturn, onDelete, currentUser }) => {
   const [activeTab, setActiveTab] = useState('details');
 
   if (!isOpen || !asset) return null;
@@ -336,6 +336,15 @@ const AssetDetailsModal = ({ isOpen, onClose, asset, onEdit, onAssign, onReturn,
               <>
                 <Button variant="outline" size="sm" onClick={() => onEdit(asset)} iconName="Edit">
                   Edit
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => onDelete(asset)} 
+                  iconName="Trash2"
+                  className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 hover:bg-red-50"
+                >
+                  Delete
                 </Button>
                 {asset?.status === 'available' && (
                   <Button variant="default" size="sm" onClick={() => onAssign(asset)} iconName="UserPlus">
