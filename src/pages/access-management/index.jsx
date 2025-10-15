@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../components/ui/Header';
 import Sidebar from '../../components/ui/Sidebar';
 import Breadcrumb from '../../components/ui/Breadcrumb';
@@ -27,9 +27,13 @@ import { ensureDemoUser } from '../../utils/demoUser';
 
 const AccessManagement = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('requests');
+  const [activeTab, setActiveTab] = useState(() => {
+    const initialTab = location?.state?.openTab;
+    return typeof initialTab === 'string' ? initialTab : 'requests';
+  });
   const [selectedRequests, setSelectedRequests] = useState([]);
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');

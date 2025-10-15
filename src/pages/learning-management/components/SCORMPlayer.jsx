@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
+import JSZip from 'jszip';
 
 const SCORMPlayer = ({ packageData, onClose, onComplete }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -12,6 +13,7 @@ const SCORMPlayer = ({ packageData, onClose, onComplete }) => {
     location: '',
     sessionTime: '00:00:00'
   });
+  const [iframeContent, setIframeContent] = useState('');
   const iframeRef = useRef(null);
   const startTimeRef = useRef(Date.now());
 
@@ -42,24 +44,80 @@ const SCORMPlayer = ({ packageData, onClose, onComplete }) => {
       setIsLoading(true);
       setPlayerStatus('loading');
 
-      // Convert base64 data back to blob
+      // Convert base64 to Blob
       const binaryString = atob(packageData.data);
       const bytes = new Uint8Array(binaryString.length);
       for (let i = 0; i < binaryString.length; i++) {
         bytes[i] = binaryString.charCodeAt(i);
       }
-      const blob = new Blob([bytes], { type: 'application/zip' });
+      const zipBlob = new Blob([bytes], { type: 'application/zip' });
 
-      // Create object URL for the package
-      const packageUrl = URL.createObjectURL(blob);
-      
-      // For demo purposes, we'll show a simulated SCORM player
-      // In a real implementation, you would extract and serve the SCORM content
+      // Load ZIP
+      const zip = await new JSZip().loadAsync(zipBlob);
+
+      // Determine launch file from manifest or fallback
+      let launchPath = 'index.html';
+      const manifestFile = zip.file('imsmanifest.xml');
+      if (manifestFile) {
+        const manifest = await manifestFile.async('string');
+        const hrefMatch = manifest.match(/href\s*=\s*"([^"]+)"/i);
+        if (hrefMatch && hrefMatch[1]) {
+          launchPath = hrefMatch[1].replace(/^\.\//, '');
+        }
+      }
+
+      // Build object URLs for assets
+      const urlMap = {};
+      const mimeFromName = (name) => {
+        const ext = name.toLowerCase().split('.').pop();
+        switch (ext) {
+          case 'html': return 'text/html';
+          case 'js': return 'application/javascript';
+          case 'css': return 'text/css';
+          case 'json': return 'application/json';
+          case 'svg': return 'image/svg+xml';
+          case 'png': return 'image/png';
+          case 'jpg':
+          case 'jpeg': return 'image/jpeg';
+          case 'gif': return 'image/gif';
+          case 'mp4': return 'video/mp4';
+          case 'webm': return 'video/webm';
+          case 'mp3': return 'audio/mpeg';
+          case 'wav': return 'audio/wav';
+          case 'pdf': return 'application/pdf';
+          default: return 'application/octet-stream';
+        }
+      };
+
+      const files = Object.keys(zip.files);
+      for (const name of files) {
+        const f = zip.files[name];
+        if (!f.dir) {
+          const content = await f.async('uint8array');
+          const blob = new Blob([content], { type: mimeFromName(name) });
+          urlMap[name] = URL.createObjectURL(blob);
+        }
+      }
+
+      // Patch launch HTML to reference object URLs
+      const htmlFile = zip.file(launchPath);
+      if (!htmlFile) throw new Error(`Launch file not found: ${launchPath}`);
+      const html = await htmlFile.async('string');
+      const patchedHtml = html.replace(/(src|href)=["']([^"']+)["']/g, (m, attr, path) => {
+        const normalized = path.replace(/^\.\//, '');
+        const candidates = [normalized, `content/${normalized}`];
+        const replacement = candidates.reduce((acc, key) => acc || urlMap[key], urlMap[normalized]);
+        return replacement ? `${attr}="${replacement}"` : m;
+      });
+
+      setIframeContent(patchedHtml);
       setPlayerStatus('ready');
       setIsLoading(false);
-      
-      // Clean up URL when component unmounts
-      return () => URL.revokeObjectURL(packageUrl);
+
+      // Cleanup on unmount
+      return () => {
+        Object.values(urlMap).forEach((u) => URL.revokeObjectURL(u));
+      };
     } catch (error) {
       console.error('Error loading SCORM package:', error);
       setPlayerStatus('error');
@@ -112,6 +170,73 @@ const SCORMPlayer = ({ packageData, onClose, onComplete }) => {
     window.addEventListener('message', handlePlayerMessage);
     return () => window.removeEventListener('message', handlePlayerMessage);
   }, [scormData]);
+
+  // Expose a minimal SCORM 1.2 API shim for content to find via parent
+  useEffect(() => {
+    const lms = {
+      initialized: false,
+      values: {
+        'cmi.core.lesson_status': 'incomplete',
+        'cmi.core.score.raw': '0',
+        'cmi.core.lesson_location': '',
+        'cmi.core.total_time': '0000:00:00',
+        'cmi.core.exit': ''
+      }
+    };
+
+    const API = {
+      LMSInitialize: () => {
+        lms.initialized = true;
+        return 'true';
+      },
+      LMSFinish: () => {
+        return 'true';
+      },
+      LMSGetValue: (name) => {
+        const val = lms.values[name];
+        return typeof val === 'undefined' ? '' : String(val);
+      },
+      LMSSetValue: (name, value) => {
+        lms.values[name] = String(value);
+        if (name === 'cmi.core.lesson_location') {
+          setScormData((prev) => ({ ...prev, location: String(value) }));
+          const num = Number(value);
+          if (!Number.isNaN(num)) setProgress(Math.max(0, Math.min(100, num)));
+        }
+        if (name === 'cmi.core.score.raw') {
+          const num = Number(value);
+          if (!Number.isNaN(num)) setScormData((prev) => ({ ...prev, score: num }));
+        }
+        if (name === 'cmi.core.lesson_status') {
+          setScormData((prev) => ({ ...prev, lessonStatus: String(value) }));
+          if (String(value).toLowerCase() === 'completed') {
+            setProgress(100);
+            onComplete && onComplete({
+              packageId: packageData?.id,
+              score: Number(lms.values['cmi.core.score.raw']) || 0,
+              completed: true,
+              sessionTime: scormData.sessionTime
+            });
+          }
+        }
+        return 'true';
+      },
+      LMSCommit: () => {
+        try {
+          const payload = {
+            status: lms.values['cmi.core.lesson_status'],
+            score: lms.values['cmi.core.score.raw'],
+            location: lms.values['cmi.core.lesson_location'],
+            totalTime: lms.values['cmi.core.total_time']
+          };
+          localStorage.setItem(`scorm_session_${packageData?.id}`, JSON.stringify(payload));
+        } catch {}
+        return 'true';
+      }
+    };
+    window.API = API;
+    return () => { try { delete window.API; } catch {} };
+  }, [onComplete, packageData, scormData.sessionTime]);
 
   const mockSCORMPlayer = () => {
     return (
@@ -322,7 +447,15 @@ const SCORMPlayer = ({ packageData, onClose, onComplete }) => {
               </div>
             </div>
           ) : (
-            mockSCORMPlayer()
+            <div className="h-full">
+              <iframe
+                ref={iframeRef}
+                title="SCORM Content"
+                srcDoc={iframeContent}
+                className="w-full h-full bg-white"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+              />
+            </div>
           )}
         </div>
 

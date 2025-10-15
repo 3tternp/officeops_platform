@@ -81,7 +81,7 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-80 bg-white/95 backdrop-blur-lg border-b border-gray-200/80 shadow-sm"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-b border-gray-200/80 shadow-sm"
       style={branding?.loginBackgroundImage ? {
         backgroundImage: `url(${branding.loginBackgroundImage})`,
         backgroundSize: 'cover',
@@ -164,7 +164,7 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
             </button>
 
             {notificationOpen && (
-              <div className="absolute right-0 top-full mt-3 w-80 bg-white border border-gray-200 rounded-2xl shadow-2xl z-90 overflow-hidden">
+              <div className="absolute right-0 top-full mt-3 w-80 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
                 <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-gray-200">
                   <h3 className="font-semibold text-gray-900">Notifications</h3>
                   <p className="text-sm text-gray-500 mt-0.5">{unreadCount} unread messages</p>
@@ -197,7 +197,15 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
                   ))}
                 </div>
                 <div className="p-4 border-t border-border">
-                  <Button variant="ghost" size="sm" className="w-full">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => {
+                      setNotificationOpen(false);
+                      navigate('/access-management', { state: { openTab: 'notifications' } });
+                    }}
+                  >
                     View all notifications
                   </Button>
                 </div>
@@ -230,7 +238,7 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 top-full mt-3 w-64 bg-white border border-gray-200 rounded-2xl shadow-2xl z-90 overflow-hidden">
+              <div className="absolute right-0 top-full mt-3 w-64 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
                 <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-gray-200">
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
@@ -310,7 +318,7 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
       {/* Overlay for mobile dropdowns */}
       {(notificationOpen || profileOpen) && (
         <div
-          className="fixed inset-0 z-70 bg-black/20 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-xs lg:hidden"
           onClick={() => {
             setNotificationOpen(false);
             setProfileOpen(false);
