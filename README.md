@@ -9,6 +9,7 @@
 ![Features](https://img.shields.io/badge/features-fully_functional-green.svg)
 ![Last Updated](https://img.shields.io/badge/updated-January_2025-blue.svg)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/7e3010cf-8613-4481-b143-2df4e9f6c307/deploy-status)](https://app.netlify.com/)
+[![CI](https://github.com/3tternp/officeops_platform/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/3tternp/officeops_platform/actions/workflows/ci-cd.yml)
 
 ## 📋 Table of Contents
 
