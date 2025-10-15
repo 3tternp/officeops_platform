@@ -8,6 +8,7 @@
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Features](https://img.shields.io/badge/features-fully_functional-green.svg)
 ![Last Updated](https://img.shields.io/badge/updated-January_2025-blue.svg)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/7e3010cf-8613-4481-b143-2df4e9f6c307/deploy-status)](https://app.netlify.com/)
 
 ## 📋 Table of Contents
 
@@ -19,6 +20,7 @@
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
+- [Screenshots](#screenshots)
 - [RBAC Permissions](#rbac-permissions)
 - [Demo Accounts](#demo-accounts)
 - [API Documentation](#api-documentation)
@@ -307,6 +309,20 @@ The platform is highly customizable:
 - **Components**: All UI components are in `src/components/`
 - **Routes**: Configure routing in `src/Routes.jsx`
 - **Data Models**: Mock data structure in `src/services/DataService.jsx`
+
+## 🖼️ Screenshots
+
+- Place images and GIFs under `docs/assets/`.
+- Recommended examples:
+  - `docs/assets/overview.png` – Main dashboard overview
+  - `docs/assets/lms-actions.png` – LMS course details showing gated actions
+  - `docs/assets/access-approval-iso.png` – Access approval modal with ISO routing
+  - `docs/assets/demo.gif` – Short demo of key workflows
+- Embed example:
+  - `![Overview](docs/assets/overview.png)`
+  - `![LMS Actions](docs/assets/lms-actions.png)`
+  - `![Access Approval ISO](docs/assets/access-approval-iso.png)`
+  - `![Demo](docs/assets/demo.gif)`
 
 ## 📖 Usage
 
