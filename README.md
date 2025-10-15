@@ -5,10 +5,9 @@
 ![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![React](https://img.shields.io/badge/react-18.3.1-blue.svg)
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Features](https://img.shields.io/badge/features-fully_functional-green.svg)
 ![Last Updated](https://img.shields.io/badge/updated-January_2025-blue.svg)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/7e3010cf-8613-4481-b143-2df4e9f6c307/deploy-status)](https://app.netlify.com/)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/7e3010cf-8613-4481-b143-2df4e9f6c307/deploy-status)](https://app.netlify.com/sites/officeops-platform/deploys)
 [![CI](https://github.com/3tternp/officeops_platform/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/3tternp/officeops_platform/actions/workflows/ci-cd.yml)
 
 ## 📋 Table of Contents
@@ -27,6 +26,7 @@
 - [API Documentation](#api-documentation)
 - [Docker Deployment](#docker-deployment)
 - [Netlify Deployment](#netlify-deployment)
+- [CI/CD](#cicd)
 - [Contributing](#contributing)
 - [Troubleshooting](#troubleshooting)
 - [Support](#support)
@@ -173,6 +173,19 @@ npm run dev
 # Access the application
 # Open http://localhost:4028 in your browser
 ```
+
+## CI/CD
+
+- GitHub Actions runs the "OfficeOps Platform CI/CD" workflow on `push` to `main`/`develop` and `pull_request` to `main`.
+- Jobs include test/build (`npm ci`, `npm run build`), security scans (`npm audit`, Trivy), Docker build/push for `main`, and Lighthouse perf checks on PRs.
+- The workflow uploads build artifacts from `dist/` and can deploy to Netlify when `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` secrets are configured.
+- Netlify auto-deploys from Git; deploy status is shown via the badge above.
+
+Secrets to enable Netlify deploy in CI:
+- `NETLIFY_AUTH_TOKEN`: Personal access token from Netlify.
+- `NETLIFY_SITE_ID`: Site ID for `officeops-platform.netlify.app`.
+
+Workflow file: `.github/workflows/ci-cd.yml`.
 
 ## 📦 Installation
 

@@ -42,7 +42,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: build-files
-        path: build/
+        path: dist/
         retention-days: 7
 
   # Security Scan Job
@@ -157,7 +157,7 @@ jobs:
       
     - name: Run Lighthouse CI
       run: |
-        npx serve -s build -l 3000 &
+        npx serve -s dist -l 3000 &
         sleep 10
         lhci autorun
       env:
@@ -171,8 +171,8 @@ jobs:
     
     environment:
       name: production
-      url: https://your-domain.com
-      
+      url: https://officeops-platform.netlify.app
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -181,9 +181,21 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: build-files
-        path: build/
+        path: dist/
+    
+    - name: Install Netlify CLI (if secrets provided)
+      if: ${{ secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_SITE_ID != '' }}
+      run: npm install -g netlify-cli
+    
+    - name: Deploy to Netlify (production)
+      if: ${{ secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_SITE_ID != '' }}
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      run: |
+        netlify deploy --dir=dist --prod --site=${{ secrets.NETLIFY_SITE_ID }}
         
     - name: Deploy to production
+      if: ${{ secrets.NETLIFY_AUTH_TOKEN == '' || secrets.NETLIFY_SITE_ID == '' }}
       run: |
         echo "Deploying to production..."
         # Add your deployment commands here
@@ -193,8 +205,8 @@ jobs:
       run: |
         # Wait for deployment to complete
         sleep 30
-        # Add health check commands
-        echo "Performing health check..."
+        # Perform health check against Netlify site
+        curl -sS -I https://officeops-platform.netlify.app | head -n 1
         
     - name: Notify deployment success
       if: success()
