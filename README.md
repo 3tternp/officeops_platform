@@ -19,9 +19,11 @@
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
+- [RBAC Permissions](#rbac-permissions)
 - [Demo Accounts](#demo-accounts)
 - [API Documentation](#api-documentation)
 - [Docker Deployment](#docker-deployment)
+- [Netlify Deployment](#netlify-deployment)
 - [Contributing](#contributing)
 - [Troubleshooting](#troubleshooting)
 - [Support](#support)
@@ -153,8 +155,8 @@ Get the platform running in less than 5 minutes:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/officeops-platform.git
-cd officeops-platform
+git clone https://github.com/3tternp/officeops_platform.git
+cd officeops_platform
 
 # Install dependencies
 npm install
@@ -177,13 +179,13 @@ npm run dev
 
 **Linux/macOS:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yourusername/officeops-platform/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/3tternp/officeops_platform/main/install.sh | sudo bash
 ```
 
 **Windows PowerShell (Run as Administrator):**
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-iwr -useb https://raw.githubusercontent.com/yourusername/officeops-platform/main/install.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/3tternp/officeops_platform/main/install.ps1 | iex
 ```
 
 #### Automated Installation Scripts
@@ -191,7 +193,7 @@ iwr -useb https://raw.githubusercontent.com/yourusername/officeops-platform/main
 **Linux/Unix:**
 ```bash
 # Download and run installer
-wget https://raw.githubusercontent.com/yourusername/officeops-platform/main/install.sh
+wget https://raw.githubusercontent.com/3tternp/officeops_platform/main/install.sh
 chmod +x install.sh
 sudo ./install.sh
 
@@ -205,7 +207,7 @@ sudo ./install.sh --no-docker --ssl
 **Windows:**
 ```powershell
 # Download and run installer
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yourusername/officeops-platform/main/install.ps1" -OutFile "install.ps1"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/3tternp/officeops_platform/main/install.ps1" -OutFile "install.ps1"
 .\install.ps1
 
 # Development mode
@@ -220,8 +222,8 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yourusername/officeops
 #### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/officeops-platform.git
-cd officeops-platform
+git clone https://github.com/3tternp/officeops_platform.git
+cd officeops_platform
 ```
 
 #### 2. Install Dependencies
@@ -351,6 +353,24 @@ The platform is highly customizable:
    - Use role switcher in header (development only)
    - Switch between Admin, ISO, Manager, Employee roles
    - Test different permission levels and features
+
+## 🔑 RBAC Permissions
+
+- Roles: `admin`, `iso`, `manager`, `employee`, `risk_officer`
+- Admin has full permissions across modules.
+- ISO focuses on security/compliance with access approvals and LMS management.
+- Manager and Employee have limited, role-appropriate permissions.
+
+LMS actions:
+- Edit Course requires `LMS_CREATE_COURSE` or `LMS_MANAGE_ALL`.
+- Assign Course requires `LMS_ASSIGN_COURSE` or `LMS_MANAGE_ALL`.
+- Create Assignment requires `LMS_ASSIGN_COURSE` or `LMS_MANAGE_ALL`.
+
+Access Management:
+- Access requests routed to `Information Technology` are approved by `ISO`.
+- Approver label displays `ISO` for IT routing in approval modals.
+
+These rules are enforced via `src/utils/permissions.js` and applied across components.
 
 ## 👤 Demo Accounts
 
@@ -589,6 +609,30 @@ docker-compose up -d --build frontend
 - **Database**: PostgreSQL for data persistence
 - **Cache**: Redis for sessions and caching
 - **Proxy**: Nginx as reverse proxy and load balancer
+
+## ☁️ Netlify Deployment
+
+- Build command: `npm run build`
+- Publish directory: `dist`
+- SPA routing and headers configured via `netlify.toml`
+
+Automatic deploys (recommended):
+- Log in to Netlify and create a new site from Git.
+- Connect GitHub repo `3tternp/officeops_platform` and select branch `master`.
+- Confirm build settings: base `.`; build `npm run build`; publish `dist`.
+- Deploys trigger automatically on pushes to `master`.
+
+CLI deploy (alternative):
+- `npm install -g netlify-cli`
+- `npm run build`
+- `netlify login`
+- `netlify init` (link to the Netlify site)
+- `netlify deploy --prod --dir=dist`
+
+Notes:
+- Node version 18 is set in `netlify.toml`.
+- SPA redirects are already configured to avoid 404 on refresh.
+- If using external APIs, ensure required `VITE_*` env vars are defined in Netlify.
 
 ## 🤝 Contributing
 
