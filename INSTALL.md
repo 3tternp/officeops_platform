@@ -67,14 +67,14 @@ The installation scripts will automatically install these, but you can install t
 ### One-Line Installation (Linux/macOS)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yourusername/officeops-platform/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/3tternp/officeops_platform/main/install.sh | sudo bash
 ```
 
 ### One-Line Installation (Windows PowerShell)
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-iwr -useb https://raw.githubusercontent.com/yourusername/officeops-platform/main/install.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/3tternp/officeops_platform/main/install.ps1 | iex
 ```
 
 ## 🤖 Automated Installation
@@ -85,7 +85,7 @@ iwr -useb https://raw.githubusercontent.com/yourusername/officeops-platform/main
 
 ```bash
 # Download the installer
-wget https://raw.githubusercontent.com/yourusername/officeops-platform/main/install.sh
+wget https://raw.githubusercontent.com/3tternp/officeops_platform/main/install.sh
 chmod +x install.sh
 
 # Run installation (as root/sudo)
@@ -131,11 +131,23 @@ The Linux installer will:
 
 ```powershell
 # Download the installer
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yourusername/officeops-platform/main/install.ps1" -OutFile "install.ps1"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/3tternp/officeops_platform/main/install.ps1" -OutFile "install.ps1"
 
 # Run installation (as Administrator)
 .\install.ps1
 ```
+
+### Quick Dev Setup (recommended for contributors)
+
+```bash
+# Linux/macOS
+./scripts/setup-dev.sh
+
+# Windows PowerShell
+./scripts/setup-dev.ps1
+```
+
+This minimal setup will copy `.env.example` to `.env` if missing, install dependencies, and build the app. Then start with `npm run dev`.
 
 #### Development Installation
 
