@@ -49,6 +49,8 @@ services:
       dockerfile: Dockerfile
     container_name: officeops-backend
     restart: unless-stopped
+    profiles:
+      - api
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3001
@@ -88,8 +90,6 @@ services:
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-4028}:80"
-    depends_on:
-      - backend
     networks:
       - officeops-network
     environment:

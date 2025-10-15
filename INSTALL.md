@@ -297,6 +297,48 @@ docker-compose up -d --build
 docker-compose up -d --scale frontend=3
 ```
 
+### Local Automation (Scripts)
+
+Use the provided helper scripts to bring up the local environment with one command.
+
+Linux/macOS (bash):
+
+```bash
+# Frontend + Postgres (default)
+./scripts/local-up.sh
+
+# Include development overrides (hot-reload dev server)
+./scripts/local-up.sh --dev
+
+# Include optional services
+./scripts/local-up.sh --tools          # PgAdmin, Adminer, MailHog
+./scripts/local-up.sh --api            # Backend API (requires backend code)
+./scripts/local-up.sh --rebuild        # Force rebuild images
+```
+
+Windows (PowerShell):
+
+```powershell
+# Frontend + Postgres (default)
+.\\scripts\\local-up.ps1
+
+# Include development overrides (hot-reload dev server)
+.\\scripts\\local-up.ps1 -Dev
+
+# Include optional services
+.\\scripts\\local-up.ps1 -Tools         # PgAdmin, Adminer, MailHog
+.\\scripts\\local-up.ps1 -Api           # Backend API (requires backend code)
+.\\scripts\\local-up.ps1 -Rebuild       # Force rebuild images
+```
+
+After startup, access:
+
+- Frontend: `http://localhost:${FRONTEND_PORT}` (default `4028`)
+- Backend (if enabled): `http://localhost:${BACKEND_PORT}` (default `3001`)
+- PgAdmin (tools): `http://localhost:${PGADMIN_PORT}` (default `5050`)
+- Adminer (tools): `http://localhost:${ADMINER_PORT}` (default `8080`)
+- MailHog (tools): `http://localhost:${MAILHOG_WEB_PORT}` (default `8025`)
+
 ## ⚙️ Configuration
 
 ### Environment Variables

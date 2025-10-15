@@ -4,7 +4,7 @@ import Icon from '../components/AppIcon';
 import Button from '../components/ui/Button';
 import { useUser } from '../contexts/UserContext';
 import { securityUtils } from '../utils/security';
-import { AlertCircle, Shield } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -226,21 +226,7 @@ const Login = () => {
             <div className="w-full h-full bg-gradient-to-br from-blue-100/30 to-transparent rounded-full" />
           </div>
           <div className="relative z-10">
-          {/* Security Indicator */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-green-600 font-semibold">Secure Connection</span>
-            </div>
-            {loginAttempts > 0 && !isLocked && (
-              <div className="flex items-center space-x-1">
-                <AlertCircle className="h-4 w-4 text-orange-500" />
-                <span className="text-xs text-orange-500">
-                  {loginAttempts}/5 attempts
-                </span>
-              </div>
-            )}
-          </div>
+          
 
           {/* Error Display */}
           {error && (
@@ -354,38 +340,7 @@ const Login = () => {
           </form>
           </div>
           
-          {/* Security Notice */}
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center space-x-2 mb-1">
-              <Shield className="h-4 w-4 text-blue-600" />
-              <span className="font-medium text-sm text-blue-700">Security Features Active</span>
-            </div>
-            <ul className="text-xs text-blue-600 space-y-1">
-              <li>• Input validation and sanitization</li>
-              <li>• Rate limiting protection</li>
-              <li>• Security monitoring and audit logging</li>
-              <li>• Account lockout after 5 failed attempts</li>
-            </ul>
-          </div>
           
-          {/* Demo Notice */}
-          <div className="mt-4 p-4 bg-muted rounded-lg">
-            <div className="flex items-center space-x-2 mb-2">
-              <Icon name="Info" size={16} className="text-accent" />
-              <span className="font-medium text-sm text-foreground">Demo Mode</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              This is a demo application. Enter any email and password to sign in.
-            </p>
-            <div className="mt-2 text-xs text-muted-foreground">
-              <p className="font-medium">Try these roles:</p>
-              <ul className="mt-1 space-y-1">
-                <li>• admin@demo.com - Admin access</li>
-                <li>• manager@demo.com - Manager access</li>
-                <li>• employee@demo.com - Employee access</li>
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
     </div>
