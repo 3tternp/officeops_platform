@@ -35,8 +35,8 @@
     "jspdf": "^3.0.2",
     "jszip": "^3.10.1",
     "lucide-react": "^0.484.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-hook-form": "^7.55.0",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.8.2",
@@ -49,8 +49,12 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "vite",
-    "clean": "rm -rf dist node_modules package-lock.json",
-    "reinstall": "npm run clean && npm install"
+    "clean": "rimraf dist node_modules package-lock.json",
+    "reinstall": "npm run clean && npm install",
+    "netlify:login": "netlify login",
+    "netlify:init": "netlify init",
+    "deploy:netlify": "netlify deploy --prod --dir=dist",
+    "deploy:netlify:preview": "netlify deploy --dir=dist"
   },
   "eslintConfig": {
     "extends": [
@@ -75,6 +79,8 @@
     "autoprefixer": "^10.4.2",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.6",
-    "vite": "^5.4.19"
+    "vite": "^5.4.19",
+    "netlify-cli": "^17.34.0",
+    "rimraf": "^5.0.5"
   }
 }

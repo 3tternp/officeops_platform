@@ -4,7 +4,7 @@
 
 ![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![React](https://img.shields.io/badge/react-18.2.0-blue.svg)
+![React](https://img.shields.io/badge/react-18.3.1-blue.svg)
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Features](https://img.shields.io/badge/features-fully_functional-green.svg)
 ![Last Updated](https://img.shields.io/badge/updated-January_2025-blue.svg)
@@ -640,16 +640,33 @@ Automatic deploys (recommended):
 - Deploys trigger automatically on pushes to `master`.
 
 CLI deploy (alternative):
-- `npm install -g netlify-cli`
 - `npm run build`
-- `netlify login`
-- `netlify init` (link to the Netlify site)
-- `netlify deploy --prod --dir=dist`
+- `npm run netlify:login`  # one-time
+- `npm run netlify:init`   # link local repo to Netlify site
+- `npm run deploy:netlify` # deploy production build from `dist`
 
 Notes:
 - Node version 18 is set in `netlify.toml`.
 - SPA redirects are already configured to avoid 404 on refresh.
 - If using external APIs, ensure required `VITE_*` env vars are defined in Netlify.
+
+## 🚀 Local Installation
+
+### Prerequisites
+- Node.js 18+
+- npm 9+
+
+### Steps
+- Clone the repository: `git clone https://github.com/yourusername/officeops-platform.git`
+- Change into the folder: `cd officeops-platform`
+- Install dependencies: `npm install`
+- Start dev server: `npm run dev`
+- Open the app: `http://localhost:4028` (or the port shown in terminal)
+
+### Production Preview (locally)
+- Build: `npm run build`
+- Preview: `npm run preview -- --port 4031`
+- Open: `http://localhost:4031`
 
 ## 🤝 Contributing
 

@@ -1,6 +1,7 @@
 import React from "react";
 import Routes from "./Routes";
 import { UserProvider } from "./contexts/UserContext";
+import { BrandingProvider } from "./contexts/BrandingContext";
 
 // Simple Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -47,7 +48,9 @@ function App() {
   return (
     <ErrorBoundary>
       <UserProvider>
-        <Routes />
+        <BrandingProvider>
+          <Routes />
+        </BrandingProvider>
       </UserProvider>
     </ErrorBoundary>
   );

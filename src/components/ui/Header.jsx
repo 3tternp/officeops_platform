@@ -4,6 +4,7 @@ import Icon from '../AppIcon';
 import Button from './Button';
 import { useUser } from '../../contexts/UserContext';
 import UserRoleSwitcher from "../debug/UserRoleSwitcher";
+import { useBranding } from '../../contexts/BrandingContext';
 
 const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -12,6 +13,7 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, logout } = useUser();
+  const { branding } = useBranding();
 
   const notifications = [
     {
@@ -78,7 +80,15 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-80 bg-white/95 backdrop-blur-lg border-b border-gray-200/80 shadow-sm">
+    <header
+      className="fixed top-0 left-0 right-0 z-80 bg-white/95 backdrop-blur-lg border-b border-gray-200/80 shadow-sm"
+      style={branding?.loginBackgroundImage ? {
+        backgroundImage: `url(${branding.loginBackgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundBlendMode: 'overlay'
+      } : undefined}
+    >
       <div className="flex items-center justify-between h-16 px-6">
         {/* Left Section - Logo and Sidebar Toggle */}
         <div className="flex items-center space-x-4">
@@ -92,11 +102,15 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
           </Button>
           
           <div className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-lg">
-              <Icon name="Building2" size={22} color="white" />
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl shadow-lg overflow-hidden bg-gradient-to-br from-blue-600 to-blue-700">
+              {branding?.companyLogo ? (
+                <img src={branding.companyLogo} alt="Logo" className="w-full h-full object-cover" />
+              ) : (
+                <Icon name="Building2" size={22} color="white" />
+              )}
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">OfficeOps</h1>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">{branding?.companyName || 'OfficeOps'}</h1>
               <p className="text-xs font-medium text-gray-500 tracking-wide">PLATFORM</p>
             </div>
           </div>
@@ -245,13 +259,15 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
                     <Icon name="User" size={16} />
                     <span>Profile Settings</span>
                   </button>
-                  <button
-                    onClick={() => handleProfileAction('preferences')}
-                    className="w-full px-4 py-2 text-left text-sm text-popover-foreground hover:bg-muted transition-enterprise flex items-center space-x-2"
-                  >
-                    <Icon name="Settings" size={16} />
-                    <span>Preferences</span>
-                  </button>
+                  {currentUser?.role === 'admin' && (
+                    <button
+                      onClick={() => handleProfileAction('preferences')}
+                      className="w-full px-4 py-2 text-left text-sm text-popover-foreground hover:bg-muted transition-enterprise flex items-center space-x-2"
+                    >
+                      <Icon name="Settings" size={16} />
+                      <span>Preferences</span>
+                    </button>
+                  )}
                   <button
                     onClick={() => handleProfileAction('help')}
                     className="w-full px-4 py-2 text-left text-sm text-popover-foreground hover:bg-muted transition-enterprise flex items-center space-x-2"

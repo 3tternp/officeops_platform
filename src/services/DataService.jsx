@@ -347,6 +347,37 @@ class DataService {
     console.log('OfficeOps Platform initialized with default data');
   }
 
+  // Branding settings
+  getCompanyBranding() {
+    const raw = localStorage.getItem('companyBranding');
+    const defaults = {
+      companyName: 'OfficeOps',
+      companyLogo: '',
+      companyFavicon: '',
+      loginBackgroundImage: '',
+      bannerImage: '',
+      primaryColor: '#3b82f6',
+      secondaryColor: '#6366f1',
+      footerText: '',
+      supportEmail: '',
+      supportPhone: '',
+      website: ''
+    };
+    try {
+      return { ...defaults, ...(raw ? JSON.parse(raw) : {}) };
+    } catch (e) {
+      console.warn('Failed to parse companyBranding from localStorage:', e);
+      return defaults;
+    }
+  }
+
+  saveCompanyBranding(branding) {
+    const current = this.getCompanyBranding();
+    const merged = { ...current, ...branding, updatedAt: new Date().toISOString() };
+    localStorage.setItem('companyBranding', JSON.stringify(merged));
+    return merged;
+  }
+
   // User management
   getUsers() {
     return JSON.parse(localStorage.getItem('allUsers') || '[]');

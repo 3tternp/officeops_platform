@@ -1,21 +1,22 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { HashRouter, Routes as RouterRoutes, Route, Navigate } from "react-router-dom";
 import { useUser } from "./contexts/UserContext";
+import { LoadingSpinner } from './components/ui/LoadingStates';
 
-// Import all pages
-import AccessManagement from './pages/access-management';
-import LearningManagement from './pages/learning-management';
-import Dashboard from './pages/dashboard';
-import DocumentManagement from './pages/document-management';
-import AssetManagement from './pages/asset-management';
-import RiskAssessment from './pages/risk-assessment';
-import Settings from './pages/Settings';
-import Profile from './pages/Profile';
-import Login from './pages/Login';
-import ForgotPassword from './pages/ForgotPassword';
-import UserManagement from './pages/UserManagement';
-import DepartmentManagement from './pages/DepartmentManagement';
-import PasswordReset from './pages/password-reset';
+// Lazily import pages for route-based code splitting
+const AccessManagement = React.lazy(() => import('./pages/access-management'));
+const LearningManagement = React.lazy(() => import('./pages/learning-management'));
+const Dashboard = React.lazy(() => import('./pages/dashboard'));
+const DocumentManagement = React.lazy(() => import('./pages/document-management'));
+const AssetManagement = React.lazy(() => import('./pages/asset-management'));
+const RiskAssessment = React.lazy(() => import('./pages/risk-assessment'));
+const Settings = React.lazy(() => import('./pages/Settings'));
+const Profile = React.lazy(() => import('./pages/Profile'));
+const Login = React.lazy(() => import('./pages/Login'));
+const ForgotPassword = React.lazy(() => import('./pages/ForgotPassword'));
+const UserManagement = React.lazy(() => import('./pages/UserManagement'));
+const DepartmentManagement = React.lazy(() => import('./pages/DepartmentManagement'));
+const PasswordReset = React.lazy(() => import('./pages/password-reset'));
 
 // Simple 404 component
 const NotFound = () => (
@@ -36,7 +37,8 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && user?.role !== requiredRole && !['admin', 'iso'].includes(user?.role)) {
+  // Enforce exact role matching when a requiredRole is specified
+  if (requiredRole && user?.role !== requiredRole) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -47,7 +49,12 @@ const Routes = () => {
   try {
     return (
       <HashRouter>
-        <RouterRoutes>
+        <Suspense fallback={(
+          <div className="min-h-screen flex items-center justify-center bg-white">
+            <LoadingSpinner size="lg" text="Loading page..." />
+          </div>
+        )}>
+          <RouterRoutes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -117,14 +124,15 @@ const Routes = () => {
         } />
         
         <Route path="/settings" element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="admin">
             <Settings />
           </ProtectedRoute>
         } />
         
         {/* 404 Route */}
         <Route path="*" element={<NotFound />} />
-        </RouterRoutes>
+          </RouterRoutes>
+        </Suspense>
       </HashRouter>
     );
   } catch (error) {

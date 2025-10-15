@@ -10,6 +10,8 @@ import Select from '../components/ui/Select';
 import { Checkbox } from '../components/ui/Checkbox';
 import DemoDataReset from '../components/DemoDataReset';
 import { useUser } from '../contexts/UserContext';
+import CompanyBrandingSettings from '../components/admin/CompanyBrandingSettings';
+import { useBranding } from '../contexts/BrandingContext';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -17,6 +19,8 @@ const Settings = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
+  const { branding, updateBranding } = useBranding();
+  const [brandingModalOpen, setBrandingModalOpen] = useState(false);
   const [settings, setSettings] = useState({
     general: {
       companyName: 'OfficeOps Platform',
@@ -96,7 +100,10 @@ const Settings = () => {
                   { id: 'notifications', label: 'Notifications', icon: 'Bell' },
                   { id: 'security', label: 'Security', icon: 'Shield' },
                   { id: 'integrations', label: 'Integrations', icon: 'Zap' },
-                  ...(currentUser?.role === 'admin' ? [{ id: 'demo', label: 'Demo Data', icon: 'RotateCcw' }] : [])
+                  ...(currentUser?.role === 'admin' ? [
+                    { id: 'branding', label: 'Branding', icon: 'Sparkles' },
+                    { id: 'demo', label: 'Demo Data', icon: 'RotateCcw' }
+                  ] : [])
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -325,12 +332,48 @@ const Settings = () => {
               </div>
             )}
 
+            {activeTab === 'branding' && currentUser?.role === 'admin' && (
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Company Branding</h3>
+                <p className="text-sm text-muted-foreground mb-6">Customize application name, logo, favicon, and banner.</p>
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                    {branding?.companyLogo ? (
+                      <img src={branding.companyLogo} alt="Logo" className="w-full h-full object-cover" />
+                    ) : (
+                      <Icon name="Building2" size={20} className="text-muted-foreground" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">{branding?.companyName || 'OfficeOps'}</p>
+                    <p className="text-xs text-muted-foreground">Favicon and banner applied globally</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Button onClick={() => setBrandingModalOpen(true)}>
+                    <Icon name="Settings" size={16} className="mr-2" />
+                    Edit Branding
+                  </Button>
+                  <Button variant="outline" onClick={() => updateBranding({ companyName: 'OfficeOps', companyLogo: '', companyFavicon: '', loginBackgroundImage: '' })}>
+                    Reset to Defaults
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {activeTab === 'demo' && currentUser?.role === 'admin' && (
               <DemoDataReset />
             )}
           </div>
         </div>
       </main>
+      {brandingModalOpen && (
+        <CompanyBrandingSettings
+          isOpen={brandingModalOpen}
+          onClose={() => setBrandingModalOpen(false)}
+          onUpdate={(updated) => updateBranding(updated)}
+        />
+      )}
     </div>
   );
 };
