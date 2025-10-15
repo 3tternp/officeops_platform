@@ -125,7 +125,7 @@ const ApprovalRequestModal = ({ isOpen, onClose, onSubmit }) => {
 
     return {
       department: routingDepartment,
-      approverRole: routingDepartment === 'Information Technology' ? 'IT Admin' : 'Department Manager'
+      approverRole: routingDepartment === 'Information Technology' ? 'ISO' : 'Department Manager'
     };
   };
 

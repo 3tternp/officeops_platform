@@ -133,24 +133,28 @@ const CourseCard = ({ course, onView, onEdit, onAssign, onDelete }) => {
           >
             View
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onEdit(course)}
-            iconName="Edit"
-            iconPosition="left"
-          >
-            Edit
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onAssign(course)}
-            iconName="UserPlus"
-            iconPosition="left"
-          >
-            Assign
-          </Button>
+          {hasPermission(currentUser?.role, PERMISSIONS.LMS_CREATE_COURSE) && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onEdit(course)}
+              iconName="Edit"
+              iconPosition="left"
+            >
+              Edit
+            </Button>
+          )}
+          {hasPermission(currentUser?.role, PERMISSIONS.LMS_ASSIGN_COURSE) && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onAssign(course)}
+              iconName="UserPlus"
+              iconPosition="left"
+            >
+              Assign
+            </Button>
+          )}
           {/* Delete button - only for admin and ISO roles */}
           {(currentUser?.role === 'admin' || currentUser?.role === 'iso') && onDelete && (
             <Button

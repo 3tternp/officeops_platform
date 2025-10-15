@@ -765,9 +765,11 @@ const LearningManagement = () => {
               <p className="text-muted-foreground mb-6">
                 Manage course assignments, track progress, and monitor completion status
               </p>
-              <Button variant="default" onClick={handleBulkAssignment} iconName="Send" iconPosition="left">
-                Create New Assignment
-              </Button>
+              {hasPermission(currentUser?.role, PERMISSIONS.LMS_ASSIGN_COURSE) && (
+                <Button variant="default" onClick={handleBulkAssignment} iconName="Send" iconPosition="left">
+                  Create New Assignment
+                </Button>
+              )}
             </div>
           </div>
         );

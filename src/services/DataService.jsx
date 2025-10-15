@@ -899,7 +899,7 @@ class DataService {
     this.saveAccessRequests(requests);
 
     // Create notification for appropriate department/admin
-    const targetRole = routingDepartment === 'Information Technology' ? 'admin' : 'manager';
+    const targetRole = routingDepartment === 'Information Technology' ? 'iso' : 'manager';
     
     this.addNotification({
       type: 'access_request_new',

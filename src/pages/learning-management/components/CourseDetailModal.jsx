@@ -210,15 +210,17 @@ const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQu
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">Course Assignments</h3>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onAssign(course)}
-                iconName="UserPlus"
-                iconPosition="left"
-              >
-                Create Assignment
-              </Button>
+              {canAssign && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onAssign(course)}
+                  iconName="UserPlus"
+                  iconPosition="left"
+                >
+                  Create Assignment
+                </Button>
+              )}
             </div>
             <div className="space-y-4">
               {[1, 2].map((assignment, index) => (
