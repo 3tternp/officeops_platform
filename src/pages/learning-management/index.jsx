@@ -4,7 +4,7 @@ import Sidebar from '../../components/ui/Sidebar';
 import Breadcrumb from '../../components/ui/Breadcrumb';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
-import { hasPermission, PERMISSIONS, getRolePermissions } from '../../utils/permissions';
+import { hasPermission, PERMISSIONS, getRolePermissions, hasAnyPermission } from '../../utils/permissions';
 import { useUser } from '../../contexts/UserContext';
 
 // Import components
@@ -18,6 +18,7 @@ import SCORMContentWizard from './components/SCORMContentWizard';
 import SCORMPackageManager from './components/SCORMPackageManager';
 import SCORMPlayer from './components/SCORMPlayer';
 import CourseDetailModal from './components/CourseDetailModal';
+import QuizModal from './components/QuizModal';
 
 const LearningManagement = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -35,6 +36,8 @@ const LearningManagement = () => {
   const [courseToEdit, setCourseToEdit] = useState(null);
   const [selectedSCORMPackage, setSelectedSCORMPackage] = useState(null);
   const { currentUser } = useUser();
+  const [showQuizModal, setShowQuizModal] = useState(false);
+  const [quizCourse, setQuizCourse] = useState(null);
   const [filters, setFilters] = useState({
     search: '',
     department: 'all',
@@ -950,6 +953,22 @@ const LearningManagement = () => {
           }}
           onEdit={handleEditCourse}
           onAssign={handleAssignCourse}
+          canEdit={hasAnyPermission(currentUser?.role, [PERMISSIONS.LMS_CREATE_COURSE, PERMISSIONS.LMS_MANAGE_ALL])}
+          canAssign={hasAnyPermission(currentUser?.role, [PERMISSIONS.LMS_ASSIGN_COURSE, PERMISSIONS.LMS_MANAGE_ALL])}
+          onTakeQuiz={hasPermission(currentUser?.role, PERMISSIONS.LMS_TAKE_QUIZ) ? ((course) => {
+            setQuizCourse(course);
+            setShowQuizModal(true);
+          }) : undefined}
+        />
+      )}
+      {showQuizModal && quizCourse && (
+        <QuizModal
+          course={quizCourse}
+          isOpen={showQuizModal}
+          onClose={() => {
+            setShowQuizModal(false);
+            setQuizCourse(null);
+          }}
         />
       )}
     </div>

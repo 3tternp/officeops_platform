@@ -4,7 +4,7 @@ import Button from '../../../components/ui/Button';
 import Image from '../../../components/AppImage';
 import { Badge } from '../../../components/ui/Badge';
 
-const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign }) => {
+const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQuiz, canEdit = false, canAssign = false }) => {
   const [activeTab, setActiveTab] = useState('overview');
 
   if (!isOpen || !course) return null;
@@ -257,17 +257,26 @@ const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign }) => {
             <h1 className="text-xl font-semibold text-foreground">Course Details</h1>
             <p className="text-sm text-muted-foreground">View and manage course information</p>
           </div>
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm" onClick={() => onEdit(course)} iconName="Edit">
-              Edit
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => onAssign(course)} iconName="UserPlus">
-              Assign
-            </Button>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <Icon name="X" size={20} />
-            </Button>
-          </div>
+        <div className="flex items-center space-x-2">
+            {canEdit && (
+              <Button variant="outline" size="sm" onClick={() => onEdit(course)} iconName="Edit">
+                Edit
+              </Button>
+            )}
+            {canAssign && (
+              <Button variant="outline" size="sm" onClick={() => onAssign(course)} iconName="UserPlus">
+                Assign
+              </Button>
+            )}
+            {onTakeQuiz && (course?.content?.quizzes?.length > 0 || course?.contentType === 'quiz') && (
+              <Button variant="default" size="sm" onClick={() => onTakeQuiz(course)} iconName="HelpCircle">
+                Take Quiz
+              </Button>
+            )}
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <Icon name="X" size={20} />
+          </Button>
+        </div>
         </div>
 
         <div className="flex h-[calc(90vh-8rem)]">

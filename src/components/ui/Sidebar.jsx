@@ -71,7 +71,7 @@ const Sidebar = ({ isCollapsed = false, onToggle, isMobileOpen = false, onMobile
           icon: 'GraduationCap',
           path: '/learning-management',
           description: 'Training and courses',
-          roles: ['admin', 'iso', 'supervisor', 'employee', 'risk_officer'],
+          roles: ['admin', 'iso', 'manager', 'supervisor', 'employee', 'risk_officer'],
           badge: null
         }
       ]
