@@ -50,7 +50,7 @@ const RiskHeatMap = ({ risks = [], onRiskClick }) => {
           <h3 className="text-lg font-semibold text-foreground">Risk Heat Map</h3>
           <p className="text-sm text-muted-foreground">Interactive likelihood × impact matrix</p>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center flex-wrap gap-3">
           <div className="flex items-center space-x-2 text-sm">
             <div className="w-3 h-3 bg-red-600 rounded"></div>
             <span className="text-muted-foreground">Critical (20-25)</span>
@@ -66,7 +66,7 @@ const RiskHeatMap = ({ risks = [], onRiskClick }) => {
         </div>
       </div>
       <div className="overflow-x-auto">
-        <div className="min-w-[600px]">
+        <div className="min-w-[480px] sm:min-w-[600px]">
           {/* Header */}
           <div className="grid grid-cols-7 gap-1 mb-2">
             <div className="p-3"></div>
@@ -110,7 +110,7 @@ const RiskHeatMap = ({ risks = [], onRiskClick }) => {
                     key={`${likelihood?.value}-${impact?.value}`}
                     onClick={() => handleCellClick(likelihood?.value, impact?.value)}
                     className={`
-                      relative h-16 rounded cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-md
+                      relative h-12 sm:h-16 rounded cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-md
                       ${getRiskColor(likelihood?.value, impact?.value)}
                       ${selectedCell?.likelihood === likelihood?.value && selectedCell?.impact === impact?.value 
                         ? 'ring-2 ring-primary ring-offset-2' : ''
@@ -118,9 +118,9 @@ const RiskHeatMap = ({ risks = [], onRiskClick }) => {
                     `}
                   >
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-1">
-                      <div className="text-xs font-bold">{riskScore}</div>
+                      <div className="text-[10px] sm:text-xs font-bold">{riskScore}</div>
                       {cellRisks?.length > 0 && (
-                        <div className="text-xs opacity-80">
+                        <div className="text-[10px] sm:text-xs opacity-80">
                           {cellRisks?.length} risk{cellRisks?.length !== 1 ? 's' : ''}
                         </div>
                       )}

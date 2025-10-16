@@ -13,6 +13,8 @@ class DataService {
     
     if (!isInitialized) {
       this.resetToDefaults();
+      // Seed branding from environment variables if provided
+      this.seedBrandingFromEnvIfEmpty();
       localStorage.setItem('officeops_initialized', 'true');
     }
   }
@@ -348,6 +350,32 @@ class DataService {
   }
 
   // Branding settings
+  seedBrandingFromEnvIfEmpty() {
+    const existing = localStorage.getItem('companyBranding');
+    if (existing) return;
+    try {
+      const env = import.meta.env;
+      const envBrand = {
+        companyName: env?.VITE_BRAND_NAME,
+        companyLogo: env?.VITE_BRAND_LOGO,
+        companyFavicon: env?.VITE_BRAND_FAVICON,
+        loginBackgroundImage: env?.VITE_BRAND_LOGIN_BG || env?.VITE_BRAND_LOGIN_BACKGROUND_IMAGE,
+        bannerImage: env?.VITE_BRAND_BANNER_IMAGE,
+        primaryColor: env?.VITE_BRAND_PRIMARY_COLOR,
+        secondaryColor: env?.VITE_BRAND_SECONDARY_COLOR,
+        footerText: env?.VITE_BRAND_FOOTER_TEXT,
+        supportEmail: env?.VITE_SUPPORT_EMAIL,
+        supportPhone: env?.VITE_SUPPORT_PHONE,
+        website: env?.VITE_BRAND_WEBSITE,
+      };
+      const cleaned = Object.fromEntries(Object.entries(envBrand).filter(([_, v]) => v !== undefined && v !== null && v !== ''));
+      if (Object.keys(cleaned).length) {
+        this.saveCompanyBranding(cleaned);
+      }
+    } catch (e) {
+      console.warn('Failed to seed branding from environment:', e);
+    }
+  }
   getCompanyBranding() {
     const raw = localStorage.getItem('companyBranding');
     const defaults = {

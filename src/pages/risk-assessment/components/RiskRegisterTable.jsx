@@ -103,9 +103,9 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
             </p>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center flex-wrap gap-2">
             {selectedRisks?.length > 0 && (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center flex-wrap gap-2">
                 <Button variant="outline" size="sm">
                   <Icon name="Download" size={16} className="mr-2" />
                   Export Selected
@@ -125,7 +125,7 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
       </div>
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full min-w-[1000px]">
           <thead className="bg-muted/50">
             <tr>
               <th className="w-12 p-4">
@@ -154,7 +154,7 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
                   <SortIcon field="title" />
                 </button>
               </th>
-              <th className="text-left p-4">
+              <th className="text-left p-4 hidden md:table-cell">
                 <button
                   onClick={() => handleSort('category')}
                   className="flex items-center space-x-2 font-medium text-foreground hover:text-primary"
@@ -190,7 +190,7 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
                   <SortIcon field="riskScore" />
                 </button>
               </th>
-              <th className="text-left p-4">
+              <th className="text-left p-4 hidden lg:table-cell">
                 <button
                   onClick={() => handleSort('owner')}
                   className="flex items-center space-x-2 font-medium text-foreground hover:text-primary"
@@ -199,7 +199,7 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
                   <SortIcon field="owner" />
                 </button>
               </th>
-              <th className="text-left p-4">
+              <th className="text-left p-4 hidden md:table-cell">
                 <button
                   onClick={() => handleSort('status')}
                   className="flex items-center space-x-2 font-medium text-foreground hover:text-primary"
@@ -208,7 +208,7 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
                   <SortIcon field="status" />
                 </button>
               </th>
-              <th className="text-left p-4">
+              <th className="text-left p-4 hidden lg:table-cell">
                 <button
                   onClick={() => handleSort('treatmentStatus')}
                   className="flex items-center space-x-2 font-medium text-foreground hover:text-primary"
@@ -217,7 +217,7 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
                   <SortIcon field="treatmentStatus" />
                 </button>
               </th>
-              <th className="text-left p-4">
+              <th className="text-left p-4 hidden xl:table-cell">
                 <button
                   onClick={() => handleSort('nextReviewDate')}
                   className="flex items-center space-x-2 font-medium text-foreground hover:text-primary"
@@ -253,7 +253,7 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
                     <p className="text-sm text-muted-foreground line-clamp-2">{risk?.description}</p>
                   </div>
                 </td>
-                <td className="p-4">
+                <td className="p-4 hidden md:table-cell">
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-accent/10 text-accent">
                     {risk?.category}
                   </span>
@@ -269,7 +269,7 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
                     {risk?.likelihood * risk?.impact}
                   </span>
                 </td>
-                <td className="p-4">
+                <td className="p-4 hidden lg:table-cell">
                   <div className="flex items-center space-x-2">
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                       <span className="text-xs font-medium text-primary-foreground">
@@ -279,17 +279,17 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
                     <span className="text-sm text-foreground">{risk?.owner}</span>
                   </div>
                 </td>
-                <td className="p-4">
+                <td className="p-4 hidden md:table-cell">
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(risk?.status)}`}>
                     {risk?.status}
                   </span>
                 </td>
-                <td className="p-4">
+                <td className="p-4 hidden lg:table-cell">
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTreatmentStatusColor(risk?.treatmentStatus)}`}>
                     {risk?.treatmentStatus}
                   </span>
                 </td>
-                <td className="p-4">
+                <td className="p-4 hidden xl:table-cell">
                   <span className="text-sm text-foreground">
                     {risk?.nextReviewDate ? new Date(risk?.nextReviewDate).toLocaleDateString() : 'N/A'}
                   </span>

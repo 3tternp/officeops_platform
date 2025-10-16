@@ -54,7 +54,7 @@ const Sidebar = ({ isCollapsed = false, onToggle, isMobileOpen = false, onMobile
           path: '/risk-assessment',
           description: 'Risk evaluation and monitoring',
           roles: ['admin', 'iso', 'risk_officer'],
-          badge: 'HOT'
+          badge: null
         },
         {
           id: 'document-management',

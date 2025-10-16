@@ -5,11 +5,13 @@ import Button from '../components/ui/Button';
 import { useUser } from '../contexts/UserContext';
 import { securityUtils } from '../utils/security';
 import { AlertCircle } from 'lucide-react';
+import { useBranding } from '../contexts/BrandingContext';
 
 const Login = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { login } = useUser();
+  const { branding } = useBranding();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -206,21 +208,51 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen relative flex items-center justify-center p-3 sm:p-4 md:p-6">
+      {/* Background image or brand-tinted gradient */}
+      <div
+        className="absolute inset-0"
+        style={branding?.loginBackgroundImage
+          ? {
+              backgroundImage: `url(${branding.loginBackgroundImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }
+          : {
+              backgroundImage: `linear-gradient(135deg, ${(branding?.primaryColor || '#3b82f6')}11, #ffffff, ${(branding?.secondaryColor || '#6366f1')}11)`,
+            }}
+      />
+      <div className="absolute inset-0 bg-white/70" />
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg">
         {/* Logo and Title */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-2xl mx-auto mb-6">
-            <Icon name="Building2" size={36} color="white" />
-          </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2">
-            OfficeOps Platform
+        <div className="text-center mb-6 sm:mb-8">
+          {branding?.companyLogo ? (
+            <img
+              src={branding.companyLogo}
+              alt={`${branding?.companyName || 'Company'} logo`}
+              className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-2xl shadow-2xl mx-auto mb-4"
+            />
+          ) : (
+            <div
+              className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-2xl shadow-2xl mx-auto mb-4"
+              style={{
+                backgroundImage: `linear-gradient(135deg, ${branding?.primaryColor || '#3b82f6'}, ${branding?.secondaryColor || '#6366f1'})`,
+              }}
+            >
+              <Icon name="Building2" size={32} color="white" />
+            </div>
+          )}
+          <h1
+            className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent mb-2"
+            style={{ backgroundImage: 'linear-gradient(90deg, #111827, #374151)' }}
+          >
+            {branding?.companyName || 'OfficeOps'} Platform
           </h1>
-          <p className="text-gray-600 font-medium">Welcome back! Sign in to your account</p>
+          <p className="text-gray-600 font-medium text-sm sm:text-base">Welcome back! Sign in to your account</p>
         </div>
 
         {/* Login Form */}
-        <div className="bg-white/80 backdrop-blur-xl border border-gray-200/80 rounded-2xl shadow-2xl p-8 relative overflow-hidden">
+        <div className="bg-white/85 backdrop-blur-xl border border-gray-200/80 rounded-2xl shadow-2xl p-6 sm:p-8 relative overflow-hidden">
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-16 -translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-blue-100/30 to-transparent rounded-full" />
@@ -313,7 +345,8 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => navigate('/forgot-password')}
-                className="text-sm text-primary hover:underline disabled:opacity-50"
+                className="text-sm hover:underline disabled:opacity-50"
+                style={{ color: branding?.primaryColor || undefined }}
                 disabled={isLocked || isLoading}
               >
                 Forgot password?
@@ -322,7 +355,8 @@ const Login = () => {
             
             <Button 
               type="submit" 
-              className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200" 
+              className="w-full h-12 text-base font-semibold shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-white rounded-xl" 
+              style={{ background: branding?.primaryColor || undefined }}
               disabled={isLocked || isLoading}
             >
               {isLoading ? (
@@ -337,6 +371,9 @@ const Login = () => {
                 </div>
               )}
             </Button>
+            {branding?.footerText && (
+              <p className="text-xs text-gray-500 text-center mt-6">{branding.footerText}</p>
+            )}
           </form>
           </div>
           

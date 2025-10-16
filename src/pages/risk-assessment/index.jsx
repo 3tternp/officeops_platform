@@ -304,14 +304,14 @@ const RiskAssessment = () => {
           
           {/* Page Header */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
-            <div>
+            <div className="flex-1 min-w-0">
               <h1 className="text-3xl font-bold text-foreground mb-2">Risk Assessment</h1>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground truncate">
                 Conduct evaluations, monitor treatments, and generate compliance reports
               </p>
             </div>
             
-            <div className="flex items-center space-x-3 mt-4 lg:mt-0">
+            <div className="flex items-center flex-wrap gap-2 mt-4 lg:mt-0">
               <Button variant="outline" onClick={handleExportReport}>
                 <Icon name="Download" size={16} className="mr-2" />
                 Export Report
@@ -340,7 +340,7 @@ const RiskAssessment = () => {
           </div>
 
           {/* View Navigation */}
-          <div className="flex items-center space-x-1 mb-6 bg-muted p-1 rounded-lg w-fit">
+          <div className="flex flex-wrap items-center gap-1 mb-6 bg-muted p-1 rounded-lg w-fit">
             {views?.map(view => (
               <button
                 key={view?.id}
