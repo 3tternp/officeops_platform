@@ -22,6 +22,8 @@ const createTicket = (ticket, currentUser) => {
     category: ticket?.category || 'general',
     priority: ticket?.priority || 'medium',
     status: ticket?.status || 'open',
+    implementationStatus: ticket?.implementationStatus || 'not_started',
+    attachments: ticket?.attachments || [],
     requester: currentUser ? { id: currentUser.id, name: currentUser.name, role: currentUser.role, department: currentUser.department, email: currentUser.email } : null,
     assignedTo: ticket?.assignedTo || null,
     approvals: ticket?.approvals || [],
@@ -50,7 +52,8 @@ const deleteTicket = (ticketId) => {
 const assignTicket = (ticketId, user) => {
   return updateTicket(ticketId, {
     assignedTo: user ? { id: user.id, name: user.name, role: user.role } : null,
-    status: 'assigned'
+    status: 'assigned',
+    implementationStatus: 'in_progress'
   });
 };
 
@@ -85,6 +88,7 @@ const resolveTicket = (ticketId, resolver, resolution = '') => {
   if (!ticket) return null;
   return updateTicket(ticketId, {
     status: 'resolved',
+    implementationStatus: 'implemented',
     resolution,
     resolvedBy: resolver ? { id: resolver.id, name: resolver.name, role: resolver.role } : null,
     resolvedAt: new Date().toISOString()

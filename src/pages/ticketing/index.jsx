@@ -20,7 +20,7 @@ const Ticketing = () => {
   const [createTicketOpen, setCreateTicketOpen] = useState(false);
 
   const [tickets, setTickets] = useState([]);
-  const [filters, setFilters] = useState({ search: '', status: 'all', priority: 'all', category: 'all' });
+  const [filters, setFilters] = useState({ search: '', status: 'all', priority: 'all', category: 'all', implementationStatus: 'all' });
 
   // Guard: redirect if user lacks ticketing view permission
   useEffect(() => {
@@ -61,18 +61,34 @@ const Ticketing = () => {
       const matchesStatus = filters.status === 'all' || t.status === filters.status;
       const matchesPriority = filters.priority === 'all' || t.priority === filters.priority;
       const matchesCategory = filters.category === 'all' || t.category === filters.category;
-      return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
+      const matchesImpl = filters.implementationStatus === 'all' || t.implementationStatus === filters.implementationStatus;
+      return matchesSearch && matchesStatus && matchesPriority && matchesCategory && matchesImpl;
     });
   }, [tickets, myTickets, pendingApprovals, activeTab, filters]);
 
   const handleSidebarToggle = () => setSidebarCollapsed(!sidebarCollapsed);
   const handleMobileMenuClose = () => setMobileMenuOpen(false);
 
-  const [formData, setFormData] = useState({ title: '', description: '', category: 'general', priority: 'medium' });
+  const [formData, setFormData] = useState({ title: '', description: '', category: 'general', priority: 'medium', implementationStatus: 'not_started', attachments: [] });
+
+  const handleAttachmentChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result;
+      setFormData(prev => ({
+        ...prev,
+        attachments: [{ id: `att${Date.now()}`, name: file.name, type: file.type, size: file.size, dataUrl }]
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleCreateSubmit = (e) => {
     e.preventDefault();
     TicketingService.createTicket(formData, currentUser);
-    setFormData({ title: '', description: '', category: 'general', priority: 'medium' });
+    setFormData({ title: '', description: '', category: 'general', priority: 'medium', implementationStatus: 'not_started', attachments: [] });
     setCreateTicketOpen(false);
     refreshTickets();
   };
@@ -116,6 +132,15 @@ const Ticketing = () => {
     { value: 'pending_approval', label: 'Pending Approval' },
     { value: 'rejected', label: 'Rejected' },
     { value: 'resolved', label: 'Resolved' }
+  ];
+  const implementationStatuses = [
+    { value: 'all', label: 'All Impl' },
+    { value: 'not_started', label: 'Not Started' },
+    { value: 'investigating', label: 'Investigating' },
+    { value: 'in_progress', label: 'In Progress' },
+    { value: 'implemented', label: 'Implemented' },
+    { value: 'verified', label: 'Verified' },
+    { value: 'blocked', label: 'Blocked' }
   ];
 
   return (
@@ -185,6 +210,7 @@ const Ticketing = () => {
             <Select options={statuses} value={filters.status} onChange={val => setFilters({ ...filters, status: val })} />
             <Select options={priorities} value={filters.priority} onChange={val => setFilters({ ...filters, priority: val })} />
             <Select options={categories} value={filters.category} onChange={val => setFilters({ ...filters, category: val })} />
+            <Select options={implementationStatuses} value={filters.implementationStatus} onChange={val => setFilters({ ...filters, implementationStatus: val })} />
           </div>
         </div>
 
@@ -194,7 +220,7 @@ const Ticketing = () => {
             <div className="col-span-4">Title</div>
             <div className="col-span-2">Category</div>
             <div className="col-span-2">Priority</div>
-            <div className="col-span-2">Status</div>
+            <div className="col-span-2">Status / Implementation</div>
             <div className="col-span-2 text-right">Actions</div>
           </div>
           {filteredTickets.length === 0 ? (
@@ -203,12 +229,20 @@ const Ticketing = () => {
             filteredTickets.map(ticket => (
               <div key={ticket.id} className="grid grid-cols-12 gap-4 p-4 border-t items-center">
                 <div className="col-span-4">
-                  <div className="font-medium text-foreground">{ticket.title}</div>
+                  <div className="font-medium text-foreground flex items-center gap-2">
+                    {ticket.attachments?.length > 0 && (
+                      <img src={ticket.attachments[0]?.dataUrl} alt="attachment" className="w-7 h-7 rounded object-cover border" />
+                    )}
+                    {ticket.title}
+                  </div>
                   <div className="text-xs text-muted-foreground">Requested by {ticket.requester?.name || 'Unknown'} on {new Date(ticket.createdAt).toLocaleString()}</div>
                 </div>
                 <div className="col-span-2"><span className="px-2 py-1 rounded bg-muted text-xs">{ticket.category}</span></div>
                 <div className="col-span-2"><span className="px-2 py-1 rounded bg-muted text-xs capitalize">{ticket.priority}</span></div>
-                <div className="col-span-2"><span className="px-2 py-1 rounded bg-muted text-xs capitalize">{ticket.status}</span></div>
+                <div className="col-span-2 flex items-center gap-2">
+                  <span className="px-2 py-1 rounded bg-muted text-xs capitalize">{ticket.status}</span>
+                  <span className="px-2 py-1 rounded bg-muted text-xs capitalize">{ticket.implementationStatus || 'not_started'}</span>
+                </div>
                 <div className="col-span-2 flex items-center justify-end gap-2">
                   {canApprove && ticket.status !== 'resolved' && ticket.status !== 'rejected' && (
                     <div className="flex items-center gap-2">
@@ -249,6 +283,14 @@ const Ticketing = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <Select label="Category" options={categories} value={formData.category} onChange={val => setFormData({ ...formData, category: val })} />
                   <Select label="Priority" options={priorities} value={formData.priority} onChange={val => setFormData({ ...formData, priority: val })} />
+                </div>
+                <Select label="Implementation Status" options={implementationStatuses.filter(o => o.value !== 'all')} value={formData.implementationStatus} onChange={val => setFormData({ ...formData, implementationStatus: val })} />
+                <div>
+                  <label className="text-sm text-muted-foreground">Image Attachment (optional)</label>
+                  <input type="file" accept="image/*" className="mt-1 w-full" onChange={handleAttachmentChange} />
+                  {formData.attachments?.[0]?.dataUrl && (
+                    <img src={formData.attachments[0].dataUrl} alt="preview" className="mt-2 w-24 h-24 object-cover rounded border" />
+                  )}
                 </div>
                 <div className="flex items-center justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setCreateTicketOpen(false)}>Cancel</Button>

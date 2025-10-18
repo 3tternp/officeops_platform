@@ -505,6 +505,7 @@ The platform includes several pre-configured demo accounts for comprehensive tes
 | **Document Management** | ✅ | ✅ | ❌ | ❌ | Partial |
 | **Risk Assessment** | ✅ | ✅ | ❌ | ❌ | Partial |
 | **Learning Management** | ✅ | ✅ | ❌ | ❌ | Partial |
+| **Ticketing System** | ✅ | ✅ | ✅ | ✅ | Complete |
 
 ### 🎯 **Testing Scenarios**
 
@@ -812,11 +813,11 @@ For enterprise support, custom development, or consulting services, please conta
 - **Response Time**: Within 24 hours for urgent issues
 
 ### Current Development Status
-- **Version**: 2.3.0 (Latest)
+- **Version**: 3.0 (Latest)
 - **Last Updated**: January 2025
 - **Status**: Active Development
 - **Demo URL**: http://localhost:4028
-- **Latest Feature**: Complete Risk Assessment CRUD with EditRiskModal
+- **Latest Feature**: Ticketing system with implementation status and attachments
 
 ## 📄 License
 
@@ -842,7 +843,15 @@ Thanks to all the contributors who have helped make OfficeOps Platform better:
 
 ## 🎉 Changelog
 
-### Version 2.3.0 (Latest)
+### Version 3.0 (Latest)
+- ✅ NEW: Ticketing system with create, assign, approve, resolve workflow
+- ✅ NEW: Implementation Status tracking updated on assign/resolve actions
+- ✅ NEW: Optional image attachments in tickets with preview and list thumbnail
+- ✅ ENHANCED: Navigation and dashboard with Personal Tickets card
+- ✅ IMPROVED: UI/UX across forms, tables, and modals; accessibility and responsiveness
+- ✅ UPDATED: Installers import PostgreSQL schema/seeds; README/INSTALL for SQL init
+
+### Version 2.3.0
 - ✅ **NEW**: Complete Risk Assessment CRUD operations with EditRiskModal
 - ✅ **NEW**: Multi-step risk assessment creation and editing wizards
 - ✅ **NEW**: Risk register management with advanced filtering and sorting
