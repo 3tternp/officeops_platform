@@ -38,7 +38,7 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
   // Read setup status and mock/demo flag
   const adminSetupComplete = localStorage.getItem('officeops_admin_setup_complete') === 'true';
   const enableMock = (
-    (typeof import !== 'undefined' && typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_ENABLE_MOCK_DATA === 'true') ||
+    (import.meta.env?.VITE_ENABLE_MOCK_DATA === 'true') ||
     localStorage.getItem('ENABLE_MOCK_DATA') === 'true'
   );
 
