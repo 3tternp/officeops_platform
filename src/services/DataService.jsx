@@ -17,6 +17,9 @@ class DataService {
       this.seedBrandingFromEnvIfEmpty();
       localStorage.setItem('officeops_initialized', 'true');
     }
+
+    // Always ensure latest system-specific resources are present
+    this.mergeNewSystemResources();
   }
 
   // Reset all data to default state
@@ -141,6 +144,175 @@ class DataService {
         riskLevel: 'High',
         approvers: ['admin'],
         maxAccessDuration: 14, // days
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res004',
+        name: 'Office365',
+        description: 'Access to Office 365 services including Outlook, Teams, SharePoint',
+        category: 'Application',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res005',
+        name: 'Gmail',
+        description: 'Access to corporate Gmail and Google Workspace services',
+        category: 'Application',
+        department: 'Information Technology',
+        riskLevel: 'Medium',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res006',
+        name: 'Windows Server',
+        description: 'Access to Windows Server administration and services',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res007',
+        name: 'Linux Server',
+        description: 'Access to Linux servers and system administration',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res008',
+        name: 'EDR/XDR Solutions',
+        description: 'Access to endpoint detection and response platforms',
+        category: 'Application',
+        department: 'Information Technology',
+        riskLevel: 'Critical',
+        approvers: ['admin'],
+        maxAccessDuration: 7,
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res009',
+        name: 'Mobile Device Management System',
+        description: 'Access to mobile device management and enrollment systems',
+        category: 'Application',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res010',
+        name: 'Bio-metric Access',
+        description: 'Access to biometric systems and physical access controls',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res011',
+        name: 'HRMS',
+        description: 'Access to HRMS and employee records',
+        category: 'HR System',
+        department: 'Human Resources',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 30,
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res012',
+        name: 'Firewall',
+        description: 'Access to firewall administration and security policies',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'Critical',
+        approvers: ['admin'],
+        maxAccessDuration: 7,
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res013',
+        name: 'Switches',
+        description: 'Access to network switches configuration and monitoring',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res014',
+        name: 'Access Point',
+        description: 'Access to wireless access point management and configuration',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res015',
+        name: 'Routers',
+        description: 'Access to router configuration and management',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true,
+        status: 'active',
+        createdDate: new Date().toISOString()
+      },
+      {
+        id: 'res016',
+        name: 'Other Cloud Infrastructure',
+        description: 'Access to other cloud infrastructure resources',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
         requiresJustification: true,
         status: 'active',
         createdDate: new Date().toISOString()
@@ -488,6 +660,162 @@ class DataService {
     const resources = this.getResources();
     const filteredResources = resources.filter(res => res.id !== resourceId);
     this.saveResources(filteredResources);
+  }
+
+  // Add or merge system-specific resources without wiping existing data
+  mergeNewSystemResources() {
+    const resources = this.getResources();
+    const existingNames = new Set(resources.map(r => (r.name || '').toLowerCase()));
+
+    const systemSpecific = [
+      {
+        name: 'Office365',
+        description: 'Access to Office 365 services including Outlook, Teams, SharePoint',
+        category: 'Application',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true
+      },
+      {
+        name: 'Gmail',
+        description: 'Access to corporate Gmail and Google Workspace services',
+        category: 'Application',
+        department: 'Information Technology',
+        riskLevel: 'Medium',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true
+      },
+      {
+        name: 'Windows Server',
+        description: 'Access to Windows Server administration and services',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true
+      },
+      {
+        name: 'Linux Server',
+        description: 'Access to Linux servers and system administration',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true
+      },
+      {
+        name: 'EDR/XDR Solutions',
+        description: 'Access to endpoint detection and response platforms',
+        category: 'Application',
+        department: 'Information Technology',
+        riskLevel: 'Critical',
+        approvers: ['admin'],
+        maxAccessDuration: 7,
+        requiresJustification: true
+      },
+      {
+        name: 'Mobile Device Management System',
+        description: 'Access to mobile device management and enrollment systems',
+        category: 'Application',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true
+      },
+      {
+        name: 'Bio-metric Access',
+        description: 'Access to biometric systems and physical access controls',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true
+      },
+      {
+        name: 'HRMS',
+        description: 'Access to HRMS and employee records',
+        category: 'HR System',
+        department: 'Human Resources',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 30,
+        requiresJustification: true
+      },
+      {
+        name: 'Firewall',
+        description: 'Access to firewall administration and security policies',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'Critical',
+        approvers: ['admin'],
+        maxAccessDuration: 7,
+        requiresJustification: true
+      },
+      {
+        name: 'Switches',
+        description: 'Access to network switches configuration and monitoring',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true
+      },
+      {
+        name: 'Access Point',
+        description: 'Access to wireless access point management and configuration',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true
+      },
+      {
+        name: 'Routers',
+        description: 'Access to router configuration and management',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true
+      },
+      {
+        name: 'Other Cloud Infrastructure',
+        description: 'Access to other cloud infrastructure resources',
+        category: 'Infrastructure',
+        department: 'Information Technology',
+        riskLevel: 'High',
+        approvers: ['admin'],
+        maxAccessDuration: 14,
+        requiresJustification: true
+      }
+    ];
+
+    let updated = false;
+    systemSpecific.forEach((res, idx) => {
+      if (!existingNames.has(res.name.toLowerCase())) {
+        resources.push({
+          id: `res${Date.now()}${idx}`,
+          ...res,
+          status: 'active',
+          createdDate: new Date().toISOString()
+        });
+        updated = true;
+      }
+    });
+
+    if (updated) {
+      this.saveResources(resources);
+    }
   }
 
   // Role management
