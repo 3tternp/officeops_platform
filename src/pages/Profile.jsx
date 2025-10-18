@@ -220,7 +220,7 @@ const Profile = () => {
         onMobileClose={handleMobileMenuClose}
       />
       <main className={`transition-all duration-300 ease-in-out pt-16 ${
-        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-72'
       }`}>
         <div className="p-6">
           <Breadcrumb />

@@ -181,7 +181,7 @@ const PasswordReset = () => {
         onMobileClose={handleMobileSidebarClose}
       />
       <main className={`pt-16 transition-all duration-300 ${
-        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-72'
       }`}>
         <div className="p-6">
           <div className="max-w-7xl mx-auto">

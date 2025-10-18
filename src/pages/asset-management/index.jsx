@@ -604,8 +604,8 @@ const AssetManagement = () => {
         isMobileOpen={mobileMenuOpen}
         onMobileClose={handleMobileMenuClose}
       />
-      <main className={`transition-all duration-300 ease-in-out pt-16 ${
-        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+      <main className={`pt-16 transition-all duration-300 ${
+        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-72'
       }`}>
         <div className="p-6">
           <Breadcrumb />

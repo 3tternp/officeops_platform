@@ -922,7 +922,7 @@ const AccessManagement = () => {
         onMobileClose={handleMobileSidebarClose}
       />
       <main className={`pt-16 transition-all duration-300 ${
-        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-72'
       }`}>
         <div className="p-6">
           <div className="max-w-7xl mx-auto">
@@ -938,10 +938,11 @@ const AccessManagement = () => {
                   </p>
                 </div>
                 <div className="flex space-x-3">
-                  <Button variant="outline" onClick={handleSettings}>
+                  {/* Removed Settings button from header as requested */}
+                  {/* <Button variant="outline" onClick={handleSettings}>
                     <Icon name="Settings" size={16} className="mr-2" />
                     Settings
-                  </Button>
+                  </Button> */}
                   <Button onClick={handleNewRequest}>
                     <Icon name="Plus" size={16} className="mr-2" />
                     New Request

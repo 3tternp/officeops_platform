@@ -297,7 +297,7 @@ const RiskAssessment = () => {
         onMobileClose={handleMobileMenuClose}
       />
       <main className={`transition-all duration-300 ${
-        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-72'
       } pt-16`}>
         <div className="p-6">
           <Breadcrumb />

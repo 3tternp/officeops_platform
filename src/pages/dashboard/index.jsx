@@ -16,14 +16,16 @@ import PersonalDocumentCard from './components/PersonalDocumentCard';
 import PersonalAlertsCard from './components/PersonalAlertsCard';
 import { useUser } from '../../contexts/UserContext';
 import { hasPermission, PERMISSIONS } from '../../utils/permissions';
+import TicketingService from '../../services/TicketingService';
+import PersonalTicketsCard from './components/PersonalTicketsCard';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const { currentUser } = useUser();
-  
-  // Debug current user role
+  const [tickets, setTickets] = useState([]);
+
   useEffect(() => {
     if (currentUser) {
       console.log('🏠 Dashboard - Current User:', currentUser);
@@ -32,8 +34,34 @@ const Dashboard = () => {
     }
   }, [currentUser]);
 
-  // Mock data for dashboard metrics
+  useEffect(() => {
+    setTickets(TicketingService.getTickets());
+  }, []);
+
+  const openTicketCount = tickets.filter(t => t.status !== 'resolved' && t.status !== 'rejected').length;
+  const pendingApprovalCount = tickets.filter(t => t.status === 'pending_approval').length;
+
   const dashboardMetrics = [
+    {
+      title: 'Open Tickets',
+      value: String(openTicketCount),
+      change: '',
+      changeType: 'neutral',
+      icon: 'Ticket',
+      color: 'primary',
+      actionLabel: 'Open Ticketing',
+      onActionClick: () => navigate('/ticketing')
+    },
+    {
+      title: 'Pending Ticket Approvals',
+      value: String(pendingApprovalCount),
+      change: '',
+      changeType: 'neutral',
+      icon: 'ShieldCheck',
+      color: 'warning',
+      actionLabel: 'Review Tickets',
+      onActionClick: () => navigate('/ticketing')
+    },
     {
       title: 'Active Employees',
       value: '1,247',
@@ -96,7 +124,6 @@ const Dashboard = () => {
     }
   ];
 
-  // Mock data for quick actions
   const quickActions = [
     {
       title: 'Employee Onboarding',
@@ -127,10 +154,19 @@ const Dashboard = () => {
         { label: 'New Request', icon: 'Plus', onClick: () => navigate('/asset-management') },
         { label: 'Scan Asset', icon: 'QrCode', onClick: () => console.log('Scan asset') }
       ]
+    },
+    {
+      title: 'Ticketing',
+      description: 'Create and triage support tickets',
+      icon: 'Ticket',
+      color: 'primary',
+      actions: [
+        { label: 'Create Ticket', icon: 'Plus', onClick: () => navigate('/ticketing') },
+        { label: 'View Tickets', icon: 'ListTodo', onClick: () => navigate('/ticketing') }
+      ]
     }
   ];
 
-  // Mock data for alerts
   const [alerts, setAlerts] = useState([
     {
       id: 1,
@@ -164,7 +200,6 @@ const Dashboard = () => {
     }
   ]);
 
-  // Mock data for recent activities
   const recentActivities = [
     {
       id: 1,
@@ -208,7 +243,6 @@ const Dashboard = () => {
     }
   ];
 
-  // Mock data for risk heat map
   const riskData = [
     { id: 1, title: 'Data Breach Risk', likelihood: 3, impact: 5, owner: 'IT Security Team' },
     { id: 2, title: 'Server Downtime', likelihood: 2, impact: 4, owner: 'Infrastructure Team' },
@@ -220,7 +254,6 @@ const Dashboard = () => {
     { id: 8, title: 'Software Vulnerability', likelihood: 3, impact: 3, owner: 'DevOps Team' }
   ];
 
-  // Mock data for training progress chart
   const trainingProgressData = [
     { name: 'Security Awareness', value: 87 },
     { name: 'Data Privacy', value: 92 },
@@ -229,7 +262,6 @@ const Dashboard = () => {
     { name: 'IT Security', value: 83 }
   ];
 
-  // Mock data for asset distribution chart
   const assetDistributionData = [
     { name: 'Laptops', value: 456 },
     { name: 'Desktops', value: 234 },
@@ -250,7 +282,6 @@ const Dashboard = () => {
     setMobileSidebarOpen(!mobileSidebarOpen);
   };
 
-  // Determine if user is admin/ISO (has full access) or employee/manager (personal view)
   const isAdminUser = hasPermission(currentUser?.role, PERMISSIONS.USER_MANAGE);
   const isEmployeeOrManager = currentUser?.role === 'employee' || currentUser?.role === 'manager';
 
@@ -267,7 +298,7 @@ const Dashboard = () => {
         onMobileClose={() => setMobileSidebarOpen(false)}
       />
       <main className={`pt-16 transition-all duration-300 ${
-        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-72'
       }`}>
         <div className="p-6">
           <Breadcrumb />
@@ -306,6 +337,7 @@ const Dashboard = () => {
                 <PersonalAssetCard currentUser={currentUser} />
                 <PersonalTrainingCard currentUser={currentUser} />
                 <PersonalDocumentCard currentUser={currentUser} />
+                <PersonalTicketsCard currentUser={currentUser} />
               </div>
             </>
           ) : (

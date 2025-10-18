@@ -77,9 +77,9 @@ const Settings = () => {
         isMobileOpen={mobileMenuOpen}
         onMobileClose={handleMobileMenuClose}
       />
-      <main className={`transition-all duration-300 ease-in-out pt-16 ${
-        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
-      }`}>
+      <main className={`transition-all duration-300 ${
+        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-72'
+      } pt-16`}>
         <div className="p-6">
           <Breadcrumb />
           

@@ -13,7 +13,8 @@ const Breadcrumb = ({ customItems = null }) => {
     '/access-management': { label: 'Access Management', icon: 'Shield' },
     '/asset-management': { label: 'Asset Management', icon: 'Package' },
     '/risk-assessment': { label: 'Risk Assessment', icon: 'AlertTriangle' },
-    '/document-management': { label: 'Document Management', icon: 'FileText' }
+    '/document-management': { label: 'Document Management', icon: 'FileText' },
+    '/ticketing': { label: 'Ticketing', icon: 'Ticket' }
   };
 
   const generateBreadcrumbs = () => {

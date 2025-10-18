@@ -277,7 +277,23 @@ cd officeops-platform
 cp .env.example .env
 
 # Start with Docker Compose
+```bash
 docker-compose up -d
+```
+
+- PostgreSQL auto-initializes on first run from `database/init/01-init.sql` and `database/init/02-seed-data.sql` via the `/docker-entrypoint-initdb.d` mount.
+- The Windows (`install.ps1`) and Linux/macOS (`install.sh`) installers also import these SQL files during setup.
+
+To import schema and seeds manually:
+
+```bash
+# Using local psql client
+psql -h localhost -U $DB_USER -d $DB_NAME -f database/init/01-init.sql
+psql -h localhost -U $DB_USER -d $DB_NAME -f database/init/02-seed-data.sql
+
+# Or via Docker container
+docker exec -i officeops-db psql -U ${DB_USER:-postgres} -d ${DB_NAME:-officeops} -f /docker-entrypoint-initdb.d/01-init.sql
+docker exec -i officeops-db psql -U ${DB_USER:-postgres} -d ${DB_NAME:-officeops} -f /docker-entrypoint-initdb.d/02-seed-data.sql
 ```
 
 ### Development with Docker

@@ -269,15 +269,26 @@ nano .env  # or use your preferred editor
 The platform includes a demo mode with local storage. For production use:
 
 ```bash
-# Start PostgreSQL and Redis services
+# Start PostgreSQL and Redis services (Docker Compose)
 docker-compose up -d database redis
-
-# Run database migrations
-npm run db:migrate
-
-# Seed initial data
-npm run db:seed
 ```
+
+- When using Docker Compose, PostgreSQL automatically initializes from `database/init/01-init.sql` and `database/init/02-seed-data.sql` on first run.
+- The Windows (`install.ps1`) and Linux/macOS (`install.sh`) installers also import these SQL files during setup.
+
+If you want to import schema and seeds manually (or re-run them):
+
+```bash
+# Using local psql client
+psql -h localhost -U $DB_USER -d $DB_NAME -f database/init/01-init.sql
+psql -h localhost -U $DB_USER -d $DB_NAME -f database/init/02-seed-data.sql
+
+# Or via Docker container
+docker exec -i officeops-db psql -U ${DB_USER:-postgres} -d ${DB_NAME:-officeops} -f /docker-entrypoint-initdb.d/01-init.sql
+docker exec -i officeops-db psql -U ${DB_USER:-postgres} -d ${DB_NAME:-officeops} -f /docker-entrypoint-initdb.d/02-seed-data.sql
+```
+
+
 
 ### 5. Start Development Server
 
@@ -840,8 +851,6 @@ Thanks to all the contributors who have helped make OfficeOps Platform better:
 - ✅ Asset catalog and assignment functionality
 
 ---
-
-<div align="center">
 
 **Built with ❤️ by the OfficeOps Development Team**
 

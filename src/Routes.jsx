@@ -17,6 +17,7 @@ const ForgotPassword = React.lazy(() => import('./pages/ForgotPassword'));
 const UserManagement = React.lazy(() => import('./pages/UserManagement'));
 const DepartmentManagement = React.lazy(() => import('./pages/DepartmentManagement'));
 const PasswordReset = React.lazy(() => import('./pages/password-reset'));
+const Ticketing = React.lazy(() => import('./pages/ticketing'));
 
 // Simple 404 component
 const NotFound = () => (
@@ -100,6 +101,12 @@ const Routes = () => {
         <Route path="/risk-assessment" element={
           <ProtectedRoute>
             <RiskAssessment />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/ticketing" element={
+          <ProtectedRoute>
+            <Ticketing />
           </ProtectedRoute>
         } />
         

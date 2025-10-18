@@ -47,6 +47,14 @@ export const PERMISSIONS = {
   ASSET_ASSIGN: 'asset_assign', // Assign assets to users
   ASSET_EDIT: 'asset_edit',     // Edit asset details
 
+  // Ticketing Permissions
+  TICKET_CREATE: 'ticket_create',
+  TICKET_APPROVE: 'ticket_approve',
+  TICKET_ASSIGN: 'ticket_assign',
+  TICKET_RESOLVE: 'ticket_resolve',
+  TICKET_VIEW_ALL: 'ticket_view_all',
+  TICKET_VIEW_OWN: 'ticket_view_own',
+
   // System Permissions
   SYSTEM_SETTINGS: 'system_settings',
   AUDIT_ACCESS: 'audit_access',
@@ -89,6 +97,11 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.ASSET_CREATE, // Only admins can add/create new assets
     PERMISSIONS.ASSET_ASSIGN, // Assign assets to users
     PERMISSIONS.ASSET_EDIT,   // Edit asset details
+    PERMISSIONS.TICKET_CREATE,
+    PERMISSIONS.TICKET_APPROVE,
+    PERMISSIONS.TICKET_ASSIGN,
+    PERMISSIONS.TICKET_RESOLVE,
+    PERMISSIONS.TICKET_VIEW_ALL,
     PERMISSIONS.SYSTEM_SETTINGS,
     PERMISSIONS.AUDIT_ACCESS,
     PERMISSIONS.DATA_EXPORT
@@ -117,6 +130,12 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.USER_VIEW,
     PERMISSIONS.ASSET_REQUEST,
     PERMISSIONS.ASSET_VIEW,
+    // Ticketing
+    PERMISSIONS.TICKET_CREATE,
+    PERMISSIONS.TICKET_APPROVE,
+    PERMISSIONS.TICKET_ASSIGN,
+    PERMISSIONS.TICKET_RESOLVE,
+    PERMISSIONS.TICKET_VIEW_ALL,
     PERMISSIONS.AUDIT_ACCESS
   ],
   
@@ -132,20 +151,29 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.USER_VIEW,
     PERMISSIONS.ASSET_REQUEST,
     PERMISSIONS.ASSET_APPROVE, // Limited to assets under $5K
-    PERMISSIONS.ASSET_VIEW
+    PERMISSIONS.ASSET_VIEW,
+    // Ticketing
+    PERMISSIONS.TICKET_CREATE,
+    PERMISSIONS.TICKET_APPROVE,
+    PERMISSIONS.TICKET_ASSIGN,
+    PERMISSIONS.TICKET_VIEW_ALL
     // NOTE: Manager CANNOT create documents, courses, or assets
   ],
   
   employee: [
-    // Employee permissions - limited access
+    // Employee permissions - Default restricted access
     PERMISSIONS.DOCUMENT_VIEW,
     PERMISSIONS.DOCUMENT_ACKNOWLEDGE,
     PERMISSIONS.LMS_VIEW_COURSE,
     PERMISSIONS.LMS_TAKE_QUIZ,
     PERMISSIONS.ACCESS_REQUEST,
     PERMISSIONS.ACCESS_VIEW_OWN,
+    PERMISSIONS.USER_VIEW,
     PERMISSIONS.ASSET_REQUEST,
-    PERMISSIONS.ASSET_VIEW
+    PERMISSIONS.ASSET_VIEW,
+    // Ticketing
+    PERMISSIONS.TICKET_CREATE,
+    PERMISSIONS.TICKET_VIEW_OWN
   ],
   
   risk_officer: [
@@ -160,6 +188,9 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.ACCESS_VIEW_OWN,
     PERMISSIONS.ASSET_REQUEST,
     PERMISSIONS.ASSET_VIEW,
+    // Ticketing
+    PERMISSIONS.TICKET_VIEW_ALL,
+    PERMISSIONS.TICKET_RESOLVE,
     PERMISSIONS.USER_VIEW
   ]
 };
@@ -206,6 +237,11 @@ export const canAccessModule = (userRole, module) => {
       return hasPermission(userRole, PERMISSIONS.USER_VIEW);
     case 'assets':
       return hasPermission(userRole, PERMISSIONS.ASSET_VIEW);
+    case 'ticketing':
+      return hasAnyPermission(userRole, [
+        PERMISSIONS.TICKET_VIEW_ALL,
+        PERMISSIONS.TICKET_VIEW_OWN
+      ]);
     default:
       return false;
   }

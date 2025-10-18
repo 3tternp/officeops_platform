@@ -418,6 +418,9 @@ configure_environment() {
         sudo -u "$SERVICE_USER" sed -i "s|JWT_SECRET=.*|JWT_SECRET=$jwt_secret|g" "$env_file"
         sudo -u "$SERVICE_USER" sed -i "s|SESSION_SECRET=.*|SESSION_SECRET=$session_secret|g" "$env_file"
         sudo -u "$SERVICE_USER" sed -i "s|DB_PASSWORD=.*|DB_PASSWORD=$db_password|g" "$env_file"
+        # Align DB settings with installer defaults
+        sudo -u "$SERVICE_USER" sed -i "s|DB_USER=.*|DB_USER=$DB_USER|g" "$env_file"
+        sudo -u "$SERVICE_USER" sed -i "s|DATABASE_URL=.*|DATABASE_URL=postgresql://$DB_USER:$db_password@localhost:5432/$DB_NAME|g" "$env_file"
         
         if [[ "$DEVELOPMENT_MODE" == true ]]; then
             sudo -u "$SERVICE_USER" sed -i "s|NODE_ENV=production|NODE_ENV=development|g" "$env_file"
@@ -447,10 +450,26 @@ setup_database() {
 CREATE DATABASE $DB_NAME;
 CREATE USER $DB_USER WITH ENCRYPTED PASSWORD '$db_password';
 GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;
+ALTER DATABASE $DB_NAME OWNER TO $DB_USER;
 \q
 EOF
+
+    # Import schema and seed data if available
+    if [[ -f "$INSTALL_DIR/database/init/01-init.sql" ]]; then
+        log "📄 Importing PostgreSQL schema (01-init.sql)"
+        sudo -u postgres psql -v ON_ERROR_STOP=1 -d "$DB_NAME" -f "$INSTALL_DIR/database/init/01-init.sql"
+    else
+        log "ℹ️  Skipping schema import: $INSTALL_DIR/database/init/01-init.sql not found"
+    fi
     
-    success "Database setup completed"
+    if [[ -f "$INSTALL_DIR/database/init/02-seed-data.sql" ]]; then
+        log "🌱 Importing PostgreSQL seed data (02-seed-data.sql)"
+        sudo -u postgres psql -v ON_ERROR_STOP=1 -d "$DB_NAME" -f "$INSTALL_DIR/database/init/02-seed-data.sql"
+    else
+        log "ℹ️  Skipping seed import: $INSTALL_DIR/database/init/02-seed-data.sql not found"
+    fi
+    
+    success "Database setup completed with schema and seed data"
 }
 
 # Configure Nginx

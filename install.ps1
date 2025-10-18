@@ -320,6 +320,9 @@ function Set-Environment {
         $envContent = $envContent -replace "JWT_SECRET=.*", "JWT_SECRET=$jwtSecret"
         $envContent = $envContent -replace "SESSION_SECRET=.*", "SESSION_SECRET=$sessionSecret"
         $envContent = $envContent -replace "DB_PASSWORD=.*", "DB_PASSWORD=$dbPassword"
+        $envContent = $envContent -replace "DB_USER=.*", "DB_USER=$DB_USER"
+        $envContent = $envContent -replace "DB_NAME=.*", "DB_NAME=$DB_NAME"
+        $envContent = $envContent -replace "DATABASE_URL=.*", "DATABASE_URL=postgresql://$DB_USER:$dbPassword@localhost:5432/$DB_NAME"
         
         if ($DEVELOPMENT_MODE) {
             $envContent = $envContent -replace "NODE_ENV=production", "NODE_ENV=development"
@@ -355,10 +358,32 @@ function Setup-Database {
             $psqlPath = "C:\Program Files\PostgreSQL\15\bin\psql.exe"
         }
         
+        # Create database and user with owner set
         $env:PGPASSWORD = "postgres123"
         & $psqlPath -U postgres -c "CREATE DATABASE $DB_NAME;" 2>$null
         & $psqlPath -U postgres -c "CREATE USER $DB_USER WITH ENCRYPTED PASSWORD '$dbPassword';" 2>$null
         & $psqlPath -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;" 2>$null
+        & $psqlPath -U postgres -c "ALTER DATABASE $DB_NAME OWNER TO $DB_USER;" 2>$null
+
+        # Import bundled schema and seed data
+        $initDir   = Join-Path $InstallPath "database\init"
+        $schemaSql = Join-Path $initDir "01-init.sql"
+        $seedSql   = Join-Path $initDir "02-seed-data.sql"
+
+        $env:PGPASSWORD = $dbPassword
+        if (Test-Path $schemaSql) {
+            Write-Log "📄 Importing PostgreSQL schema (01-init.sql)"
+            & $psqlPath -h localhost -U $DB_USER -d $DB_NAME -v ON_ERROR_STOP=1 -f $schemaSql 2>$null
+        } else {
+            Write-Log "ℹ️  Skipping schema import: $schemaSql not found"
+        }
+
+        if (Test-Path $seedSql) {
+            Write-Log "🌱 Importing PostgreSQL seed data (02-seed-data.sql)"
+            & $psqlPath -h localhost -U $DB_USER -d $DB_NAME -v ON_ERROR_STOP=1 -f $seedSql 2>$null
+        } else {
+            Write-Log "ℹ️  Skipping seed import: $seedSql not found"
+        }
         
         Write-Success "Database setup completed"
     }
@@ -508,9 +533,18 @@ function Test-Installation {
     # Check database connection (if installed)
     if ($INSTALL_DATABASE) {
         try {
-            $env:PGPASSWORD = "postgres123"
-            $psqlPath = "C:\Program Files\PostgreSQL\15\bin\psql.exe"
-            & $psqlPath -U postgres -d $DB_NAME -c "SELECT 1;" 2>$null
+            $envContent = Get-Content (Join-Path $InstallPath ".env")
+            $dbUserLine = $envContent | Where-Object { $_ -match "^DB_USER=" }
+            $dbPassLine = $envContent | Where-Object { $_ -match "^DB_PASSWORD=" }
+            $dbNameLine = $envContent | Where-Object { $_ -match "^DB_NAME=" }
+            $dbUser = $dbUserLine.Split('=')[1]
+            $dbPassword = $dbPassLine.Split('=')[1]
+            $dbName = $dbNameLine.Split('=')[1]
+
+            $env:PGPASSWORD = $dbPassword
+            $psqlPath = (Get-Command psql -ErrorAction SilentlyContinue).Source
+            if (-not $psqlPath) { $psqlPath = "C:\Program Files\PostgreSQL\15\bin\psql.exe" }
+            & $psqlPath -h localhost -U $dbUser -d $dbName -c "SELECT 1;" 2>$null
             Write-Success "Database connection verified"
         }
         catch {

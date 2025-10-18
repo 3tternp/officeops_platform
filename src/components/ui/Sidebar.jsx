@@ -73,6 +73,15 @@ const Sidebar = ({ isCollapsed = false, onToggle, isMobileOpen = false, onMobile
           description: 'Training and courses',
           roles: ['admin', 'iso', 'manager', 'supervisor', 'employee', 'risk_officer'],
           badge: null
+        },
+        {
+          id: 'ticketing',
+          label: 'Ticketing',
+          icon: 'Ticket',
+          path: '/ticketing',
+          description: 'Service desk tickets',
+          roles: ['admin', 'iso', 'manager', 'employee', 'risk_officer'],
+          badge: null
         }
       ]
     },
