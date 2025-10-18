@@ -18,6 +18,7 @@ const UserManagement = React.lazy(() => import('./pages/UserManagement'));
 const DepartmentManagement = React.lazy(() => import('./pages/DepartmentManagement'));
 const PasswordReset = React.lazy(() => import('./pages/password-reset'));
 const Ticketing = React.lazy(() => import('./pages/ticketing'));
+const InitialSetup = React.lazy(() => import('./pages/InitialSetup'));
 
 // Simple 404 component
 const NotFound = () => (
@@ -34,7 +35,17 @@ const NotFound = () => (
 const ProtectedRoute = ({ children, requiredRole = null }) => {
   const { user, isAuthenticated } = useUser();
 
+  // Read setup status and mock/demo flag
+  const adminSetupComplete = localStorage.getItem('officeops_admin_setup_complete') === 'true';
+  const enableMock = (
+    (typeof import !== 'undefined' && typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_ENABLE_MOCK_DATA === 'true') ||
+    localStorage.getItem('ENABLE_MOCK_DATA') === 'true'
+  );
+
   if (!isAuthenticated) {
+    if (!enableMock && !adminSetupComplete) {
+      return <Navigate to="/setup" replace />;
+    }
     return <Navigate to="/login" replace />;
   }
 
@@ -57,6 +68,7 @@ const Routes = () => {
         )}>
           <RouterRoutes>
         {/* Public Routes */}
+        <Route path="/setup" element={<InitialSetup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/password-reset" element={

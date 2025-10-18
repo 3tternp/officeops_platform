@@ -12,6 +12,10 @@ const Login = () => {
   const [searchParams] = useSearchParams();
   const { login } = useUser();
   const { branding } = useBranding();
+  const enableMock = (
+    (typeof import !== 'undefined' && typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_ENABLE_MOCK_DATA === 'true') ||
+    localStorage.getItem('ENABLE_MOCK_DATA') === 'true'
+  );
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -62,6 +66,14 @@ const Login = () => {
       }
     });
   }, []);
+
+  // Redirect to setup if admin not created and demo disabled
+  useEffect(() => {
+    const adminSetupComplete = localStorage.getItem('officeops_admin_setup_complete') === 'true';
+    if (!enableMock && !adminSetupComplete) {
+      navigate('/setup', { replace: true });
+    }
+  }, [enableMock, navigate]);
 
   const handleInputChange = (field, value) => {
     // Clear error when user starts typing
@@ -134,9 +146,23 @@ const Login = () => {
       let userToLogin;
       
       if (existingUser) {
+        // Validate password (hash preferred, fallback to plaintext for demo)
+        if (existingUser.passwordHash) {
+          const enteredHash = await securityUtils.hashData(formData.password);
+          if (existingUser.passwordHash !== enteredHash) {
+            throw new Error('Invalid email or password');
+          }
+        } else if (existingUser.password) {
+          if (existingUser.password !== formData.password) {
+            throw new Error('Invalid email or password');
+          }
+        }
         userToLogin = existingUser;
       } else {
-        // Create a default user for demo
+        // Create a default user only when mock data is enabled
+        if (!enableMock) {
+          throw new Error('User not found. Please contact your administrator.');
+        }
         userToLogin = {
           id: Date.now().toString(),
           name: 'Demo User',

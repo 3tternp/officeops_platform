@@ -146,6 +146,7 @@ $RECYCLE.BIN/
 # ====================================
 .dockerignore
 docker-compose.override.yml
+!Dockerfile.local
 
 # ====================================
 # SSL CERTIFICATES

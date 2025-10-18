@@ -8,6 +8,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
 import dataService from '../services/DataService';
+import { securityUtils } from '../utils/security';
 
 const UserManagement = () => {
   const navigate = useNavigate();
@@ -110,7 +111,7 @@ const UserManagement = () => {
     }
   };
 
-  const handleSubmitUser = (userData, isEdit = false) => {
+  const handleSubmitUser = async (userData, isEdit = false) => {
     if (isEdit) {
       // Update in DataService
       const updatedUser = dataService.updateUser(userData.id, userData);
@@ -120,8 +121,18 @@ const UserManagement = () => {
       ));
       alert('User updated successfully!');
     } else {
-      // Add to DataService
-      const newUser = dataService.addUser(userData);
+      // Add to DataService with hashed password
+      const payload = { ...userData };
+      if (payload.password) {
+        try {
+          payload.passwordHash = await securityUtils.hashData(payload.password);
+        } catch (e) {
+          console.error('Password hashing failed', e);
+        }
+        delete payload.password;
+        delete payload.confirmPassword;
+      }
+      const newUser = dataService.addUser(payload);
       // Update local state
       setUsers(prev => [...prev, newUser]);
       alert(`User added successfully! You can now login with email: ${newUser.email}`);

@@ -10,9 +10,63 @@ class DataService {
   initializeDefaultData() {
     // Check if data has been initialized
     const isInitialized = localStorage.getItem('officeops_initialized');
+
+    // Read mock/demo flag (supports Vite env and localStorage override)
+    const enableMock = (
+      (typeof import !== 'undefined' && typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_ENABLE_MOCK_DATA === 'true') ||
+      localStorage.getItem('ENABLE_MOCK_DATA') === 'true'
+    );
     
     if (!isInitialized) {
-      this.resetToDefaults();
+      if (enableMock) {
+        // Demo mode: seed full demo dataset (admin + demo users)
+        this.resetToDefaults();
+      } else {
+        // Production-like first install: seed base data WITHOUT users
+        const baseRoles = [
+          {
+            id: 'admin',
+            name: 'Administrator',
+            description: 'Full system access and management capabilities',
+            permissions: [
+              'user_management',
+              'department_management', 
+              'resource_management',
+              'access_approval_all',
+              'system_settings',
+              'audit_access',
+              'risk_management_full',
+              'document_management_full',
+              'asset_management_full',
+              'learning_management_full',
+              'asset_approval_unlimited',
+              'role_configuration',
+              'data_export',
+              'system_reset'
+            ],
+            assetApprovalLimit: null,
+            color: 'bg-error text-error-foreground',
+            level: 5
+          },
+          { id: 'iso', name: 'Information Security Officer', description: 'Security oversight and compliance management', permissions: ['ACCESS_APPROVE','access_approval','risk_management_full','document_management_full','audit_access','security_settings','lms_content_creation','asset_view_assigned','asset_request','compliance_reporting','user_access_review'], assetApprovalLimit: 10000, color: 'bg-warning text-warning-foreground', level: 4 },
+          { id: 'manager', name: 'Department Manager', description: 'Department-level management and approval authority', permissions: ['team_management','access_approval_department','document_access','asset_request','asset_approval_limited','training_management','employee_monitoring','department_reporting'], assetApprovalLimit: 5000, color: 'bg-accent text-accent-foreground', level: 3 },
+          { id: 'employee', name: 'Employee', description: 'Standard employee access with limited privileges', permissions: ['profile_view_only','access_request','document_view','training_participation','asset_view_assigned','asset_request','policy_acknowledgment','quiz_participation','progress_view'], assetApprovalLimit: 0, color: 'bg-success text-success-foreground', level: 1 }
+        ];
+        
+        localStorage.setItem('allUsers', JSON.stringify([]));
+        localStorage.setItem('userRoles', JSON.stringify(baseRoles));
+        localStorage.setItem('departments', JSON.stringify([]));
+        localStorage.setItem('systemResources', JSON.stringify([]));
+        localStorage.setItem('documents', JSON.stringify([]));
+        localStorage.setItem('assets', JSON.stringify([]));
+        localStorage.setItem('risks', JSON.stringify([]));
+        localStorage.setItem('accessRequests', JSON.stringify([]));
+        localStorage.setItem('learningCourses', JSON.stringify([]));
+        localStorage.setItem('certificates', JSON.stringify([]));
+        localStorage.setItem('accessReviews', JSON.stringify([]));
+        // Mark admin setup as required
+        localStorage.setItem('officeops_admin_setup_complete', 'false');
+      }
       // Seed branding from environment variables if provided
       this.seedBrandingFromEnvIfEmpty();
       localStorage.setItem('officeops_initialized', 'true');

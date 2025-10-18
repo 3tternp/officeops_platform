@@ -40,10 +40,11 @@ JWT_SECRET=your_jwt_secret
 SESSION_SECRET=your_session_secret
 
 # Features
-ENABLE_MOCK_DATA=true
+VITE_ENABLE_MOCK_DATA=false
 DEBUG=false
 ```
 - The app reads `FRONTEND_PORT`; default dev port is `4028`.
+- `VITE_ENABLE_MOCK_DATA=false` shows the Initial Setup wizard and does not seed demo users. Set to `true` to seed demo data and bypass setup (or use `localStorage.setItem('ENABLE_MOCK_DATA','true')` during dev).
 - For production builds, `NODE_ENV=production` is recommended.
 
 ## Local Installation
