@@ -2,7 +2,7 @@
 
 > A comprehensive enterprise office operations management platform built with React and modern web technologies.
 
-![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)
+![Version](https://img.shields.io/badge/version-3.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![React](https://img.shields.io/badge/react-18.3.1-blue.svg)
 ![Features](https://img.shields.io/badge/features-fully_functional-green.svg)
@@ -46,6 +46,17 @@ OfficeOps Platform is a modern, **fully functional** enterprise management syste
 - **✅ Production-Ready**: All major features are fully implemented and functional
 - **🎯 Demo-Friendly**: Complete with sample data and multiple user roles for testing
 
+## 🚀 What's New in 3.0
+
+- Ticketing system added: create, assign, approve, and resolve tickets end-to-end.
+- New My Tickets page with filters for status and assignment.
+- Dashboard now includes a Personal Tickets card for quick triage.
+- Navigation refresh: improved Sidebar structure and Breadcrumbs for clarity.
+- Settings, Profile, Department and User Management pages refined for consistency.
+- Responsiveness and accessibility improvements across forms, tables, and modals.
+- Documentation updates: installers import schema/seeds; README/INSTALL reflect SQL-based init.
+
+
 ## ✨ Features
 
 ### 👥 User Management
@@ -79,6 +90,12 @@ OfficeOps Platform is a modern, **fully functional** enterprise management syste
 - **Digital signatures**: Secure document acknowledgments
 - **Policy distribution**: Automated policy distribution and tracking
 - **Search capabilities**: Advanced document search and filtering
+
+### 🎟️ Ticketing System
+- End-to-end workflow: create, assign, approve, resolve
+- My Tickets page with status filters and quick actions
+- Dashboard card surfaces assigned tickets for rapid triage
+- Role-aware views and actions aligned with existing RBAC
 
 ### ⚠️ Risk Assessment
 - **Complete CRUD operations**: Create, read, update, and delete risk assessments
