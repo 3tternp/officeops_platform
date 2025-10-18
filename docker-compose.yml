@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  app:
+    container_name: officeops-local
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - "${PORT:-4028}:4028"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "4028"]
+    restart: unless-stopped
