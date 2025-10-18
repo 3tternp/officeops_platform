@@ -62,7 +62,12 @@ const NotificationCenter = ({ isOpen, onClose, onNotificationClick }) => {
   const unreadCount = notifications?.filter(n => n?.unread)?.length;
 
   const handleNotificationClick = (notification) => {
-    // Mark as read
+    try {
+      dataService.markNotificationAsRead(notification?.id);
+    } catch (e) {
+      console.warn('Failed to persist read state', e);
+    }
+    // Mark as read in local state
     setNotifications(prev => 
       prev?.map(n => 
         n?.id === notification?.id ? { ...n, unread: false } : n
@@ -75,6 +80,13 @@ const NotificationCenter = ({ isOpen, onClose, onNotificationClick }) => {
   };
 
   const markAllAsRead = () => {
+    try {
+      notifications?.forEach(n => {
+        if (n?.unread) dataService.markNotificationAsRead(n?.id);
+      });
+    } catch (e) {
+      console.warn('Failed to persist mark-all-read', e);
+    }
     setNotifications(prev => 
       prev?.map(n => ({ ...n, unread: false }))
     );

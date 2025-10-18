@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Button from './Button';
 import { useUser } from '../../contexts/UserContext';
 import UserRoleSwitcher from "../debug/UserRoleSwitcher";
 import { useBranding } from '../../contexts/BrandingContext';
+import dataService from '../../services/DataService';
 
 const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -15,32 +16,42 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
   const { currentUser, logout } = useUser();
   const { branding } = useBranding();
 
-  const notifications = [
-    {
-      id: 1,
-      title: 'Asset Assignment Pending',
-      message: 'Laptop assignment for John Doe requires approval',
-      time: '5 min ago',
-      type: 'warning',
-      unread: true
-    },
-    {
-      id: 2,
-      title: 'Training Completion',
-      message: 'Security awareness training completed by 15 employees',
-      time: '1 hour ago',
-      type: 'success',
-      unread: true
-    },
-    {
-      id: 3,
-      title: 'Risk Assessment Due',
-      message: 'Quarterly risk assessment due in 3 days',
-      time: '2 hours ago',
-      type: 'error',
-      unread: false
+  const [notifications, setNotifications] = useState([]);
+
+  const formatTimeAgo = (iso) => {
+    if (!iso) return '';
+    const diffMs = Date.now() - new Date(iso).getTime();
+    const sec = Math.floor(diffMs / 1000);
+    if (sec < 60) return 'just now';
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min} min ago`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr} hour${hr !== 1 ? 's' : ''} ago`;
+    const day = Math.floor(hr / 24);
+    return `${day} day${day !== 1 ? 's' : ''} ago`;
+  };
+
+  useEffect(() => {
+    try {
+      const user = currentUser || JSON.parse(localStorage.getItem('currentUser') || '{}');
+      if (!user?.id) return;
+      const allNotifications = dataService.getNotifications();
+      const userNotifications = allNotifications
+        .filter(notif =>
+          notif.recipientId === user.id ||
+          notif.recipientRole === user.role ||
+          notif.recipientRole === 'all'
+        )
+        .map(notif => ({
+          ...notif,
+          unread: !notif.read,
+          time: formatTimeAgo(notif.createdDate)
+        }));
+      setNotifications(userNotifications);
+    } catch (e) {
+      console.warn('Failed to load notifications', e);
     }
-  ];
+  }, [currentUser, notificationOpen]);
 
   const unreadCount = notifications?.filter(n => n?.unread)?.length;
 
@@ -52,7 +63,12 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
   };
 
   const handleNotificationClick = (notification) => {
-    console.log('Notification clicked:', notification);
+    try {
+      dataService.markNotificationAsRead(notification.id);
+      setNotifications(prev => prev.map(n => n.id === notification.id ? { ...n, unread: false } : n));
+    } catch (e) {
+      console.warn('Failed to mark notification as read', e);
+    }
     setNotificationOpen(false);
   };
 
