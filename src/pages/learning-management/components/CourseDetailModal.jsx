@@ -3,9 +3,12 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Image from '../../../components/AppImage';
 import { Badge } from '../../../components/ui/Badge';
+import dataService from '../../../services/DataService';
+import { useUser } from '../../../contexts/UserContext';
 
 const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQuiz, canEdit = false, canAssign = false }) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const { currentUser } = useUser();
 
   if (!isOpen || !course) return null;
 
@@ -132,34 +135,69 @@ const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQu
           <div className="space-y-6">
             <h3 className="font-semibold">Course Content</h3>
             <div className="space-y-4">
-              {[1, 2, 3, 4].map((module, index) => (
-                <div key={index} className="border border-border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium">Module {module}: Introduction to {course.title}</h4>
-                    <Badge variant="secondary">
-                      <Icon name="Play" size={12} className="mr-1" />
-                      15 min
-                    </Badge>
+              {(() => {
+                const moduleCount = course?.settings?.moduleCount ?? 4;
+                const passingScore = course?.settings?.passingScore ?? 80;
+                dataService.initializeCourseModuleProgress(currentUser?.id, course.id, moduleCount, passingScore);
+                const cp = dataService.getCourseModuleProgress(currentUser?.id, course.id);
+                const modules = Array.from({ length: moduleCount }, (_, idx) => {
+                  const m = cp?.modules?.[idx] || { index: idx, unlocked: idx === 0, passed: false };
+                  return m;
+                });
+                return modules.map((mod, index) => (
+                  <div key={index} className="border border-border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium">Module {index + 1}: {course.title}</h4>
+                      <div className="flex items-center gap-2">
+                        {mod.passed ? (
+                          <Badge variant="secondary">
+                            <Icon name="CheckCircle" size={12} className="mr-1 text-green-600" />
+                            Passed
+                          </Badge>
+                        ) : mod.unlocked ? (
+                          <Badge variant="outline">
+                            <Icon name="Unlock" size={12} className="mr-1" />
+                            Unlocked
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline">
+                            <Icon name="Lock" size={12} className="mr-1" />
+                            Locked
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Complete module content and pass the quiz to unlock the next module.
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                          <Icon name="Video" size={12} />
+                          <span>3 Videos</span>
+                        </div>
+                        <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                          <Icon name="FileText" size={12} />
+                          <span>2 Documents</span>
+                        </div>
+                        <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                          <Icon name="HelpCircle" size={12} />
+                          <span>Quiz</span>
+                        </div>
+                      </div>
+                      <Button
+                        variant={mod.unlocked ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => onTakeQuiz && mod.unlocked ? onTakeQuiz(course, index) : undefined}
+                        disabled={!mod.unlocked}
+                        iconName="HelpCircle"
+                      >
+                        {mod.passed ? 'Completed' : 'Take Quiz'}
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Overview of key concepts and fundamental principles.
-                  </p>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                      <Icon name="Video" size={12} />
-                      <span>3 Videos</span>
-                    </div>
-                    <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                      <Icon name="FileText" size={12} />
-                      <span>2 Documents</span>
-                    </div>
-                    <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                      <Icon name="HelpCircle" size={12} />
-                      <span>1 Quiz</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                ));
+              })()}
             </div>
           </div>
         );
@@ -270,11 +308,7 @@ const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQu
                 Assign
               </Button>
             )}
-            {onTakeQuiz && (course?.content?.quizzes?.length > 0 || course?.contentType === 'quiz') && (
-              <Button variant="default" size="sm" onClick={() => onTakeQuiz(course)} iconName="HelpCircle">
-                Take Quiz
-              </Button>
-            )}
+
           <Button variant="ghost" size="icon" onClick={onClose}>
             <Icon name="X" size={20} />
           </Button>

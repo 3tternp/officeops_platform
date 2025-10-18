@@ -38,6 +38,7 @@ const LearningManagement = () => {
   const { currentUser } = useUser();
   const [showQuizModal, setShowQuizModal] = useState(false);
   const [quizCourse, setQuizCourse] = useState(null);
+  const [quizModuleIndex, setQuizModuleIndex] = useState(null);
   const [filters, setFilters] = useState({
     search: '',
     department: 'all',
@@ -957,8 +958,9 @@ const LearningManagement = () => {
           onAssign={handleAssignCourse}
           canEdit={hasAnyPermission(currentUser?.role, [PERMISSIONS.LMS_CREATE_COURSE, PERMISSIONS.LMS_MANAGE_ALL])}
           canAssign={hasAnyPermission(currentUser?.role, [PERMISSIONS.LMS_ASSIGN_COURSE, PERMISSIONS.LMS_MANAGE_ALL])}
-          onTakeQuiz={hasPermission(currentUser?.role, PERMISSIONS.LMS_TAKE_QUIZ) ? ((course) => {
+          onTakeQuiz={hasPermission(currentUser?.role, PERMISSIONS.LMS_TAKE_QUIZ) ? ((course, moduleIndex) => {
             setQuizCourse(course);
+            setQuizModuleIndex(moduleIndex);
             setShowQuizModal(true);
           }) : undefined}
         />
@@ -966,10 +968,12 @@ const LearningManagement = () => {
       {showQuizModal && quizCourse && (
         <QuizModal
           course={quizCourse}
+          moduleIndex={quizModuleIndex}
           isOpen={showQuizModal}
           onClose={() => {
             setShowQuizModal(false);
             setQuizCourse(null);
+            setQuizModuleIndex(null);
           }}
         />
       )}

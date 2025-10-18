@@ -5,7 +5,7 @@ import dataService from '../../../services/DataService';
 import { useUser } from '../../../contexts/UserContext';
 import { hasPermission, PERMISSIONS } from '../../../utils/permissions';
 
-const QuizModal = ({ course, isOpen, onClose }) => {
+const QuizModal = ({ course, moduleIndex, isOpen, onClose }) => {
   const { currentUser } = useUser();
 
   if (!isOpen || !course) return null;
@@ -73,6 +73,13 @@ const QuizModal = ({ course, isOpen, onClose }) => {
         quizResults: [...(progress.quizResults || []), result]
       };
       dataService.saveUserProgress(currentUser?.id, updated);
+      // Update per-module gating
+      dataService.recordQuizResultForModule(
+        currentUser?.id,
+        course.id,
+        typeof moduleIndex === 'number' ? moduleIndex : 0,
+        pct
+      );
       setResultSaved(true);
     } catch (e) {
       console.error('Failed to save quiz result:', e);
@@ -107,7 +114,7 @@ const QuizModal = ({ course, isOpen, onClose }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div>
-            <h2 className="text-xl font-semibold text-popover-foreground">Assessment</h2>
+            <h2 className="text-xl font-semibold text-popover-foreground">Assessment — Module {typeof moduleIndex === 'number' ? moduleIndex + 1 : 'N/A'}</h2>
             <p className="text-sm text-muted-foreground mt-1">{course.title} — Multiple Choice Quiz</p>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose}>

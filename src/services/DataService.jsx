@@ -1174,6 +1174,67 @@ class DataService {
     localStorage.setItem('userProgress', JSON.stringify(allProgress));
   }
 
+  // Module gating: initialize per-course module progress if missing
+  initializeCourseModuleProgress(userId, courseId, moduleCount = 4, passingScore = 80) {
+    const progress = this.getUserProgress(userId);
+    const updated = { ...progress };
+    if (!updated.courses) updated.courses = {};
+    if (!updated.courses[courseId]) {
+      updated.courses[courseId] = {
+        moduleCount,
+        passingScore,
+        currentModuleIndex: 0,
+        modules: Array.from({ length: moduleCount }, (_, i) => ({
+          index: i,
+          unlocked: i === 0,
+          passed: false,
+          score: null,
+          attempts: 0
+        }))
+      };
+      this.saveUserProgress(userId, updated);
+    }
+    return updated.courses[courseId];
+  }
+
+  // Get module progress for a specific course
+  getCourseModuleProgress(userId, courseId) {
+    const progress = this.getUserProgress(userId);
+    return progress?.courses?.[courseId] || null;
+  }
+
+  // Record a quiz result for a specific module and unlock next on pass
+  recordQuizResultForModule(userId, courseId, moduleIndex, score) {
+    const progress = this.getUserProgress(userId);
+    if (!progress?.courses?.[courseId]) return null;
+    const courseProg = progress.courses[courseId];
+    const passing = score >= (courseProg.passingScore ?? 80);
+
+    const mod = courseProg.modules?.[moduleIndex];
+    if (!mod) return null;
+
+    mod.score = score;
+    mod.attempts = (mod.attempts || 0) + 1;
+    if (passing) {
+      mod.passed = true;
+      const nextIndex = moduleIndex + 1;
+      courseProg.currentModuleIndex = Math.min(nextIndex, (courseProg.moduleCount || courseProg.modules.length) - 1);
+      if (nextIndex < (courseProg.moduleCount || courseProg.modules.length)) {
+        courseProg.modules[nextIndex].unlocked = true;
+      }
+    }
+
+    this.saveUserProgress(userId, progress);
+    return { passed: passing, progress: courseProg };
+  }
+
+  // Check if all modules are passed for a course
+  isCourseFullyCompleted(userId, courseId) {
+    const courseProg = this.getCourseModuleProgress(userId, courseId);
+    if (!courseProg) return false;
+    return courseProg.modules?.every(m => m.passed) || false;
+  }
+
   // Access Review management
   getAccessReviews() {
     return JSON.parse(localStorage.getItem('accessReviews') || '[]');
