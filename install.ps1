@@ -1,7 +1,8 @@
 Param(
-  [ValidateSet("dev","preview","build")]
+  [ValidateSet("dev","preview","build","dev-netlify")]
   [string]$Mode = "dev",
-  [int]$Port = 4028
+  [int]$Port = 4028,
+  [int]$NetlifyPort = 8888
 )
 
 function Write-Info($Message) { Write-Host "[INFO] $Message" -ForegroundColor Cyan }
@@ -37,6 +38,20 @@ if (-not (Test-Path ".env")) {
   }
 }
 
+# Warn if SMTP envs are missing for dev-netlify
+if ($Mode -eq "dev-netlify") {
+  $smtpVars = @("SMTP_HOST","SMTP_PORT","SMTP_SECURE","SMTP_USER","SMTP_PASS","SMTP_FROM")
+  $missing = $false
+  foreach ($v in $smtpVars) {
+    if (-not $env:$v) { $missing = $true }
+  }
+  if ($missing) {
+    Write-Info "SMTP env vars not fully set; send-email function may fail. Configure in .env or system environment."
+  } else {
+    Write-Ok "SMTP env vars present"
+  }
+}
+
 # Install dependencies
 if (Test-Path "package-lock.json") {
   Write-Info "Installing dependencies (npm ci)..."
@@ -50,6 +65,10 @@ switch ($Mode) {
   "dev" {
     Write-Info "Starting Vite dev server on port $Port..."
     npm run dev -- --host 0.0.0.0 --port $Port
+  }
+  "dev-netlify" {
+    Write-Info "Starting Netlify dev (functions + proxy) on port $NetlifyPort and Vite on $Port..."
+    npx netlify dev --functions netlify/functions -c "npm run dev -- --host 0.0.0.0 --port $Port" --port $NetlifyPort
   }
   "preview" {
     Write-Info "Building production bundle..."

@@ -9,6 +9,7 @@ import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
 import dataService from '../services/DataService';
 import { securityUtils } from '../utils/security';
+import EmailService from '../services/EmailService';
 
 const UserManagement = () => {
   const navigate = useNavigate();
@@ -495,6 +496,29 @@ const UserModal = ({ isOpen, onClose, onSubmit, user, isEdit }) => {
       alert('Passwords do not match!');
       setIsSubmitting(false);
       return;
+    }
+
+    // Email format validation
+    const email = (formData.email || '').trim();
+    if (!securityUtils.isValidEmail(email)) {
+      alert('Please enter a valid email address.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Allowed domain enforcement
+    const { allowedDomains = [] } = EmailService.getSettings();
+    const normalizedAllowed = allowedDomains.map(d => d.toLowerCase()).filter(Boolean);
+    if (normalizedAllowed.length > 0) {
+      const emailDomain = email.split('@')[1]?.toLowerCase();
+      const domainAllowed = normalizedAllowed.some(dom =>
+        dom.startsWith('.') ? emailDomain.endsWith(dom) : emailDomain === dom
+      );
+      if (!domainAllowed) {
+        alert(`Email domain not allowed. Allowed domains: ${normalizedAllowed.join(', ')}`);
+        setIsSubmitting(false);
+        return;
+      }
     }
 
     try {

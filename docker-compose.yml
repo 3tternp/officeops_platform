@@ -8,6 +8,14 @@ services:
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
+      # SMTP / Email settings (optional; used by Netlify functions)
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - SMTP_FROM=${SMTP_FROM}
+      - ALLOWED_EMAIL_DOMAINS=${ALLOWED_EMAIL_DOMAINS}
     ports:
       - "${PORT:-4028}:4028"
     volumes:
@@ -17,6 +25,27 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+
+  netlify:
+    image: node:20
+    container_name: officeops-netlify
+    working_dir: /app
+    environment:
+      - NODE_ENV=development
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - SMTP_FROM=${SMTP_FROM}
+      - ALLOWED_EMAIL_DOMAINS=${ALLOWED_EMAIL_DOMAINS}
+    volumes:
+      - .:/app
+    ports:
+      - "${NETLIFY_PORT:-8888}:8888"
+    command: ["npx", "netlify", "dev", "--functions", "netlify/functions", "--targetPort", "4028", "--port", "8888"]
+    depends_on:
+      - app
 
   db:
     image: postgres:17

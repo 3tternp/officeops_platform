@@ -12,6 +12,8 @@ import DemoDataReset from '../components/DemoDataReset';
 import { useUser } from '../contexts/UserContext';
 import CompanyBrandingSettings from '../components/admin/CompanyBrandingSettings';
 import { useBranding } from '../contexts/BrandingContext';
+import EmailService from '../services/EmailService';
+import SecurityService from '../services/SecurityService';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -37,10 +39,15 @@ const Settings = () => {
     security: {
       sessionTimeout: '30',
       passwordPolicy: 'strong',
-      twoFactorRequired: false,
+      twoFactorRequired: !!SecurityService.getSettings().twoFactorRequired,
       auditLogging: true
     }
   });
+
+  const [emailAllowedDomainsInput, setEmailAllowedDomainsInput] = useState(
+    (EmailService.getSettings().allowedDomains || []).join(', ')
+  );
+  const [testEmailAddress, setTestEmailAddress] = useState('');
 
   const handleSidebarToggle = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -60,8 +67,11 @@ const Settings = () => {
     }));
   };
 
-  const handleSaveSettings = (category) => {
+  const handleSaveSettings = async (category) => {
     console.log(`Saving ${category} settings:`, settings[category]);
+    if (category === 'security') {
+      SecurityService.setSettings(settings.security);
+    }
     alert(`${category} settings saved successfully!`);
   };
 
@@ -289,44 +299,62 @@ const Settings = () => {
             {activeTab === 'integrations' && (
               <div className="bg-card border border-border rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Integrations</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <Icon name="Mail" size={20} color="white" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground">Email Service</p>
-                        <p className="text-sm text-muted-foreground">SMTP configuration</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">Configure</Button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                        <Icon name="Database" size={20} color="white" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground">Database</p>
-                        <p className="text-sm text-muted-foreground">PostgreSQL connection</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">Configure</Button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                        <Icon name="Cloud" size={20} color="white" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground">Cloud Storage</p>
-                        <p className="text-sm text-muted-foreground">File storage integration</p>
+                <div className="space-y-6">
+                  {/* Email SMTP Settings */}
+                  <div className="bg-muted rounded-lg p-4">
+                    <h4 className="text-md font-semibold text-foreground mb-2">Email SMTP</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Configure allowed email domains for user registration. SMTP credentials are read from environment variables on the server.
+                    </p>
+
+                    <div className="space-y-3">
+                      <Input
+                        label="Allowed Email Domains (comma-separated)"
+                        value={emailAllowedDomainsInput}
+                        onChange={(e) => setEmailAllowedDomainsInput(e.target.value)}
+                        placeholder="example.com, company.org"
+                      />
+                      <div className="flex justify-end">
+                        <Button onClick={() => {
+                          const domains = emailAllowedDomainsInput
+                            .split(',')
+                            .map(d => d.trim())
+                            .filter(Boolean);
+                          EmailService.setSettings({ allowedDomains: domains });
+                          alert('Email domain policy saved');
+                        }}>Save Email Settings</Button>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">Configure</Button>
+
+                    <div className="mt-6">
+                      <h5 className="text-sm font-medium text-foreground mb-2">Send Test Email</h5>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <Input
+                          label="Recipient"
+                          type="email"
+                          value={testEmailAddress}
+                          onChange={(e) => setTestEmailAddress(e.target.value)}
+                          placeholder="admin@example.com"
+                        />
+                        <div className="flex items-end">
+                          <Button onClick={async () => {
+                            if (!testEmailAddress) {
+                              alert('Enter a recipient email');
+                              return;
+                            }
+                            try {
+                              const res = await EmailService.sendTest(testEmailAddress);
+                              alert(`Test email sent: ${res.messageId || 'OK'}`);
+                            } catch (err) {
+                              alert(`Failed to send test: ${err.message}`);
+                            }
+                          }}>Send Test</Button>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        SMTP env vars required: SMTP_HOST, SMTP_PORT, SMTP_SECURE (true|false), SMTP_USER, SMTP_PASS, SMTP_FROM. Optional: ALLOWED_EMAIL_DOMAIN(S).
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

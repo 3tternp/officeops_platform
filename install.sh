@@ -2,11 +2,12 @@
 set -euo pipefail
 
 # Usage:
-#   ./install.sh [dev|preview|build]
+#   ./install.sh [dev|preview|build|dev-netlify]
 # Defaults to dev mode.
 
 MODE="${1:-dev}"
 PORT="${PORT:-4028}"
+NETLIFY_PORT="${NETLIFY_PORT:-8888}"
 
 info() { echo -e "\033[36m[INFO]\033[0m $*"; }
 ok()   { echo -e "\033[32m✔\033[0m $*"; }
@@ -18,6 +19,21 @@ need_cmd() { command -v "$1" >/dev/null 2>&1 || { err "$1 not found. Please inst
 info "Ensuring prerequisites..."
 need_cmd node
 need_cmd npm
+
+# optional: warn if SMTP envs missing when functions used
+if [ "$MODE" = "dev-netlify" ]; then
+  missing=0
+  for var in SMTP_HOST SMTP_PORT SMTP_SECURE SMTP_USER SMTP_PASS SMTP_FROM; do
+    if [ -z "${!var:-}" ]; then
+      missing=1
+    fi
+  done
+  if [ "$missing" -eq 1 ]; then
+    info "SMTP env vars not fully set; send-email function may fail. Configure in .env or shell."
+  else
+    ok "SMTP env vars present"
+  fi
+fi
 
 VERSION=$(node -v | sed 's/^v//')
 MAJOR=$(echo "$VERSION" | cut -d. -f1)
@@ -44,6 +60,10 @@ case "$MODE" in
     info "Starting Vite dev server on port $PORT..."
     npm run dev -- --host 0.0.0.0 --port "$PORT"
     ;;
+  dev-netlify)
+    info "Starting Netlify dev (functions + proxy) on port $NETLIFY_PORT and Vite on $PORT..."
+    npx netlify dev --functions netlify/functions -c "npm run dev -- --host 0.0.0.0 --port $PORT" --port "$NETLIFY_PORT"
+    ;;
   preview)
     info "Building production bundle..."
     npm run build
@@ -56,5 +76,5 @@ case "$MODE" in
     ok "Build complete. See dist/"
     ;;
   *)
-    err "Unknown mode: $MODE (use dev|preview|build)"; exit 1;;
+    err "Unknown mode: $MODE (use dev|preview|build|dev-netlify)"; exit 1;;
 esac

@@ -6,6 +6,8 @@ import { useUser } from '../contexts/UserContext';
 import { securityUtils } from '../utils/security';
 import { AlertCircle } from 'lucide-react';
 import { useBranding } from '../contexts/BrandingContext';
+import EmailService from '../services/EmailService';
+import SecurityService from '../services/SecurityService';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,6 +27,10 @@ const Login = () => {
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
   const [lockoutTime, setLockoutTime] = useState(null);
+  const [mfaPending, setMfaPending] = useState(false);
+  const [otpInput, setOtpInput] = useState('');
+  const [otpData, setOtpData] = useState(null); // { code, expiresAt }
+  const [pendingUser, setPendingUser] = useState(null);
 
   // Check for lockout on component mount
   useEffect(() => {
@@ -174,6 +180,27 @@ const Login = () => {
         };
       }
 
+      // If 2FA is required, send OTP and wait for verification
+      const sec = SecurityService.getSettings();
+      if (sec?.twoFactorRequired) {
+        try {
+          const ttl = typeof sec.otpTTLSeconds === 'number' ? sec.otpTTLSeconds : 300;
+          const code = Math.floor(100000 + Math.random() * 900000).toString();
+          setPendingUser(userToLogin);
+          setOtpData({ code, expiresAt: Date.now() + ttl * 1000 });
+          await EmailService.sendEmail({
+            to: userToLogin.email,
+            subject: 'Your OfficeOps verification code',
+            text: `Your verification code is ${code}. It expires in ${Math.round(ttl/60)} minutes.`
+          });
+          setMfaPending(true);
+          setIsLoading(false);
+          return; // wait for user to enter code
+        } catch (sendErr) {
+          throw new Error(sendErr.message || 'Failed to send verification code');
+        }
+      }
+
       // Log successful login
       securityUtils.auditLog({
         action: 'successful_login',
@@ -230,6 +257,62 @@ const Login = () => {
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e?.preventDefault?.();
+    if (!mfaPending || !otpData || !pendingUser) {
+      setError('No verification in progress.');
+      return;
+    }
+    if (!otpInput) {
+      setError('Enter the verification code sent to your email.');
+      return;
+    }
+    if (Date.now() > otpData.expiresAt) {
+      setError('Verification code expired. Please sign in again.');
+      setMfaPending(false);
+      setOtpInput('');
+      setOtpData(null);
+      setPendingUser(null);
+      return;
+    }
+    if (otpInput.trim() !== otpData.code) {
+      setError('Invalid verification code. Please try again.');
+      return;
+    }
+
+    try {
+      // Log successful login after verification
+      securityUtils.auditLog({
+        action: 'successful_login',
+        severity: 'info',
+        details: {
+          email: pendingUser.email,
+          role: pendingUser.role,
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent
+        }
+      });
+      securityUtils.resetLoginAttempts();
+
+      const sessionToken = securityUtils.generateSecureToken();
+      pendingUser.sessionToken = sessionToken;
+
+      login(pendingUser);
+
+      const returnUrl = searchParams.get('returnUrl');
+      if (returnUrl && returnUrl.startsWith('/')) {
+        navigate(decodeURIComponent(returnUrl));
+      } else {
+        navigate('/dashboard');
+      }
+    } finally {
+      setMfaPending(false);
+      setOtpInput('');
+      setOtpData(null);
+      setPendingUser(null);
     }
   };
 
@@ -322,7 +405,7 @@ const Login = () => {
                 <input
                   type="email"
                   required
-                  disabled={isLocked || isLoading}
+                  disabled={isLocked || isLoading || mfaPending}
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="Enter your email address"
@@ -346,7 +429,7 @@ const Login = () => {
                 <input
                   type="password"
                   required
-                  disabled={isLocked || isLoading}
+                  disabled={isLocked || isLoading || mfaPending}
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
                   placeholder="Enter your password"
@@ -359,11 +442,32 @@ const Login = () => {
               </div>
             </div>
             
+            {mfaPending && (
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Verification Code
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Icon name="ShieldCheck" size={18} className="text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    value={otpInput}
+                    onChange={(e) => setOtpInput(e.target.value)}
+                    placeholder="Enter 6-digit code"
+                    className="w-full pl-11 pr-4 py-3 border rounded-xl text-sm transition-all duration-200 border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white hover:border-gray-300"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">We sent a code to {formData.email}. Check your inbox.</p>
+              </div>
+            )}
+
             <div className="flex items-center justify-between">
               <label className="flex items-center">
                 <input 
                   type="checkbox" 
-                  disabled={isLocked || isLoading}
+                  disabled={isLocked || isLoading || mfaPending}
                   className="rounded border-input" 
                 />
                 <span className="ml-2 text-sm text-muted-foreground">Remember me</span>
@@ -373,30 +477,45 @@ const Login = () => {
                 onClick={() => navigate('/forgot-password')}
                 className="text-sm hover:underline disabled:opacity-50"
                 style={{ color: branding?.primaryColor || undefined }}
-                disabled={isLocked || isLoading}
+                disabled={isLocked || isLoading || mfaPending}
               >
                 Forgot password?
               </button>
             </div>
             
-            <Button 
-              type="submit" 
-              className="w-full h-12 text-base font-semibold shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-white rounded-xl" 
-              style={{ background: branding?.primaryColor || undefined }}
-              disabled={isLocked || isLoading}
-            >
-              {isLoading ? (
+            {mfaPending ? (
+              <Button 
+                type="button" 
+                onClick={handleVerifyOtp}
+                className="w-full h-12 text-base font-semibold shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-white rounded-xl" 
+                style={{ background: branding?.primaryColor || undefined }}
+                disabled={isLocked || isLoading}
+              >
                 <div className="flex items-center space-x-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Signing you in...</span>
+                  <Icon name="ShieldCheck" size={18} />
+                  <span>Verify Code</span>
                 </div>
-              ) : (
-                <div className="flex items-center space-x-2">
-                  <Icon name="LogIn" size={18} />
-                  <span>Sign In</span>
-                </div>
-              )}
-            </Button>
+              </Button>
+            ) : (
+              <Button 
+                type="submit" 
+                className="w-full h-12 text-base font-semibold shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-white rounded-xl" 
+                style={{ background: branding?.primaryColor || undefined }}
+                disabled={isLocked || isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Signing you in...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <Icon name="LogIn" size={18} />
+                    <span>Sign In</span>
+                  </div>
+                )}
+              </Button>
+            )}
             {branding?.footerText && (
               <p className="text-xs text-gray-500 text-center mt-6">{branding.footerText}</p>
             )}
