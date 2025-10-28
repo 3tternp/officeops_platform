@@ -14,7 +14,9 @@ const Settings = React.lazy(() => import('./pages/Settings'));
 const Profile = React.lazy(() => import('./pages/Profile'));
 const Login = React.lazy(() => import('./pages/Login'));
 const ForgotPassword = React.lazy(() => import('./pages/ForgotPassword'));
-const UserManagement = React.lazy(() => import('./pages/UserManagement'));
+// Temporarily using direct import instead of lazy
+import UserManagementDirect from './pages/UserManagement';
+const UserManagement = UserManagementDirect;
 const DepartmentManagement = React.lazy(() => import('./pages/DepartmentManagement'));
 const PasswordReset = React.lazy(() => import('./pages/password-reset'));
 const Ticketing = React.lazy(() => import('./pages/ticketing'));
