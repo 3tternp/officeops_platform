@@ -634,7 +634,16 @@ class DataService {
 
   // User management
   getUsers() {
-    return JSON.parse(localStorage.getItem('allUsers') || '[]');
+    try {
+      const usersData = localStorage.getItem('allUsers') || '[]';
+      console.log('🔍 DataService.getUsers() - Raw data:', usersData);
+      const parsed = JSON.parse(usersData);
+      console.log('🔍 DataService.getUsers() - Parsed data:', parsed);
+      return parsed;
+    } catch (error) {
+      console.error('🚨 DataService.getUsers() - JSON parse error:', error);
+      return [];
+    }
   }
 
   saveUsers(users) {
@@ -643,7 +652,16 @@ class DataService {
 
   // Department management
   getDepartments() {
-    return JSON.parse(localStorage.getItem('departments') || '[]');
+    try {
+      const deptData = localStorage.getItem('departments') || '[]';
+      console.log('🔍 DataService.getDepartments() - Raw data:', deptData);
+      const parsed = JSON.parse(deptData);
+      console.log('🔍 DataService.getDepartments() - Parsed data:', parsed);
+      return parsed;
+    } catch (error) {
+      console.error('🚨 DataService.getDepartments() - JSON parse error:', error);
+      return [];
+    }
   }
 
   saveDepartments(departments) {
@@ -874,7 +892,16 @@ class DataService {
 
   // Role management
   getRoles() {
-    return JSON.parse(localStorage.getItem('userRoles') || '[]');
+    try {
+      const rolesData = localStorage.getItem('userRoles') || '[]';
+      console.log('🔍 DataService.getRoles() - Raw data:', rolesData);
+      const parsed = JSON.parse(rolesData);
+      console.log('🔍 DataService.getRoles() - Parsed data:', parsed);
+      return parsed;
+    } catch (error) {
+      console.error('🚨 DataService.getRoles() - JSON parse error:', error);
+      return [];
+    }
   }
 
   saveRoles(roles) {

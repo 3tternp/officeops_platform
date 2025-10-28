@@ -9,9 +9,10 @@ import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
 import dataService from '../services/DataService';
 import { securityUtils } from '../utils/security';
-import EmailService from '../services/EmailService';
 
 const UserManagement = () => {
+  console.log('🚀 UserManagement component initializing...');
+  
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,16 +31,39 @@ const UserManagement = () => {
   const [roles, setRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
 
+  console.log('📊 State initialized:', { users: users.length, roles: roles.length, departments: departments.length });
+
   // Load data from DataService on mount
   useEffect(() => {
+    console.log('🔄 useEffect for data loading triggered');
+    
     const loadData = () => {
-      const storedUsers = dataService.getUsers();
-      const storedRoles = dataService.getRoles();
-      const storedDepartments = dataService.getDepartments();
-      
-      setUsers(storedUsers);
-      setRoles(storedRoles);
-      setDepartments(storedDepartments);
+      try {
+        console.log('📥 Loading data from DataService...');
+        console.log('🔍 DataService object:', dataService);
+        
+        const storedUsers = dataService.getUsers() || [];
+        console.log('👥 Loaded users:', storedUsers.length, storedUsers);
+        
+        const storedRoles = dataService.getRoles() || [];
+        console.log('🎭 Loaded roles:', storedRoles.length, storedRoles);
+        
+        const storedDepartments = dataService.getDepartments() || [];
+        console.log('🏢 Loaded departments:', storedDepartments.length, storedDepartments);
+        
+        setUsers(storedUsers);
+        setRoles(storedRoles);
+        setDepartments(storedDepartments);
+        
+        console.log('✅ Data loading completed successfully');
+      } catch (error) {
+        console.error('❌ Error loading data:', error);
+        console.error('❌ Error stack:', error.stack);
+        // Set empty arrays as fallback
+        setUsers([]);
+        setRoles([]);
+        setDepartments([]);
+      }
     };
     loadData();
   }, []);
@@ -80,17 +104,32 @@ const UserManagement = () => {
   };
 
   // Filter users based on current filters
+  console.log('🔍 Filtering users...', { 
+    totalUsers: users.length, 
+    searchQuery, 
+    filterRole, 
+    filterStatus 
+  });
+  
   const filteredUsers = users.filter(user => {
+    // Add null/undefined checks to prevent errors
+    if (!user) {
+      console.warn('⚠️ Found null/undefined user in array');
+      return false;
+    }
+    
     const searchMatch = searchQuery === '' || 
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.department.toLowerCase().includes(searchQuery.toLowerCase());
+      (user.name && user.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (user.email && user.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (user.department && user.department.toLowerCase().includes(searchQuery.toLowerCase()));
     
     const roleMatch = filterRole === 'all' || user.role === filterRole;
     const statusMatch = filterStatus === 'all' || user.status === filterStatus;
     
     return searchMatch && roleMatch && statusMatch;
   });
+  
+  console.log('✅ Filtered users result:', filteredUsers.length, filteredUsers);
 
   const handleAddUser = () => {
     setSelectedUser(null);
@@ -166,6 +205,14 @@ const UserManagement = () => {
     }
   };
 
+  // Safely format a label (e.g., role/status) even if undefined/null
+  const formatLabel = (value) => {
+    if (typeof value !== 'string' || value.length === 0) return 'Unknown';
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  };
+
+  console.log('🎨 Rendering UserManagement component...');
+  
   return (
     <div className="min-h-screen bg-background">
       <Header 
@@ -329,7 +376,7 @@ const UserManagement = () => {
                         <td className="py-4 px-6">
                           <div className="space-y-1">
                             <span className={`px-2 py-1 text-xs rounded-full ${getRoleColor(user.role)}`}>
-                              {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                              {formatLabel(user.role)}
                             </span>
                             <div className="text-xs text-muted-foreground">
                               Level {userRole?.level || 'N/A'}
@@ -348,7 +395,7 @@ const UserManagement = () => {
                         </td>
                         <td className="py-4 px-6">
                           <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(user.status)}`}>
-                            {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                            {formatLabel(user.status)}
                           </span>
                         </td>
                         <td className="py-4 px-6">
