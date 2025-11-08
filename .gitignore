@@ -197,3 +197,6 @@ docs/static/img/
 *.rar
 *.zip
 *.7z
+
+# Local Netlify folder
+.netlify
