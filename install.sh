@@ -37,7 +37,7 @@ fi
 
 VERSION=$(node -v | sed 's/^v//')
 MAJOR=$(echo "$VERSION" | cut -d. -f1)
-if [ "$MAJOR" -lt 18 ]; then err "Node.js $VERSION detected; require >= 18"; exit 1; fi
+if [ "$MAJOR" -lt 20 ]; then err "Node.js $VERSION detected; require >= 20"; exit 1; fi
 ok "Node.js $VERSION detected"
 
 # Prepare environment file

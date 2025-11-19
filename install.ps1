@@ -14,11 +14,11 @@ function Test-Command($cmd) {
 }
 
 function Ensure-Node {
-  if (-not (Test-Command 'node')) { Write-Err "Node.js not found. Please install Node.js 18+ from https://nodejs.org"; exit 1 }
+  if (-not (Test-Command 'node')) { Write-Err "Node.js not found. Please install Node.js 20+ from https://nodejs.org"; exit 1 }
   if (-not (Test-Command 'npm')) { Write-Err "npm not found. Ensure your Node.js installation includes npm"; exit 1 }
   $versionStr = (& node -v) -replace '^v',''
   $major = [int]($versionStr.Split('.')[0])
-  if ($major -lt 18) { Write-Err "Node.js $versionStr detected; require >= 18"; exit 1 }
+  if ($major -lt 20) { Write-Err "Node.js $versionStr detected; require >= 20"; exit 1 }
   Write-Ok "Node.js $versionStr detected"
 }
 
