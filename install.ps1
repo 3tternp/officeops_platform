@@ -2,12 +2,13 @@ Param(
   [ValidateSet("dev","preview","build","dev-netlify")]
   [string]$Mode = "dev",
   [int]$Port = 4028,
-  [int]$NetlifyPort = 8888
+  [int]$NetlifyPort = 8888,
+  [switch]$DockerDb
 )
 
 function Write-Info($Message) { Write-Host "[INFO] $Message" -ForegroundColor Cyan }
-function Write-Ok($Message) { Write-Host "✔ $Message" -ForegroundColor Green }
-function Write-Err($Message) { Write-Host "✖ $Message" -ForegroundColor Red }
+function Write-Ok($Message) { Write-Host "[OK] $Message" -ForegroundColor Green }
+function Write-Err($Message) { Write-Host "[ERROR] $Message" -ForegroundColor Red }
 
 function Test-Command($cmd) {
   $null -ne (Get-Command $cmd -ErrorAction SilentlyContinue)
@@ -22,11 +23,28 @@ function Ensure-Node {
   Write-Ok "Node.js $versionStr detected"
 }
 
+function Start-DockerDb {
+  if (-not (Test-Command 'docker')) { Write-Err "Docker not found. Install Docker Desktop"; exit 1 }
+  try {
+    Write-Info "Starting Docker PostgreSQL service (db)..."
+    docker compose up -d db | Out-Null
+  } catch {
+    if (Test-Command 'docker-compose') {
+      docker-compose up -d db | Out-Null
+    } else {
+      Write-Err "docker compose not available"; exit 1
+    }
+  }
+  Write-Ok "Docker db service running"
+}
+
 # Go to script directory
 Set-Location -Path (Split-Path -Parent $MyInvocation.MyCommand.Path)
 
 Write-Info "Ensuring prerequisites..."
 Ensure-Node
+
+if ($DockerDb) { Start-DockerDb }
 
 # Prepare environment file
 if (-not (Test-Path ".env")) {
@@ -43,7 +61,8 @@ if ($Mode -eq "dev-netlify") {
   $smtpVars = @("SMTP_HOST","SMTP_PORT","SMTP_SECURE","SMTP_USER","SMTP_PASS","SMTP_FROM")
   $missing = $false
   foreach ($v in $smtpVars) {
-    if (-not $env:$v) { $missing = $true }
+    $val = [System.Environment]::GetEnvironmentVariable($v, "Process")
+    if ([string]::IsNullOrEmpty($val)) { $missing = $true }
   }
   if ($missing) {
     Write-Info "SMTP env vars not fully set; send-email function may fail. Configure in .env or system environment."

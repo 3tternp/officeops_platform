@@ -156,8 +156,8 @@ OfficeOps Platform is a modern, **fully functional** enterprise management syste
 
 Before you begin, ensure you have the following installed on your development machine:
 
-- **Node.js** (v18.0.0 or higher)
-- **npm** (v9.0.0 or higher) or **yarn** (v1.22.0 or higher)
+- **Node.js** (v20.0.0 or higher)
+- **npm** (v10.0.0 or higher) or **yarn** (v1.22.0 or higher)
 - **Docker** (v20.0.0 or higher) - for containerized deployment
 - **Docker Compose** (v2.0.0 or higher) - for multi-container setup
 - **PostgreSQL** (v13.0 or higher) - if running database locally
@@ -221,33 +221,20 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 iwr -useb https://raw.githubusercontent.com/3tternp/officeops_platform/main/install.ps1 | iex
 ```
 
-#### Automated Installation Scripts
+#### Local Installer Usage
 
 **Linux/Unix:**
 ```bash
-# Download and run installer
-wget https://raw.githubusercontent.com/3tternp/officeops_platform/main/install.sh
-chmod +x install.sh
-sudo ./install.sh
-
-# Development mode
-sudo ./install.sh --dev
-
-# Custom options
-sudo ./install.sh --no-docker --ssl
+./install.sh dev
+./install.sh dev --docker-db
+./install.sh dev-netlify
 ```
 
 **Windows:**
 ```powershell
-# Download and run installer
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/3tternp/officeops_platform/main/install.ps1" -OutFile "install.ps1"
-.\install.ps1
-
-# Development mode
-.\install.ps1 -Development
-
-# Custom options
-.\install.ps1 -NoDocker -SSL
+.\install.ps1 -Mode dev
+.\install.ps1 -Mode dev -DockerDb
+.\install.ps1 -Mode dev-netlify
 ```
 
 ### 🔧 Manual Installation
@@ -281,28 +268,12 @@ cp .env.example .env
 nano .env  # or use your preferred editor
 ```
 
-### 4. Database Setup (Optional for Demo Mode)
+### 4. Database Setup (Optional)
 
-The platform includes a demo mode with local storage. For production use:
-
-```bash
-# Start PostgreSQL and Redis services (Docker Compose)
-docker-compose up -d database redis
-```
-
-- When using Docker Compose, PostgreSQL automatically initializes from `database/init/01-init.sql` and `database/init/02-seed-data.sql` on first run.
-- The Windows (`install.ps1`) and Linux/macOS (`install.sh`) installers also import these SQL files during setup.
-
-If you want to import schema and seeds manually (or re-run them):
+For front-end demo, no database is required. To run PostgreSQL locally via Docker:
 
 ```bash
-# Using local psql client
-psql -h localhost -U $DB_USER -d $DB_NAME -f database/init/01-init.sql
-psql -h localhost -U $DB_USER -d $DB_NAME -f database/init/02-seed-data.sql
-
-# Or via Docker container
-docker exec -i officeops-db psql -U ${DB_USER:-postgres} -d ${DB_NAME:-officeops} -f /docker-entrypoint-initdb.d/01-init.sql
-docker exec -i officeops-db psql -U ${DB_USER:-postgres} -d ${DB_NAME:-officeops} -f /docker-entrypoint-initdb.d/02-seed-data.sql
+docker compose up -d db
 ```
 
 
@@ -339,8 +310,20 @@ JWT_SECRET=your_jwt_secret
 SESSION_SECRET=your_session_secret
 
 # Features
-ENABLE_MOCK_DATA=true
+VITE_ENABLE_MOCK_DATA=true
 DEBUG=false
+```
+
+Email function (Netlify):
+
+```env
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_user
+SMTP_PASS=your_password
+SMTP_FROM=noreply@example.com
+ALLOWED_EMAIL_DOMAINS=example.com,another.org
 ```
 
 ### Customization

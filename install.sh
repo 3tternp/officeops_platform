@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage:
-#   ./install.sh [dev|preview|build|dev-netlify]
-# Defaults to dev mode.
-
 MODE="${1:-dev}"
 PORT="${PORT:-4028}"
 NETLIFY_PORT="${NETLIFY_PORT:-8888}"
+WITH_DOCKER_DB=0
+for arg in "$@"; do
+  if [ "$arg" = "--docker-db" ]; then WITH_DOCKER_DB=1; fi
+done
 
 info() { echo -e "\033[36m[INFO]\033[0m $*"; }
 ok()   { echo -e "\033[32m✔\033[0m $*"; }
@@ -53,6 +53,22 @@ if [ -f package-lock.json ]; then
 else
   info "Installing dependencies (npm install)..."
   npm install
+fi
+
+if [ "$WITH_DOCKER_DB" = "1" ]; then
+  info "Starting Docker PostgreSQL service (db)..."
+  if command -v docker >/dev/null 2>&1; then
+    if docker compose version >/dev/null 2>&1; then
+      docker compose up -d db
+    elif command -v docker-compose >/dev/null 2>&1; then
+      docker-compose up -d db
+    else
+      err "docker compose not found"; exit 1
+    fi
+  else
+    err "Docker not found"; exit 1
+  fi
+  ok "Docker db service running"
 fi
 
 case "$MODE" in
