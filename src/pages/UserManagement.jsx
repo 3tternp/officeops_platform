@@ -9,6 +9,7 @@ import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
 import dataService from '../services/DataService';
 import { securityUtils } from '../utils/security';
+import EmailService from '../services/EmailService';
 
 const UserManagement = () => {
   console.log('🚀 UserManagement component initializing...');
@@ -545,6 +546,15 @@ const UserModal = ({ isOpen, onClose, onSubmit, user, isEdit }) => {
       return;
     }
 
+    if (!isEdit) {
+      const pwdCheck = securityUtils.validatePasswordStrength(formData.password);
+      if (!pwdCheck?.isValid) {
+        alert('Password does not meet strength requirements.');
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     // Email format validation
     const email = (formData.email || '').trim();
     if (!securityUtils.isValidEmail(email)) {
@@ -553,7 +563,6 @@ const UserModal = ({ isOpen, onClose, onSubmit, user, isEdit }) => {
       return;
     }
 
-    // Allowed domain enforcement
     const { allowedDomains = [] } = EmailService.getSettings();
     const normalizedAllowed = allowedDomains.map(d => d.toLowerCase()).filter(Boolean);
     if (normalizedAllowed.length > 0) {
@@ -568,6 +577,13 @@ const UserModal = ({ isOpen, onClose, onSubmit, user, isEdit }) => {
       }
     }
 
+    const existing = dataService.getUserByEmail(email);
+    if (existing) {
+      alert('A user with this email already exists.');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const userData = {
         ...formData,
@@ -575,8 +591,9 @@ const UserModal = ({ isOpen, onClose, onSubmit, user, isEdit }) => {
         createdDate: user?.createdDate,
         lastLogin: user?.lastLogin
       };
-      
-      await onSubmit(userData);
+      const submitPromise = Promise.resolve(onSubmit(userData));
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 8000));
+      await Promise.race([submitPromise, timeout]);
       onClose();
     } catch (error) {
       console.error('Error submitting user:', error);

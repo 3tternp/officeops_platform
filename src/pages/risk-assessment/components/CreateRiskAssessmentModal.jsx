@@ -188,6 +188,37 @@ const CreateRiskAssessmentModal = ({ isOpen, onClose, onSubmit }) => {
     }));
   };
 
+  const handleAISuggest = () => {
+    const assetName = formData.asset || assets[0]?.name || '';
+    const threatName = formData.threat || 'Phishing';
+    const ai = dataService.aiGenerateRiskFromAsset(assetName, threatName);
+    const mit = dataService.aiSuggestMitigation({
+      ...ai,
+      riskType: formData.riskType || 'Technology'
+    });
+    setFormData(prev => ({
+      ...prev,
+      assetGroup: ai.assetGroup || prev.assetGroup,
+      asset: ai.asset || prev.asset,
+      threat: ai.threat || prev.threat,
+      vulnerability: ai.vulnerability || prev.vulnerability,
+      riskDescription: ai.description || prev.riskDescription,
+      existingControls: ai.existingControls || prev.existingControls,
+      likelihood: String(ai.likelihood || prev.likelihood || ''),
+      impact: String(ai.impact || prev.impact || ''),
+      treatmentOptionChosen: mit.treatmentOptionChosen,
+      proposedTreatmentAction: mit.proposedTreatmentAction,
+      annexAControlReference: mit.annexAControlReference,
+      treatmentCost: mit.treatmentCost,
+      treatmentActionOwner: mit.treatmentActionOwner,
+      treatmentActionTimescale: mit.treatmentActionTimescale,
+      postTreatmentLikelihood: String(mit.postTreatmentLikelihood || ''),
+      postTreatmentImpact: String(mit.postTreatmentImpact || ''),
+      reviewFrequency: mit.reviewFrequency,
+      nextReviewDate: mit.nextReviewDate
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -305,9 +336,15 @@ const CreateRiskAssessmentModal = ({ isOpen, onClose, onSubmit }) => {
               Create a new risk assessment sheet for evaluation and monitoring
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <Icon name="X" size={20} />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={handleAISuggest}>
+              <Icon name="Sparkles" size={16} className="mr-2" />
+              AI Suggest
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <Icon name="X" size={20} />
+            </Button>
+          </div>
         </div>
 
         {/* Step Progress */}

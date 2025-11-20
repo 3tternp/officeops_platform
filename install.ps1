@@ -75,6 +75,10 @@ if ($Mode -eq "dev-netlify") {
 if (Test-Path "package-lock.json") {
   Write-Info "Installing dependencies (npm ci)..."
   npm ci
+  if ($LASTEXITCODE -ne 0) {
+    Write-Info "npm ci failed; falling back to npm install"
+    npm install
+  }
 } else {
   Write-Info "Installing dependencies (npm install)..."
   npm install

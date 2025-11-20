@@ -29,6 +29,10 @@ const RiskAssessment = () => {
   const [editRiskModalOpen, setEditRiskModalOpen] = useState(false);
   const [riskToEdit, setRiskToEdit] = useState(null);
   const [uploadRegisterModalOpen, setUploadRegisterModalOpen] = useState(false);
+  const [aiMenuOpen, setAiMenuOpen] = useState(false);
+  const [aiSources, setAiSources] = useState({ assets: true, documents: true, access: true, users: true, departments: true });
+  const [aiGeneratedRisks, setAiGeneratedRisks] = useState([]);
+  const [aiGenerating, setAiGenerating] = useState(false);
 
   const [risks, setRisks] = useState([]);
   const [filteredRisks, setFilteredRisks] = useState([]);
@@ -50,6 +54,22 @@ const RiskAssessment = () => {
       setFilteredRisks(storedRisks);
     };
     loadRisks();
+  }, []);
+
+  useEffect(() => {
+    const updated = dataService.autoUpdateRiskReviews();
+    setRisks(updated);
+    setFilteredRisks(updated);
+  }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      dataService.autoUpdateRiskReviews();
+      const updated = dataService.autoConductDueReviews();
+      setRisks(updated);
+      setFilteredRisks(updated);
+    }, 60000);
+    return () => clearInterval(id);
   }, []);
 
   useEffect(() => {
@@ -158,6 +178,34 @@ const RiskAssessment = () => {
 
   const handleUploadRegister = () => {
     setUploadRegisterModalOpen(true);
+  };
+
+  const handleAIGenerateSelected = async () => {
+    try {
+      setAiGenerating(true);
+      const generated = dataService.aiGenerateRisksFromSystem(aiSources);
+      setAiGeneratedRisks(generated);
+      toast.success(`${generated.length} AI risks generated`);
+    } catch (e) {
+      console.error('AI generation error', e);
+      toast.error('Failed to generate AI risks');
+    } finally {
+      setAiGenerating(false);
+    }
+  };
+
+  const handleAIAddAll = () => {
+    const toAdd = aiGeneratedRisks || [];
+    if (!toAdd.length) {
+      toast.error('No AI risks to add');
+      return;
+    }
+    const added = toAdd.map(r => dataService.addRisk(r));
+    setRisks(prev => [...added, ...prev]);
+    setFilteredRisks(prev => [...added, ...prev]);
+    setAiMenuOpen(false);
+    setAiGeneratedRisks([]);
+    toast.success('AI risks added to register');
   };
 
   const handleSubmitNewRisk = async (riskData) => {
@@ -303,15 +351,15 @@ const RiskAssessment = () => {
           <Breadcrumb />
           
           {/* Page Header */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-bold text-foreground mb-2">Risk Assessment</h1>
-              <p className="text-muted-foreground truncate">
+          <div className="mb-8">
+            <div className="min-w-0">
+              <h1 className="text-3xl font-bold text-foreground">Risk Assessment</h1>
+              <p className="text-muted-foreground">
                 Conduct evaluations, monitor treatments, and generate compliance reports
               </p>
             </div>
             
-            <div className="flex items-center flex-wrap gap-2 mt-4 lg:mt-0">
+            <div className="relative mt-4 flex items-center gap-2 flex-wrap">
               <Button variant="outline" onClick={handleExportReport}>
                 <Icon name="Download" size={16} className="mr-2" />
                 Export Report
@@ -336,6 +384,55 @@ const RiskAssessment = () => {
                 <Icon name="Plus" size={16} className="mr-2" />
                 Create Risk Assessment
               </Button>
+              <div className="relative">
+                <Button 
+                  variant="outline"
+                  onClick={() => setAiMenuOpen(v => !v)}
+                >
+                  <Icon name="Sparkles" size={16} className="mr-2" />
+                  AI Create Risk
+                </Button>
+                {aiMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-72 bg-popover border border-border rounded-md shadow-enterprise-lg p-3 z-50">
+                    <p className="text-sm font-medium text-popover-foreground mb-2">Sources</p>
+                    <div className="space-y-2 text-sm">
+                      <label className="flex items-center justify-between">
+                        <span>Assets</span>
+                        <input type="checkbox" checked={aiSources.assets} onChange={e => setAiSources(s => ({ ...s, assets: e.target.checked }))} />
+                      </label>
+                      <label className="flex items-center justify-between">
+                        <span>Documents</span>
+                        <input type="checkbox" checked={aiSources.documents} onChange={e => setAiSources(s => ({ ...s, documents: e.target.checked }))} />
+                      </label>
+                      <label className="flex items-center justify-between">
+                        <span>Access Management</span>
+                        <input type="checkbox" checked={aiSources.access} onChange={e => setAiSources(s => ({ ...s, access: e.target.checked }))} />
+                      </label>
+                      <label className="flex items-center justify-between">
+                        <span>User Management</span>
+                        <input type="checkbox" checked={aiSources.users} onChange={e => setAiSources(s => ({ ...s, users: e.target.checked }))} />
+                      </label>
+                      <label className="flex items-center justify-between">
+                        <span>Department Management</span>
+                        <input type="checkbox" checked={aiSources.departments} onChange={e => setAiSources(s => ({ ...s, departments: e.target.checked }))} />
+                      </label>
+                    </div>
+                    <div className="mt-3 flex items-center justify-between">
+                      <Button variant="outline" onClick={() => setAiMenuOpen(false)}>Cancel</Button>
+                      <div className="flex items-center gap-2">
+                        <Button variant="secondary" onClick={handleAIGenerateSelected} disabled={aiGenerating}>
+                          <Icon name={aiGenerating ? 'LoaderCircle' : 'Sparkles'} size={16} className="mr-2" />
+                          {aiGenerating ? 'Generating…' : 'Generate'}
+                        </Button>
+                        <Button onClick={handleAIAddAll} disabled={!aiGeneratedRisks.length}>
+                          <Icon name="Check" size={16} className="mr-2" />
+                          Add {aiGeneratedRisks.length || ''}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

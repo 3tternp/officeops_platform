@@ -49,7 +49,7 @@ fi
 # Install dependencies
 if [ -f package-lock.json ]; then
   info "Installing dependencies (npm ci)..."
-  npm ci
+  npm ci || { info "npm ci failed; falling back to npm install"; npm install; }
 else
   info "Installing dependencies (npm install)..."
   npm install

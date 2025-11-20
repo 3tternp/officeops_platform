@@ -1016,7 +1016,7 @@ class DataService {
       ...risk,
       id: `risk${Date.now()}`,
       createdDate: new Date().toISOString(),
-      status: 'active'
+      status: risk.status || 'Open'
     };
     risks.push(newRisk);
     this.saveRisks(risks);
@@ -1075,6 +1075,326 @@ class DataService {
       dueForReview: this.getRisksDueForReview().length
     };
     return stats;
+  }
+
+  aiGenerateRiskFromAsset(assetName = '', threatName = '') {
+    const assets = this.getAssets();
+    const asset = assets.find(a => a.name === assetName) || assets[0] || {};
+    const name = asset.name || assetName || 'Unknown Asset';
+    const group = asset.category === 'server' || /server|infrastructure|network/i.test(name)
+      ? 'IT Infrastructure'
+      : asset.category === 'laptop' || /workstation|laptop|desktop/i.test(name)
+      ? 'Equipment'
+      : 'Applications';
+    const threat = threatName || 'Phishing';
+    const vulnerability = threat === 'Phishing'
+      ? 'Users susceptible to social engineering and credential harvesting'
+      : threat === 'Data Breach'
+      ? 'Weak access controls and insufficient data protection'
+      : threat === 'Unauthorized Access'
+      ? 'Inadequate IAM, missing MFA, excessive privileges'
+      : threat === 'System Failure'
+      ? 'Single points of failure and limited monitoring'
+      : threat === 'Natural Disaster'
+      ? 'Insufficient disaster recovery and site resilience'
+      : threat === 'Fire'
+      ? 'Lack of suppression systems and environmental monitoring'
+      : threat === 'Theft'
+      ? 'Physical security gaps and inadequate asset tracking'
+      : threat === 'Human Error'
+      ? 'Inadequate training and change controls'
+      : threat === 'Power Outage'
+      ? 'Insufficient power redundancy and UPS coverage'
+      : threat === 'Network Failure'
+      ? 'Limited redundancy and poor configuration management'
+      : 'Control weaknesses increasing exposure';
+    const baseLikelihood = /Critical|High/i.test(asset.riskLevel || '') ? 4 : /Medium/i.test(asset.riskLevel || '') ? 3 : 2;
+    const baseImpact = /Critical|High/i.test(asset.riskLevel || '') ? 4 : /Medium/i.test(asset.riskLevel || '') ? 3 : 2;
+    const threatBoost = threat === 'Data Breach' || threat === 'Unauthorized Access' ? 1 : 0;
+    const likelihood = Math.min(5, baseLikelihood + threatBoost);
+    const impact = Math.min(5, baseImpact + (threat === 'Data Breach' ? 1 : 0));
+    const existingControls = group === 'IT Infrastructure'
+      ? 'Firewall, EDR/XDR, IAM, logging'
+      : group === 'Applications'
+      ? 'RBAC, input validation, backups'
+      : 'Asset tracking, device encryption, screen lock';
+    const description = `${threat} risk affecting ${name} due to ${vulnerability}`;
+    return {
+      title: `${threat} - ${name}`,
+      description,
+      category: group,
+      owner: 'iso',
+      assetGroup: group,
+      asset: name,
+      threat,
+      vulnerability,
+      existingControls,
+      likelihood,
+      impact
+    };
+  }
+
+  aiSuggestMitigation(riskDraft) {
+    const score = (riskDraft.likelihood || 0) * (riskDraft.impact || 0);
+    const level = score >= 20 ? 'Critical' : score >= 15 ? 'High' : score >= 10 ? 'Medium' : score >= 5 ? 'Low' : 'Very Low';
+    const treatmentOptionChosen = level === 'Critical' ? 'avoid' : level === 'High' ? 'mitigate' : level === 'Medium' ? 'transfer' : 'accept';
+    const annexMap = {
+      Phishing: 'A.5.10,A.5.13',
+      'Data Breach': 'A.8.12,A.5.18',
+      'Unauthorized Access': 'A.5.16,A.5.17',
+      'System Failure': 'A.5.29,A.8.13',
+      'Natural Disaster': 'A.5.30',
+      Fire: 'A.7.4',
+      Theft: 'A.7.5',
+      'Human Error': 'A.5.10,A.8.32',
+      'Power Outage': 'A.7.7',
+      'Network Failure': 'A.5.23',
+      default: 'A.5.1'
+    };
+    const threat = riskDraft.threat || 'default';
+    const annexAControlReference = annexMap[threat] || annexMap.default;
+    const actions = {
+      Phishing: 'Awareness training, phishing simulations, enforce MFA',
+      'Data Breach': 'DLP, encryption, least privilege, continuous monitoring',
+      'Unauthorized Access': 'MFA, IAM hardening, privileged access management',
+      'System Failure': 'Redundancy, backups, monitoring and alerting',
+      'Natural Disaster': 'DR plan, offsite backups, alternate site',
+      Fire: 'Suppression systems, sensors, evacuations drills',
+      Theft: 'Physical access controls, CCTV, asset tagging',
+      'Human Error': 'Training, peer review, change management',
+      'Power Outage': 'UPS, generators, rack-level redundancy',
+      'Network Failure': 'Redundant links, failover, configuration hardening',
+      default: 'Implement baseline controls and monitoring'
+    };
+    const proposedTreatmentAction = actions[threat] || actions.default;
+    const treatmentActionTimescale = level === 'Critical' ? '14 days' : level === 'High' ? '30 days' : level === 'Medium' ? '60 days' : '90 days';
+    const treatmentCost = level === 'Critical' ? 'High' : level === 'High' ? 'Medium' : level === 'Medium' ? 'Low' : 'Minimal';
+    const postTreatmentLikelihood = Math.max(1, (riskDraft.likelihood || 0) - (level === 'Critical' ? 2 : 1));
+    const postTreatmentImpact = Math.max(1, (riskDraft.impact || 0) - 1);
+    const reviewFrequency = level === 'Critical' ? 'monthly' : level === 'High' ? 'quarterly' : 'annually';
+    const next = new Date();
+    if (reviewFrequency === 'monthly') next.setMonth(next.getMonth() + 1);
+    else if (reviewFrequency === 'quarterly') next.setMonth(next.getMonth() + 3);
+    else next.setFullYear(next.getFullYear() + 1);
+    const nextReviewDate = next.toISOString().split('T')[0];
+    return {
+      treatmentOptionChosen,
+      proposedTreatmentAction,
+      annexAControlReference,
+      treatmentCost,
+      treatmentActionOwner: riskDraft.owner || 'iso',
+      treatmentActionTimescale,
+      postTreatmentLikelihood,
+      postTreatmentImpact,
+      reviewFrequency,
+      nextReviewDate
+    };
+  }
+
+  aiGenerateRisksFromSystem(options = { assets: true, documents: true, access: true, users: true, departments: true }) {
+    const risks = [];
+    const add = (base) => {
+      const mit = this.aiSuggestMitigation(base);
+      const pre = (base.likelihood || 0) * (base.impact || 0);
+      const post = (mit.postTreatmentLikelihood || 0) * (mit.postTreatmentImpact || 0);
+      const level = pre >= 20 ? 'Critical' : pre >= 15 ? 'High' : pre >= 10 ? 'Medium' : pre >= 5 ? 'Low' : 'Very Low';
+      const postLevel = post >= 20 ? 'Critical' : post >= 15 ? 'High' : post >= 10 ? 'Medium' : post >= 5 ? 'Low' : 'Very Low';
+      risks.push({
+        id: `RISK-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        title: base.title,
+        description: base.description,
+        category: base.category,
+        owner: base.owner,
+        likelihood: base.likelihood,
+        impact: base.impact,
+        riskScore: pre,
+        riskLevel: level,
+        status: 'Open',
+        treatmentStatus: 'Planned',
+        reviewStatus: 'Current',
+        assessmentDate: new Date().toISOString().split('T')[0],
+        nextReviewDate: mit.nextReviewDate,
+        treatmentDescription: mit.proposedTreatmentAction,
+        treatmentOptionChosen: mit.treatmentOptionChosen,
+        annexAControlReference: mit.annexAControlReference,
+        treatmentCost: mit.treatmentCost,
+        treatmentActionOwner: mit.treatmentActionOwner,
+        treatmentActionTimescale: mit.treatmentActionTimescale,
+        postTreatmentLikelihood: mit.postTreatmentLikelihood,
+        postTreatmentImpact: mit.postTreatmentImpact,
+        postTreatmentRiskScore: post,
+        postTreatmentRiskLevel: postLevel
+      });
+    };
+
+    if (options.assets) {
+      const assets = this.getAssets();
+      assets.forEach(a => add(this.aiGenerateRiskFromAsset(a.name, 'Unauthorized Access')));
+    }
+
+    if (options.documents) {
+      const docs = this.getDocuments();
+      docs.forEach(d => {
+        const threat = /policy|procedure|standard/i.test(d.name || '') ? 'Compliance' : 'Data Breach';
+        const base = {
+          title: `${threat} - ${d.name}`,
+          description: `${threat} risk for document ${d.name}`,
+          category: 'Compliance',
+          owner: 'iso',
+          assetGroup: 'Documents',
+          asset: d.name,
+          threat,
+          vulnerability: threat === 'Compliance' ? 'Outdated or unapproved policy documents' : 'Improper document access and storage',
+          existingControls: 'Document access controls, approvals, versioning',
+          likelihood: 3,
+          impact: /confidential|hr|finance/i.test(d.name || '') ? 4 : 3
+        };
+        add(base);
+      });
+    }
+
+    if (options.access) {
+      const reqs = this.getAccessRequests();
+      reqs.forEach(r => {
+        const res = this.getResourceById(r.resourceId) || { riskLevel: 'Medium', name: r.resourceName };
+        const threat = r.accessType === 'admin' || r.accessType === 'full' ? 'Unauthorized Access' : 'Excessive Privilege';
+        const baseLik = /Critical|High/i.test(res.riskLevel) ? 4 : 3;
+        const baseImp = /Critical|High/i.test(res.riskLevel) ? 4 : 3;
+        const base = {
+          title: `${threat} - ${res.name}`,
+          description: `${threat} risk from request ${r.id} for ${res.name}`,
+          category: res.category || 'Application',
+          owner: 'iso',
+          assetGroup: res.category || 'Applications',
+          asset: res.name,
+          threat,
+          vulnerability: 'Elevated access request may bypass least privilege',
+          existingControls: 'RBAC, approvals, logging',
+          likelihood: baseLik,
+          impact: baseImp
+        };
+        add(base);
+      });
+    }
+
+    if (options.users) {
+      const users = this.getUsers();
+      users.forEach(u => {
+        const threat = u.role === 'admin' || u.role === 'iso' ? 'Privilege Misuse' : 'Phishing';
+        const base = {
+          title: `${threat} - ${u.name || u.email}`,
+          description: `${threat} risk for user account ${u.email}`,
+          category: 'People',
+          owner: 'manager',
+          assetGroup: 'People',
+          asset: u.email,
+          threat,
+          vulnerability: threat === 'Privilege Misuse' ? 'Excessive privileges without tight controls' : 'Susceptible to social engineering',
+          existingControls: 'MFA, training, PAM',
+          likelihood: threat === 'Privilege Misuse' ? 3 : 2,
+          impact: threat === 'Privilege Misuse' ? 4 : 3
+        };
+        add(base);
+      });
+    }
+
+    if (options.departments) {
+      const depts = this.getDepartments();
+      depts.forEach(d => {
+        const threat = /finance|hr/i.test(d.name || '') ? 'Data Breach' : 'Operational Disruption';
+        const base = {
+          title: `${threat} - ${d.name}`,
+          description: `${threat} risk affecting ${d.name} department`,
+          category: 'Operational',
+          owner: 'manager',
+          assetGroup: 'Processes',
+          asset: d.name,
+          threat,
+          vulnerability: threat === 'Data Breach' ? 'Sensitive records exposure risk' : 'Single points of failure in processes',
+          existingControls: 'Process documentation, approvals, internal audits',
+          likelihood: 3,
+          impact: /finance|hr/i.test(d.name || '') ? 4 : 3
+        };
+        add(base);
+      });
+    }
+
+    return risks;
+  }
+
+  autoConductDueReviews() {
+    const risks = this.getRisks();
+    const today = new Date();
+    const updated = risks.map(risk => {
+      const nextDate = new Date(risk.nextReviewDate || risk.nextReview || '');
+      if (!isNaN(nextDate) && nextDate <= today) {
+        const pre = (risk.riskScore || 0) || ((risk.likelihood || 0) * (risk.impact || 0));
+        const post = (risk.postTreatmentRiskScore || 0) || ((risk.postTreatmentLikelihood || 0) * (risk.postTreatmentImpact || 0));
+        const improvement = post && post < pre;
+        const status = improvement ? 'Closed' : 'In Progress';
+        const reviewStatus = 'Reviewed';
+        const lastReviewedDate = new Date().toISOString().split('T')[0];
+        const next = new Date();
+        const freq = risk.reviewFrequency || 'annually';
+        if (freq === 'monthly') next.setMonth(next.getMonth() + 1);
+        else if (freq === 'quarterly') next.setMonth(next.getMonth() + 3);
+        else next.setFullYear(next.getFullYear() + 1);
+        const nextReviewDate = next.toISOString().split('T')[0];
+        this.addNotification({
+          type: 'risk_review_completed',
+          title: 'Risk review completed',
+          message: `${risk.title || risk.id} reviewed. Status: ${status}`,
+          recipientRole: 'iso'
+        });
+        this.addNotification({
+          type: 'risk_review_completed',
+          title: 'Risk review completed',
+          message: `${risk.title || risk.id} reviewed. Status: ${status}`,
+          recipientRole: 'admin'
+        });
+        return { ...risk, status, reviewStatus, lastReviewedDate, nextReviewDate };
+      }
+      return risk;
+    });
+    this.saveRisks(updated);
+    return updated;
+  }
+  autoUpdateRiskReviews() {
+    const risks = this.getRisks();
+    const today = new Date();
+    const updated = risks.map(risk => {
+      const nextDate = new Date(risk.nextReviewDate || risk.nextReview || '');
+      let reviewStatus = risk.reviewStatus || 'Current';
+      if (!isNaN(nextDate) && nextDate <= today) reviewStatus = 'Due';
+      let status = risk.status || 'Open';
+      if (status === 'active') status = 'Open';
+      if (risk.treatmentActionStatus === 'Completed') status = 'Closed';
+      else if ((risk.treatmentActionProgress && Number(risk.treatmentActionProgress) > 0) || risk.treatmentActionStatus === 'In Progress') status = 'In Progress';
+      const freq = risk.reviewFrequency || 'annually';
+      let nextReviewDate = risk.nextReviewDate || risk.nextReview || '';
+      if (reviewStatus === 'Due') {
+        const next = new Date();
+        if (freq === 'monthly') next.setMonth(next.getMonth() + 1);
+        else if (freq === 'quarterly') next.setMonth(next.getMonth() + 3);
+        else next.setFullYear(next.getFullYear() + 1);
+        nextReviewDate = next.toISOString().split('T')[0];
+        this.addNotification({
+          type: 'risk_review_due',
+          title: 'Risk review due',
+          message: `${risk.title || risk.id} requires review`,
+          recipientRole: 'iso'
+        });
+        this.addNotification({
+          type: 'risk_review_due',
+          title: 'Risk review due',
+          message: `${risk.title || risk.id} requires review`,
+          recipientRole: 'admin'
+        });
+      }
+      return { ...risk, reviewStatus, status, nextReviewDate };
+    });
+    this.saveRisks(updated);
+    return updated;
   }
 
   // User management methods
