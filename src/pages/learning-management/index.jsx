@@ -58,8 +58,22 @@ const LearningManagement = () => {
     }
   }, [currentUser]);
 
+  // Governance-aligned quiz bank (minimum 10 questions)
+  const defaultQuizBank = [
+    { id: 'q1', question: 'What is the primary goal of least privilege?', options: ['Limit access to only what is required', 'Allow broad access for collaboration', 'Reduce audit logging', 'Disable MFA'], correctAnswer: 0 },
+    { id: 'q2', question: 'Who must approve access to critical systems?', options: ['Any employee', 'ISO role', 'External auditor', 'HR only'], correctAnswer: 1 },
+    { id: 'q3', question: 'What triggers automatic access removal?', options: ['Manager request', 'Access period expiry', 'User login', 'Password reset'], correctAnswer: 1 },
+    { id: 'q4', question: 'Which roles can add LMS content?', options: ['Admin and ISO', 'Employees only', 'Vendors', 'Finance only'], correctAnswer: 0 },
+    { id: 'q5', question: 'What is required before unlocking the next module?', options: ['Reading a PDF', 'Passing the module quiz', 'Submitting a ticket', 'Emailing IT'], correctAnswer: 1 },
+    { id: 'q6', question: 'What type of evidence should be captured for access approval?', options: ['Verbal confirmation', 'Documented justification and ISO approval', 'No evidence is required', 'Chat message'], correctAnswer: 1 },
+    { id: 'q7', question: 'Who provisions access after approval?', options: ['Random user', 'System owner or IT administrator', 'Physical security', 'Finance'], correctAnswer: 1 },
+    { id: 'q8', question: 'How frequently should access be reviewed by default?', options: ['Never', 'Every 90 days', 'Every 5 years', 'Only during incidents'], correctAnswer: 1 },
+    { id: 'q9', question: 'What content types can be assigned in the LMS?', options: ['Only audio', 'Video and documents (PDF/PPT/Word)', 'Executable files', 'Source code'], correctAnswer: 1 },
+    { id: 'q10', question: 'What happens when a quiz is failed?', options: ['Next module unlocks automatically', 'Learner must retry until passing score is met', 'Account is disabled', 'Course is deleted'], correctAnswer: 1 }
+  ];
+
   // Initial mock courses data
-  const initialMockCourses = [
+  const baseCourses = [
     {
       id: 'course001',
       title: 'Data Privacy and GDPR Compliance',
@@ -163,6 +177,29 @@ const LearningManagement = () => {
       createdDate: '2024-03-15T00:00:00Z'
     }
   ];
+
+  const initialMockCourses = baseCourses.map(course => ({
+    ...course,
+    settings: {
+      moduleCount: course.settings?.moduleCount || 4,
+      passingScore: course.settings?.passingScore || 80,
+      allowRetakes: true,
+      certificateEnabled: true,
+      prerequisites: course.settings?.prerequisites || [],
+      sequentialUnlock: true,
+      minimumQuestionCount: defaultQuizBank.length,
+      targetRoles: ['manager', 'employee']
+    },
+    content: {
+      ...course.content,
+      materials: [
+        { type: 'video', title: `${course.title} overview` },
+        { type: 'document', format: 'pdf', title: `${course.title} reference guide` },
+        { type: 'document', format: 'ppt', title: `${course.title} presentation` }
+      ],
+      quizzes: defaultQuizBank
+    }
+  }));
 
   // State for managing courses
   const [courses, setCourses] = useState([]);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
-import { Textarea } from '../../../components/ui/Textarea';
+import { Textarea } from '../../../components/ui/TextArea';
 import { Checkbox } from '../../../components/ui/Checkbox';
 import { ApprovalStage, AccessRequestStatus } from '../utils/entities';
 
