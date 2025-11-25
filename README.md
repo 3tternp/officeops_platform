@@ -20,6 +20,7 @@
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
+- [Application Workflows](#application-workflows)
 - [Screenshots](#screenshots)
 - [RBAC Permissions](#rbac-permissions)
 - [Demo Accounts](#demo-accounts)
@@ -334,6 +335,10 @@ The platform is highly customizable:
 - **Components**: All UI components are in `src/components/`
 - **Routes**: Configure routing in `src/Routes.jsx`
 - **Data Models**: Mock data structure in `src/services/DataService.jsx`
+
+## 🔄 Application Workflows
+
+Use the **[Application Workflows](docs/application-workflow.md)** guide to understand the end-to-end flows for access approvals, asset lifecycle steps, and LMS module gating (including ISO/admin roles and automatic reviews/expiry).
 
 ## 🖼️ Screenshots
 

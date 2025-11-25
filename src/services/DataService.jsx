@@ -170,7 +170,9 @@ class DataService {
         category: 'Database',
         department: 'Human Resources',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 30, // days
         requiresJustification: true,
         status: 'active',
@@ -183,7 +185,9 @@ class DataService {
         category: 'Application',
         department: 'Finance',
         riskLevel: 'Critical',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 7, // days
         requiresJustification: true,
         status: 'active',
@@ -196,7 +200,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14, // days
         requiresJustification: true,
         status: 'active',
@@ -209,7 +215,9 @@ class DataService {
         category: 'Application',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true,
         status: 'active',
@@ -222,7 +230,9 @@ class DataService {
         category: 'Application',
         department: 'Information Technology',
         riskLevel: 'Medium',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true,
         status: 'active',
@@ -235,7 +245,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true,
         status: 'active',
@@ -248,7 +260,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true,
         status: 'active',
@@ -261,7 +275,9 @@ class DataService {
         category: 'Application',
         department: 'Information Technology',
         riskLevel: 'Critical',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 7,
         requiresJustification: true,
         status: 'active',
@@ -274,7 +290,9 @@ class DataService {
         category: 'Application',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true,
         status: 'active',
@@ -287,7 +305,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true,
         status: 'active',
@@ -300,7 +320,9 @@ class DataService {
         category: 'HR System',
         department: 'Human Resources',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 30,
         requiresJustification: true,
         status: 'active',
@@ -313,7 +335,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'Critical',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 7,
         requiresJustification: true,
         status: 'active',
@@ -326,7 +350,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true,
         status: 'active',
@@ -339,7 +365,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true,
         status: 'active',
@@ -352,7 +380,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true,
         status: 'active',
@@ -365,7 +395,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true,
         status: 'active',
@@ -746,7 +778,9 @@ class DataService {
         category: 'Application',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true
       },
@@ -756,7 +790,9 @@ class DataService {
         category: 'Application',
         department: 'Information Technology',
         riskLevel: 'Medium',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true
       },
@@ -766,7 +802,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true
       },
@@ -776,7 +814,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true
       },
@@ -786,7 +826,9 @@ class DataService {
         category: 'Application',
         department: 'Information Technology',
         riskLevel: 'Critical',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 7,
         requiresJustification: true
       },
@@ -796,7 +838,9 @@ class DataService {
         category: 'Application',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true
       },
@@ -806,7 +850,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true
       },
@@ -816,7 +862,9 @@ class DataService {
         category: 'HR System',
         department: 'Human Resources',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 30,
         requiresJustification: true
       },
@@ -826,7 +874,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'Critical',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 7,
         requiresJustification: true
       },
@@ -836,7 +886,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true
       },
@@ -846,7 +898,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true
       },
@@ -856,7 +910,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true
       },
@@ -866,7 +922,9 @@ class DataService {
         category: 'Infrastructure',
         department: 'Information Technology',
         riskLevel: 'High',
-        approvers: ['admin'],
+        approvers: ['iso', 'admin'],
+        reviewFrequencyDays: 90,
+        autoExpiryEnforced: true,
         maxAccessDuration: 14,
         requiresJustification: true
       }
@@ -910,7 +968,47 @@ class DataService {
 
   // Access requests management
   getAccessRequests() {
-    return JSON.parse(localStorage.getItem('accessRequests') || '[]');
+    const requests = JSON.parse(localStorage.getItem('accessRequests') || '[]');
+    const now = new Date();
+    let hasUpdates = false;
+
+    const enriched = requests.map((request) => {
+      const updatedRequest = { ...request };
+
+      // Ensure every request has a scheduled review date for periodic attestations
+      if (!updatedRequest.nextReviewDate) {
+        const baseDate = updatedRequest.requested_start_date || updatedRequest.created_at || updatedRequest.requestDate;
+        const reviewAnchor = baseDate ? new Date(baseDate) : now;
+        const cycleDays = updatedRequest.reviewFrequencyDays || 90;
+        const nextReview = new Date(reviewAnchor);
+        nextReview.setDate(nextReview.getDate() + cycleDays);
+        updatedRequest.nextReviewDate = nextReview.toISOString();
+        hasUpdates = true;
+      }
+
+      // Auto-expire and revoke access that has passed its end date
+      const expiryDate = updatedRequest.requested_end_date || updatedRequest.endDate || updatedRequest.dueDate;
+      if (
+        expiryDate &&
+        new Date(expiryDate) < now &&
+        updatedRequest.status !== 'expired' &&
+        updatedRequest.status !== 'revoked'
+      ) {
+        updatedRequest.status = 'expired';
+        updatedRequest.revoked_at = now.toISOString();
+        updatedRequest.autoRevoked = true;
+        updatedRequest.revocationReason = 'Access period expired — automatically removed per governance policy';
+        hasUpdates = true;
+      }
+
+      return updatedRequest;
+    });
+
+    if (hasUpdates) {
+      this.saveAccessRequests(enriched);
+    }
+
+    return enriched;
   }
 
   saveAccessRequests(requests) {

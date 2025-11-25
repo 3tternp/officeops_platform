@@ -289,16 +289,14 @@ export const determineApprovalChain = (request, resource) => {
     }));
   }
 
-  // 2. ISO Officer review (required for high-risk resources or proxy requests)
-  if (request.iso_review_required || resource.risk_rating === 'high' || resource.classification === 'restricted') {
-    chain.push(createApprovalEntry({
-      stage: ApprovalStage.ISO_OFFICER,
-      approver_id: null, // Will be assigned to any ISO officer
-      approver_name: 'ISO Officer',
-      approver_role: 'iso',
-      order: order++
-    }));
-  }
+  // 2. ISO Officer review (mandatory for all requests)
+  chain.push(createApprovalEntry({
+    stage: ApprovalStage.ISO_OFFICER,
+    approver_id: null, // Will be assigned to any ISO officer
+    approver_name: 'ISO Officer',
+    approver_role: 'iso',
+    order: order++
+  }));
 
   // 3. Asset Owner approval (always required)
   chain.push(createApprovalEntry({
@@ -319,6 +317,15 @@ export const determineApprovalChain = (request, resource) => {
       order: order++
     }));
   }
+
+  // 5. Final IT administrator provisioning (ensures maker/checker)
+  chain.push(createApprovalEntry({
+    stage: ApprovalStage.FINAL_APPROVAL,
+    approver_id: resource.system_owner_id || null,
+    approver_name: resource.system_owner_name || 'IT Administrator',
+    approver_role: 'admin',
+    order: order++
+  }));
 
   return chain;
 };
