@@ -4,7 +4,7 @@ import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
 import { Checkbox } from '../../../components/ui/Checkbox';
-import { Textarea } from '../../../components/ui/Textarea';
+import { Textarea } from '../../../components/ui/TextArea';
 import { createAccessReviewNotification, NotificationStatus } from '../utils/entities';
 
 const ReviewNotifications = ({ currentUser, onNotificationAction }) => {
