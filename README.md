@@ -20,6 +20,7 @@
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
+- [Application Workflows](#application-workflows)
 - [Screenshots](#screenshots)
 - [RBAC Permissions](#rbac-permissions)
 - [Demo Accounts](#demo-accounts)
@@ -98,17 +99,13 @@ OfficeOps Platform is a modern, **fully functional** enterprise management syste
 - Role-aware views and actions aligned with existing RBAC
 
 ### ⚠️ Risk Assessment
-- **Complete CRUD operations**: Create, read, update, and delete risk assessments
-- **Multi-step risk creation**: Comprehensive 4-step risk assessment wizard
-- **Risk editing capability**: Full edit functionality with pre-populated data
-- **Risk identification**: Comprehensive risk cataloging with asset integration
-- **Impact analysis**: Quantitative risk assessment with pre/post treatment scoring
-- **Mitigation planning**: Detailed risk response strategies and treatment planning
-- **Treatment tracking**: Progress monitoring and status management
-- **Review scheduling**: Automated risk review reminders with customizable frequency
-- **Risk register management**: Sortable table with bulk operations and filtering
-- **Visual risk analytics**: Interactive heat maps and comprehensive reporting dashboards
-- **Template support**: CSV template download and risk register upload functionality
+- **Governed intake and ownership**: Risks are created through a guided 4-step wizard with ISO-aligned validation and explicit owner assignment.
+- **Complete lifecycle management**: Create, read, update, and delete assessments with edit modals that preserve historical context.
+- **Impact and treatment rigor**: Pre/post treatment scoring, residual risk tracking, and mitigation planning with action progress.
+- **Asset-aware identification**: Risks can be tied directly to assets, access flows, and documents to improve traceability.
+- **Review and expiry discipline**: Automated review scheduling, reminders, and evidence capture for each cycle.
+- **Register operations**: Sortable/filterable register with bulk actions, CSV export/import, and template guidance.
+- **Analytics and reporting**: Heat maps, dashboards, and a maintained [Risk Posture Report](docs/risk-assessment-report.md) for executives.
 
 ### 🎓 Learning Management
 - **Course creation**: Interactive learning content
@@ -335,6 +332,10 @@ The platform is highly customizable:
 - **Routes**: Configure routing in `src/Routes.jsx`
 - **Data Models**: Mock data structure in `src/services/DataService.jsx`
 
+## 🔄 Application Workflows
+
+Use the **[Application Workflows](docs/application-workflow.md)** guide to understand the end-to-end flows for access approvals, asset lifecycle steps, and LMS module gating (including ISO/admin roles and automatic reviews/expiry). For a visual handoff, use the **[Figma Workflow Blueprint](docs/figma-workflow-blueprint.md)** to build or verify the diagram before implementation.
+
 ## 🖼️ Screenshots
 
 - Place images and GIFs under `docs/assets/`.
@@ -459,16 +460,15 @@ The platform includes several pre-configured demo accounts for comprehensive tes
 - **Admin-only Controls**: Edit and delete buttons restricted to administrators
 
 #### ⚠️ **Risk Assessment System**
-- **Complete CRUD Operations**: Create, Read, Update, Delete functionality for risk assessments
-- **Multi-step Risk Creation**: 4-step wizard for comprehensive risk assessment creation
-- **Smart Edit Modal**: Full editing capability with pre-populated form data
-- **Risk Register Management**: Sortable table with filtering, bulk operations, and CSV export
-- **Treatment Planning**: Detailed treatment action planning with progress tracking
-- **Risk Scoring**: Automatic pre/post treatment risk score calculation
-- **Visual Analytics**: Interactive heat maps and dashboard views
-- **Asset Integration**: Direct integration with Asset Management system
-- **Template Support**: CSV template download and bulk upload functionality
-- **Review Management**: Automated scheduling and review frequency configuration
+- **Complete CRUD Operations**: Guided 4-step creation wizard plus edit modals for continuous risk lifecycle management.
+- **ISO/Owner Accountability**: Every risk tracks a named owner and ISO reviewer to align with governance checkpoints.
+- **Risk Register Management**: Sortable/filterable register with bulk actions, CSV export, and ingestion via templates.
+- **Treatment Planning**: Action plans with status, owners, and evidence fields to reduce pre-treatment scores.
+- **Risk Scoring**: Automatic pre/post treatment calculations with residual risk visibility.
+- **Visual Analytics**: Heat maps, dashboards, and drill-downs by likelihood, impact, and control effectiveness.
+- **Asset Integration**: Risks can be created from assets or access flows to strengthen traceability.
+- **Review Management**: Automated scheduling, reminders, and attestation evidence capture for audits.
+- **Executive Reporting**: See the consolidated [Risk Posture Report](docs/risk-assessment-report.md) for open/closed trends and recommendations.
 
 #### 🔄 **System Integration**
 - **Role-based Access Control**: Different UI elements based on user permissions
@@ -489,6 +489,13 @@ The platform includes several pre-configured demo accounts for comprehensive tes
 | **Risk Assessment** | ✅ | ✅ | ❌ | ❌ | Partial |
 | **Learning Management** | ✅ | ✅ | ❌ | ❌ | Partial |
 | **Ticketing System** | ✅ | ✅ | ✅ | ✅ | Complete |
+
+### 📊 Risk Posture Snapshot
+
+- **Open risks:** 6 (2 critical, 3 high, 1 medium)
+- **In progress:** 4 (mitigations underway with evidence capture)
+- **Closed/accepted:** 5 (residual risk documented with sign-off)
+- **Read the full summary:** [Risk Posture Report](docs/risk-assessment-report.md)
 
 ### 🎯 **Testing Scenarios**
 
