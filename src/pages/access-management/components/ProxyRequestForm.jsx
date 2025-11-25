@@ -4,7 +4,7 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
-import { Textarea } from '../../../components/ui/Textarea';
+import { Textarea } from '../../../components/ui/TextArea';
 import { Checkbox } from '../../../components/ui/Checkbox';
 import { createAccessRequest, AccessTypes, RiskLevels, requiresISOReview } from '../utils/entities';
 
