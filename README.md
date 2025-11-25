@@ -335,6 +335,7 @@ The platform is highly customizable:
 ## 🔄 Application Workflows
 
 Use the **[Application Workflows](docs/application-workflow.md)** guide to understand the end-to-end flows for access approvals, asset lifecycle steps, and LMS module gating (including ISO/admin roles and automatic reviews/expiry). For a visual handoff, use the **[Figma Workflow Blueprint](docs/figma-workflow-blueprint.md)** to build or verify the diagram before implementation.
+Use the **[Application Workflows](docs/application-workflow.md)** guide to understand the end-to-end flows for access approvals, asset lifecycle steps, and LMS module gating (including ISO/admin roles and automatic reviews/expiry).
 
 ## 🖼️ Screenshots
 
