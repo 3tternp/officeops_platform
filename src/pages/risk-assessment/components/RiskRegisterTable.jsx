@@ -2,7 +2,16 @@ import React, { useState } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
-const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }) => {
+const RiskRegisterTable = ({
+  risks = [],
+  onRiskClick,
+  onEditRisk,
+  onDeleteRisk,
+  onAddRisk,
+  canManage = false,
+  canDelete = false,
+  canCreate = false
+}) => {
   const [sortField, setSortField] = useState('riskScore');
   const [sortDirection, setSortDirection] = useState('desc');
   const [selectedRisks, setSelectedRisks] = useState([]);
@@ -116,7 +125,13 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
                 </Button>
               </div>
             )}
-            <Button variant="default" size="sm">
+            <Button
+              variant="default"
+              size="sm"
+              onClick={onAddRisk}
+              disabled={!canCreate}
+              title={canCreate ? '' : 'Only Admin or ISO users can create risk assessments'}
+            >
               <Icon name="Plus" size={16} className="mr-2" />
               Add Risk
             </Button>
@@ -133,6 +148,7 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
                   type="checkbox"
                   checked={selectedRisks?.length === risks?.length && risks?.length > 0}
                   onChange={handleSelectAll}
+                  disabled={!canManage}
                   className="rounded border-border"
                 />
               </th>
@@ -241,6 +257,7 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
                     type="checkbox"
                     checked={selectedRisks?.includes(risk?.id)}
                     onChange={() => handleSelectRisk(risk?.id)}
+                    disabled={!canManage}
                     className="rounded border-border"
                   />
                 </td>
@@ -299,16 +316,20 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => onEditRisk && onEditRisk(risk)}
+                      onClick={() => canManage && onEditRisk && onEditRisk(risk)}
                       className="h-8 w-8"
+                      disabled={!canManage}
+                      title={canManage ? '' : 'Edit restricted to Admin/ISO'}
                     >
                       <Icon name="Edit" size={14} />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => onDeleteRisk && onDeleteRisk(risk)}
+                      onClick={() => canDelete && onDeleteRisk && onDeleteRisk(risk)}
                       className="h-8 w-8 text-error hover:text-error"
+                      disabled={!canDelete}
+                      title={canDelete ? '' : 'Delete restricted to Admin/ISO'}
                     >
                       <Icon name="Trash2" size={14} />
                     </Button>
@@ -324,7 +345,12 @@ const RiskRegisterTable = ({ risks = [], onRiskClick, onEditRisk, onDeleteRisk }
           <Icon name="AlertTriangle" size={48} className="mx-auto text-muted-foreground/50 mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">No Risks Found</h3>
           <p className="text-muted-foreground mb-4">Get started by adding your first risk assessment.</p>
-          <Button variant="default">
+          <Button
+            variant="default"
+            onClick={onAddRisk}
+            disabled={!canCreate}
+            title={canCreate ? '' : 'Only Admin or ISO users can create risk assessments'}
+          >
             <Icon name="Plus" size={16} className="mr-2" />
             Add Risk
           </Button>
