@@ -153,7 +153,7 @@ OfficeOps Platform is a modern, **fully functional** enterprise management syste
 
 Before you begin, ensure you have the following installed on your development machine:
 
-- **Node.js** (v20.0.0 or higher)
+- **Node.js** (v22.0.0 or higher)
 - **npm** (v10.0.0 or higher) or **yarn** (v1.22.0 or higher)
 - **Docker** (v20.0.0 or higher) - for containerized deployment
 - **Docker Compose** (v2.0.0 or higher) - for multi-container setup
@@ -679,15 +679,15 @@ CLI deploy (alternative):
 - `npm run deploy:netlify` # deploy production build from `dist`
 
 Notes:
-- Node version 18 is set in `netlify.toml`.
+- Node version 22 is enforced via `.nvmrc` and `netlify.toml`; if you see Netlify errors about unsupported engines, confirm the site is using Node 22.
 - SPA redirects are already configured to avoid 404 on refresh.
 - If using external APIs, ensure required `VITE_*` env vars are defined in Netlify.
 
 ## 🚀 Local Installation
 
 ### Prerequisites
-- Node.js 18+
-- npm 9+
+- Node.js 22+
+- npm 10+
 
 ### Steps
 - Clone the repository: `git clone https://github.com/yourusername/officeops-platform.git`
@@ -695,6 +695,11 @@ Notes:
 - Install dependencies: `npm install`
 - Start dev server: `npm run dev`
 - Open the app: `http://localhost:4028` (or the port shown in terminal)
+
+### Scripted setup
+
+- Linux/macOS: `./install.sh dev` (set `PACKAGE_MANAGER=pnpm` or `yarn` to use an alternative manager)
+- Windows (PowerShell): `./install.ps1 -Mode dev -PackageManager npm`
 
 ### Production Preview (locally)
 - Build: `npm run build`
