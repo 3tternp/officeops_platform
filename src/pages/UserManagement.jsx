@@ -153,7 +153,10 @@ const UserManagement = () => {
   };
 
   const handleSubmitUser = async (userData, isEdit = false) => {
-    const payload = { ...userData };
+    const payload = {
+      ...userData,
+      email: userData.email?.trim().toLowerCase() || '',
+    };
 
     if (payload.password) {
       try {

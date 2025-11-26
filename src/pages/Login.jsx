@@ -84,7 +84,7 @@ const Login = () => {
   const handleInputChange = (field, value) => {
     // Clear error when user starts typing
     if (error) setError('');
-    
+
     // Validate and sanitize input
     const sanitizedValue = securityUtils.sanitizeInput(value);
     
@@ -122,12 +122,14 @@ const Login = () => {
       return;
     }
 
+    const normalizedEmail = formData.email.trim().toLowerCase();
+
     setIsLoading(true);
     setError('');
 
     try {
       // Validate inputs
-      const validationResult = securityUtils.validateInput(formData.email, {
+      const validationResult = securityUtils.validateInput(normalizedEmail, {
         type: 'email',
         required: true,
         maxLength: 255
@@ -147,7 +149,7 @@ const Login = () => {
       
       // For demo purposes, any email/password combination will work
       const users = JSON.parse(localStorage.getItem('allUsers') || '[]');
-      const existingUser = users.find(user => user.email === formData.email);
+      const existingUser = users.find(user => user.email?.toLowerCase() === normalizedEmail);
 
       let userToLogin;
 
@@ -186,7 +188,7 @@ const Login = () => {
         userToLogin = {
           id: Date.now().toString(),
           name: 'Demo User',
-          email: formData.email,
+          email: normalizedEmail,
           role: 'employee',
           department: 'General',
           avatar: null,
@@ -220,7 +222,7 @@ const Login = () => {
         action: 'successful_login',
         severity: 'info',
         details: {
-          email: formData.email,
+          email: normalizedEmail,
           role: userToLogin.role,
           timestamp: new Date().toISOString(),
           userAgent: navigator.userAgent
@@ -250,7 +252,7 @@ const Login = () => {
         action: 'failed_login_attempt',
         severity: 'warning',
         details: {
-          email: formData.email,
+          email: normalizedEmail,
           error: err.message,
           timestamp: new Date().toISOString(),
           userAgent: navigator.userAgent

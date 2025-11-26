@@ -1518,7 +1518,10 @@ class DataService {
   // User management methods
   addUser(user) {
     const users = this.getUsers();
-    const sanitizedUser = { ...user };
+    const sanitizedUser = {
+      ...user,
+      email: user.email?.trim().toLowerCase() || '',
+    };
     delete sanitizedUser.password;
     delete sanitizedUser.confirmPassword;
 
@@ -1536,7 +1539,10 @@ class DataService {
 
   updateUser(userId, updates) {
     const users = this.getUsers();
-    const sanitizedUpdates = { ...updates };
+    const sanitizedUpdates = {
+      ...updates,
+      ...(updates.email ? { email: updates.email.trim().toLowerCase() } : {}),
+    };
     delete sanitizedUpdates.password;
     delete sanitizedUpdates.confirmPassword;
     const updatedUsers = users.map(user =>
