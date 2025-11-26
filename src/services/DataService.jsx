@@ -1110,8 +1110,12 @@ class DataService {
 
   addRisk(risk) {
     const risks = this.getRisks();
+    const owner = risk.owner || risk.riskOwner || risk.ownerName || risk.riskOwnerName || '';
+    const riskOwner = risk.riskOwner || owner;
     const newRisk = {
       ...risk,
+      owner,
+      riskOwner,
       id: `risk${Date.now()}`,
       createdDate: new Date().toISOString(),
       status: risk.status || 'Open'
@@ -1123,8 +1127,15 @@ class DataService {
 
   updateRisk(riskId, updates) {
     const risks = this.getRisks();
-    const updatedRisks = risks.map(risk => 
-      risk.id === riskId ? { ...risk, ...updates } : risk
+    const updatedRisks = risks.map(risk =>
+      risk.id === riskId
+        ? {
+            ...risk,
+            ...updates,
+            owner: updates.owner || updates.riskOwner || risk.owner || risk.riskOwner || '',
+            riskOwner: updates.riskOwner || updates.owner || risk.riskOwner || risk.owner || ''
+          }
+        : risk
     );
     this.saveRisks(updatedRisks);
     return updatedRisks.find(risk => risk.id === riskId);

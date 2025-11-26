@@ -36,6 +36,12 @@ const RiskAssessment = () => {
   const [aiGeneratedRisks, setAiGeneratedRisks] = useState([]);
   const [aiGenerating, setAiGenerating] = useState(false);
 
+  const normalizeRiskOwner = (risk) => ({
+    ...risk,
+    owner: risk?.owner || risk?.riskOwner || '',
+    riskOwner: risk?.riskOwner || risk?.owner || ''
+  });
+
   const { currentUser } = useUser();
   const userRole = currentUser?.role || 'employee';
   const canViewRisks = hasPermission(userRole, PERMISSIONS.RISK_VIEW);
@@ -58,7 +64,7 @@ const RiskAssessment = () => {
   // Load risks from DataService on component mount
   useEffect(() => {
     const loadRisks = () => {
-      const storedRisks = dataService.getRisks();
+      const storedRisks = dataService.getRisks()?.map(normalizeRiskOwner);
       setRisks(storedRisks);
       setFilteredRisks(storedRisks);
     };
@@ -66,7 +72,7 @@ const RiskAssessment = () => {
   }, []);
 
   useEffect(() => {
-    const updated = dataService.autoUpdateRiskReviews();
+    const updated = dataService.autoUpdateRiskReviews()?.map(normalizeRiskOwner);
     setRisks(updated);
     setFilteredRisks(updated);
   }, []);
@@ -74,7 +80,7 @@ const RiskAssessment = () => {
   useEffect(() => {
     const id = setInterval(() => {
       dataService.autoUpdateRiskReviews();
-      const updated = dataService.autoConductDueReviews();
+      const updated = dataService.autoConductDueReviews()?.map(normalizeRiskOwner);
       setRisks(updated);
       setFilteredRisks(updated);
     }, 60000);
@@ -98,7 +104,7 @@ const RiskAssessment = () => {
     }
     
     if (filters?.owner) {
-      filtered = filtered?.filter(risk => risk?.owner === filters?.owner);
+      filtered = filtered?.filter(risk => (risk?.owner || risk?.riskOwner) === filters?.owner);
     }
     
     if (filters?.status) {
@@ -242,7 +248,7 @@ const RiskAssessment = () => {
       toast.error('No AI risks to add');
       return;
     }
-    const added = toAdd.map(r => dataService.addRisk(r));
+    const added = toAdd.map(r => normalizeRiskOwner(dataService.addRisk(r)));
     setRisks(prev => [...added, ...prev]);
     setFilteredRisks(prev => [...added, ...prev]);
     setAiMenuOpen(false);
@@ -258,10 +264,11 @@ const RiskAssessment = () => {
     }
     console.log('Creating new risk assessment:', riskData);
     // Save to DataService
-    const newRisk = dataService.addRisk(riskData);
+    const newRisk = normalizeRiskOwner(dataService.addRisk(riskData));
     // Update local state
     setRisks(prev => [newRisk, ...prev]);
-    alert('Risk assessment created successfully!');
+    setCreateAssessmentModalOpen(false);
+    toast.success('Risk assessment created successfully!');
   };
 
   const handleSubmitUpload = async (uploadData) => {
@@ -273,15 +280,17 @@ const RiskAssessment = () => {
 
     const nextRisks = (() => {
       if (uploadData.mergeStrategy === 'replace') {
-        return uploadData.risks;
+        return uploadData.risks.map(normalizeRiskOwner);
       }
 
       if (uploadData.mergeStrategy === 'append') {
-        return [...risks, ...uploadData.risks];
+        return [...risks, ...uploadData.risks.map(normalizeRiskOwner)];
       }
 
       const existingIds = new Set(risks.map(r => r.id));
-      const newRisks = uploadData.risks.filter(r => !existingIds.has(r.id));
+      const newRisks = uploadData.risks
+        .filter(r => !existingIds.has(r.id))
+        .map(normalizeRiskOwner);
       return [...risks, ...newRisks];
     })();
 

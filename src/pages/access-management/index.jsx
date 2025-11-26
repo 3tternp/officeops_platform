@@ -63,8 +63,17 @@ const AccessManagement = () => {
   }, []);
 
   const loadAccessRequests = () => {
-    const requests = dataService.getAccessRequests();
+    let requests = dataService.getAccessRequests();
+
+    // Seed demo data if storage is empty so maker-checker flows stay interactive during QA
+    if (!requests || requests.length === 0) {
+      dataService.saveAccessRequests(mockRequests);
+      requests = dataService.getAccessRequests();
+    }
+
     setAccessRequests(requests);
+    setResources(dataService.getResources());
+    setUsers(dataService.getUsers());
   };
 
   const handleCreateRequest = () => {

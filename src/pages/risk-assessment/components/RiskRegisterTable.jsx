@@ -50,6 +50,11 @@ const RiskRegisterTable = ({
       bValue = b?.likelihood * b?.impact;
     }
 
+    if (sortField === 'owner') {
+      aValue = a?.owner || a?.riskOwner || '';
+      bValue = b?.owner || b?.riskOwner || '';
+    }
+
     if (typeof aValue === 'string') {
       aValue = aValue?.toLowerCase();
       bValue = bValue?.toLowerCase();
@@ -288,12 +293,17 @@ const RiskRegisterTable = ({
                 </td>
                 <td className="p-4 hidden lg:table-cell">
                   <div className="flex items-center space-x-2">
+                    {Boolean(risk?.owner || risk?.riskOwner) && (
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                       <span className="text-xs font-medium text-primary-foreground">
-                        {risk?.owner?.split(' ')?.map(n => n?.[0])?.join('')}
+                        {(risk?.owner || risk?.riskOwner)
+                          ?.split(' ')
+                          ?.map(n => n?.[0])
+                          ?.join('')}
                       </span>
                     </div>
-                    <span className="text-sm text-foreground">{risk?.owner}</span>
+                    )}
+                    <span className="text-sm text-foreground">{risk?.owner || risk?.riskOwner || 'Unassigned'}</span>
                   </div>
                 </td>
                 <td className="p-4 hidden md:table-cell">
