@@ -124,6 +124,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.RISK_VIEW,
     PERMISSIONS.RISK_CREATE,
     PERMISSIONS.RISK_MANAGE,
+    PERMISSIONS.RISK_DELETE,
     PERMISSIONS.ACCESS_REQUEST,
     PERMISSIONS.ACCESS_APPROVE,
     PERMISSIONS.ACCESS_VIEW_ALL,
@@ -181,10 +182,7 @@ export const ROLE_PERMISSIONS = {
     // Risk Officer permissions - risk management focus with read-only access to other modules
     PERMISSIONS.DOCUMENT_VIEW, // Read-only access to documents
     PERMISSIONS.LMS_VIEW_COURSE, // Read-only access to learning content
-    PERMISSIONS.RISK_VIEW,
-    PERMISSIONS.RISK_CREATE,
-    PERMISSIONS.RISK_MANAGE,
-    PERMISSIONS.RISK_DELETE, // Full risk management capabilities
+    PERMISSIONS.RISK_VIEW, // CRO visibility into ISO-maintained register
     PERMISSIONS.ACCESS_REQUEST,
     PERMISSIONS.ACCESS_VIEW_OWN,
     PERMISSIONS.ASSET_REQUEST,

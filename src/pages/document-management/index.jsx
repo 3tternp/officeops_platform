@@ -230,20 +230,27 @@ const DocumentManagement = () => {
   // Load documents and current user from DataService
   useEffect(() => {
     const loadData = () => {
-      const storedDocuments = dataService.getModuleData('documents') || mockDocuments;
-      setDocuments(storedDocuments);
-      
+      const storedDocuments = dataService.getModuleData('documents') || [];
+
+      // Seed demo content when storage is empty so document actions remain functional during QA
+      if (!storedDocuments || storedDocuments.length === 0) {
+        dataService.saveModuleData('documents', mockDocuments);
+      }
+
+      const hydratedDocuments = dataService.getModuleData('documents');
+      setDocuments(hydratedDocuments);
+
       // Calculate stats from actual documents
       const calculatedStats = {
-        totalDocuments: storedDocuments.length,
-        acknowledged: storedDocuments.filter(d => d.acknowledgmentStatus === 'acknowledged').length,
-        pending: storedDocuments.filter(d => d.acknowledgmentStatus === 'pending').length,
-        overdue: storedDocuments.filter(d => d.acknowledgmentStatus === 'overdue').length,
-        expiringSoon: storedDocuments.filter(d => {
+        totalDocuments: hydratedDocuments.length,
+        acknowledged: hydratedDocuments.filter(d => d.acknowledgmentStatus === 'acknowledged').length,
+        pending: hydratedDocuments.filter(d => d.acknowledgmentStatus === 'pending').length,
+        overdue: hydratedDocuments.filter(d => d.acknowledgmentStatus === 'overdue').length,
+        expiringSoon: hydratedDocuments.filter(d => {
           const daysUntilExpiry = Math.ceil((new Date(d.expiryDate) - new Date()) / (1000 * 60 * 60 * 24));
           return daysUntilExpiry <= 30 && daysUntilExpiry > 0;
         }).length,
-        complianceRate: storedDocuments.length > 0 ? Math.round((storedDocuments.filter(d => d.acknowledgmentStatus === 'acknowledged').length / storedDocuments.length) * 100) : 0
+        complianceRate: hydratedDocuments.length > 0 ? Math.round((hydratedDocuments.filter(d => d.acknowledgmentStatus === 'acknowledged').length / hydratedDocuments.length) * 100) : 0
       };
       
       setStats(calculatedStats);

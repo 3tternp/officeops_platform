@@ -83,7 +83,8 @@ class DataService {
       id: 'admin001',
       name: 'Demo Administrator',
       email: 'admin@demo.com',
-      password: 'admin123', // Demo password for testing
+      // Pre-hashed to avoid storing plaintext demo credentials
+      passwordHash: '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9',
       role: 'admin',
       department: 'Information Technology',
       status: 'active',
@@ -99,7 +100,7 @@ class DataService {
         id: 'iso001',
         name: 'Security Officer',
         email: 'iso@demo.com',
-        password: 'iso123',
+        passwordHash: '51ceb57f6f6372e02d830901d47f654e1e5a3d46009c8f7f3d6146b4880335f3',
         role: 'iso',
         department: 'Information Technology',
         status: 'active',
@@ -110,7 +111,7 @@ class DataService {
         id: 'mgr001',
         name: 'Department Manager',
         email: 'manager@demo.com',
-        password: 'mgr123',
+        passwordHash: '49a0ac18e26df0b0724f5ac5837e436b336527485fc0a388f578913d6ee70e67',
         role: 'manager',
         department: 'Human Resources',
         status: 'active',
@@ -121,7 +122,7 @@ class DataService {
         id: 'emp001',
         name: 'John Employee',
         email: 'employee@demo.com',
-        password: 'emp123',
+        passwordHash: 'e03d3ec8d5035f8721f5dc64546e59ed790dbcb3b7b598fe57057ccd7b683b00',
         role: 'employee',
         department: 'Finance',
         status: 'active',
@@ -1110,8 +1111,12 @@ class DataService {
 
   addRisk(risk) {
     const risks = this.getRisks();
+    const owner = risk.owner || risk.riskOwner || risk.ownerName || risk.riskOwnerName || '';
+    const riskOwner = risk.riskOwner || owner;
     const newRisk = {
       ...risk,
+      owner,
+      riskOwner,
       id: `risk${Date.now()}`,
       createdDate: new Date().toISOString(),
       status: risk.status || 'Open'
@@ -1123,8 +1128,15 @@ class DataService {
 
   updateRisk(riskId, updates) {
     const risks = this.getRisks();
-    const updatedRisks = risks.map(risk => 
-      risk.id === riskId ? { ...risk, ...updates } : risk
+    const updatedRisks = risks.map(risk =>
+      risk.id === riskId
+        ? {
+            ...risk,
+            ...updates,
+            owner: updates.owner || updates.riskOwner || risk.owner || risk.riskOwner || '',
+            riskOwner: updates.riskOwner || updates.owner || risk.riskOwner || risk.owner || ''
+          }
+        : risk
     );
     this.saveRisks(updatedRisks);
     return updatedRisks.find(risk => risk.id === riskId);
