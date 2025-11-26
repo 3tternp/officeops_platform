@@ -679,7 +679,7 @@ CLI deploy (alternative):
 - `npm run deploy:netlify` # deploy production build from `dist`
 
 Notes:
-- Node version 18 is set in `netlify.toml`.
+- Node version 20 is enforced via `.nvmrc` and `netlify.toml`; if you see Netlify errors about unsupported engines, confirm the site is using Node 20.
 - SPA redirects are already configured to avoid 404 on refresh.
 - If using external APIs, ensure required `VITE_*` env vars are defined in Netlify.
 
