@@ -136,18 +136,28 @@ const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQu
             <h3 className="font-semibold">Course Content</h3>
             <div className="space-y-4">
               {(() => {
-                const moduleCount = course?.settings?.moduleCount ?? 4;
+                const moduleDefinitions = course?.content?.modules || [];
+                const moduleCount = course?.content?.modules?.length || course?.settings?.moduleCount || 4;
                 const passingScore = course?.settings?.passingScore ?? 80;
                 dataService.initializeCourseModuleProgress(currentUser?.id, course.id, moduleCount, passingScore);
                 const cp = dataService.getCourseModuleProgress(currentUser?.id, course.id);
                 const modules = Array.from({ length: moduleCount }, (_, idx) => {
                   const m = cp?.modules?.[idx] || { index: idx, unlocked: idx === 0, passed: false };
-                  return m;
+                  const definition = moduleDefinitions?.[idx];
+                  return { ...m, definition };
                 });
                 return modules.map((mod, index) => (
                   <div key={index} className="border border-border rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium">Module {index + 1}: {course.title}</h4>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium">{mod.definition?.title || `Module ${index + 1}: ${course.title}`}</h4>
+                        {mod.definition?.aiGenerated && (
+                          <Badge variant="outline" className="text-xs">
+                            <Icon name="Sparkles" size={12} className="mr-1" />
+                            AI-generated
+                          </Badge>
+                        )}
+                      </div>
                       <div className="flex items-center gap-2">
                         {mod.passed ? (
                           <Badge variant="secondary">
@@ -168,8 +178,33 @@ const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQu
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3">
-                      Complete module content and pass the quiz to unlock the next module.
+                      {mod.definition?.aiGeneratedSummary || 'Complete module content and pass the quiz to unlock the next module.'}
                     </p>
+                    {mod.definition?.objective && (
+                      <p className="text-sm text-foreground mb-3">{mod.definition.objective}</p>
+                    )}
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-3">
+                      {mod.definition?.estimatedDuration && (
+                        <span className="inline-flex items-center gap-1">
+                          <Icon name="Clock" size={12} />
+                          {mod.definition.estimatedDuration}
+                        </span>
+                      )}
+                      <span className="inline-flex items-center gap-1">
+                        <Icon name="HelpCircle" size={12} />
+                        {mod.definition?.quiz?.questions?.length || course.content?.quizzes?.length || 0} Questions
+                      </span>
+                    </div>
+                    {mod.definition?.resources?.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-2 mb-4">
+                        {mod.definition.resources.map((res, idx) => (
+                          <Badge key={idx} variant="outline" className="text-xs capitalize">
+                            <Icon name="FileText" size={12} className="mr-1" />
+                            {res.title}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-1 text-xs text-muted-foreground">
