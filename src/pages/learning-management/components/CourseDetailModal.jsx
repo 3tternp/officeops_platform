@@ -216,6 +216,13 @@ const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQu
                         ))}
                       </div>
                     </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {mod.definition?.aiGeneratedSummary || 'Complete module content and pass the quiz to unlock the next module.'}
+                  </p>
+                  {mod.definition?.objective && (
+                    <p className="text-sm text-foreground mb-3">{mod.definition.objective}</p>
                   )}
                   <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-3">
                     {mod.definition?.estimatedDuration && (

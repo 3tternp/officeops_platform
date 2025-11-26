@@ -365,6 +365,53 @@ const LearningManagement = () => {
       ]
     }
   ];
+    { title: 'Password Hygiene & MFA', focus: 'strong authentication', duration: '20m' },
+    { title: 'Phishing & Social Engineering', focus: 'threat recognition', duration: '25m' },
+    { title: 'Secure Remote Work', focus: 'endpoint hardening', duration: '18m' },
+    { title: 'Data Classification', focus: 'handling sensitive data', duration: '20m' },
+    { title: 'Device & Patch Management', focus: 'reducing vulnerabilities', duration: '22m' },
+    { title: 'Cloud Security Basics', focus: 'shared responsibility', duration: '24m' },
+    { title: 'Incident Reporting', focus: 'early escalation', duration: '15m' },
+    { title: 'Ransomware Readiness', focus: 'containment and backups', duration: '20m' },
+    { title: 'Safe Browsing & USB Use', focus: 'preventing malware', duration: '16m' },
+    { title: 'Zero Trust Mindset', focus: 'continuous verification', duration: '25m' }
+  ];
+
+  const generateCyberQuizQuestions = (topic, idx) => ([
+    {
+      id: `cyber-${idx + 1}-q1`,
+      question: `What is the primary purpose of ${topic.title.toLowerCase()}?`,
+      options: [
+        `Enable ${topic.focus} for every employee`,
+        'Make sign-in optional for convenience',
+        'Rely solely on VPN access',
+        'Delay updates until incidents occur'
+      ],
+      correctAnswer: 0
+    },
+    {
+      id: `cyber-${idx + 1}-q2`,
+      question: `How should you apply the lesson from ${topic.title}?`,
+      options: [
+        'Share credentials with your team for speed',
+        'Follow the checklist and confirm completion in the LMS',
+        'Ignore pop-up warnings from security tools',
+        'Disable endpoint protection to improve performance'
+      ],
+      correctAnswer: 1
+    },
+    {
+      id: `cyber-${idx + 1}-q3`,
+      question: `When is it acceptable to skip controls from ${topic.title}?`,
+      options: [
+        'Never, controls are mandatory for all employees',
+        'When working from home',
+        'When the device is new',
+        'If the task seems urgent'
+      ],
+      correctAnswer: 0
+    }
+  ]);
 
   const generateCyberModules = () => cyberModuleTopics.map((topic, idx) => ({
     index: idx,
@@ -381,6 +428,15 @@ const LearningManagement = () => {
       }))
     },
     resources: (topic.resources || []).map((res) => ({ type: 'resource', title: res })),
+    aiGeneratedSummary: `This module was auto-generated to reinforce ${topic.focus} with practical, employee-friendly guardrails, walkthroughs, and checklists.`,
+    estimatedDuration: topic.duration,
+    quiz: {
+      questions: generateCyberQuizQuestions(topic, idx)
+    },
+    resources: [
+      { type: 'checklist', title: `${topic.title} quick wins` },
+      { type: 'playbook', title: `${topic.title} response guide` }
+    ],
     aiGenerated: true
   }));
 
@@ -537,6 +593,30 @@ const LearningManagement = () => {
   };
 
   const initialMockCourses = baseCourses.map(normalizeCourse);
+  const initialMockCourses = baseCourses.map(course => ({
+    ...course,
+    settings: {
+      moduleCount: course.content?.modules?.length || course.settings?.moduleCount || 4,
+      passingScore: course.settings?.passingScore || 80,
+      allowRetakes: true,
+      certificateEnabled: true,
+      prerequisites: course.settings?.prerequisites || [],
+      sequentialUnlock: true,
+      minimumQuestionCount: defaultQuizBank.length,
+      targetRoles: course.settings?.targetRoles || ['manager', 'employee']
+    },
+    content: {
+      ...course.content,
+      materials: [
+        { type: 'video', title: `${course.title} overview` },
+        { type: 'document', format: 'pdf', title: `${course.title} reference guide` },
+        { type: 'document', format: 'ppt', title: `${course.title} presentation` }
+      ],
+      quizzes: (course.content?.modules?.flatMap(m => m.quiz?.questions || [])?.length
+        ? course.content.modules.flatMap(m => m.quiz?.questions || [])
+        : defaultQuizBank)
+    }
+  }));
 
   // State for managing courses
   const [courses, setCourses] = useState([]);
