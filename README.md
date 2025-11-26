@@ -153,7 +153,7 @@ OfficeOps Platform is a modern, **fully functional** enterprise management syste
 
 Before you begin, ensure you have the following installed on your development machine:
 
-- **Node.js** (v20.0.0 or higher)
+- **Node.js** (v22.0.0 or higher)
 - **npm** (v10.0.0 or higher) or **yarn** (v1.22.0 or higher)
 - **Docker** (v20.0.0 or higher) - for containerized deployment
 - **Docker Compose** (v2.0.0 or higher) - for multi-container setup
@@ -522,17 +522,31 @@ The platform includes several pre-configured demo accounts for comprehensive tes
 6. Verify real-time updates in asset catalog
 ```
 
-#### **Risk Assessment Testing (All Users)**
+#### **Risk Assessment Testing (Maker-Checker Roles)**
+
+**Admin / ISO (creator & checker)**
 ```bash
-# Login with any demo account
+# Login as admin@demo.com / admin123 or iso@demo.com / iso123
 1. Navigate to Risk Assessment
-2. Create new risk assessment using 4-step wizard
-3. Edit existing risk using edit button in register table
-4. View risk details and analytics in dashboard
-5. Download CSV template and test bulk upload
-6. Filter and sort risks in register table
-7. View interactive heat map visualization
-8. Test treatment planning and progress tracking
+2. Create a new risk assessment using the 4-step wizard (maker)
+3. Edit existing risks or treatment plans (checker) and save updates
+4. Download CSV template and test bulk upload/import
+5. Filter and sort risks in the register table
+6. View interactive heat map visualization and analytics
+```
+
+**CRO viewer (risk_officer)**
+```bash
+# Login as a CRO viewer account
+1. Navigate to Risk Assessment
+2. Verify the register is view-only (no create/edit/delete actions)
+3. Open risk details, analytics, and heat map for oversight
+```
+
+**Unauthorized roles (e.g., employee/manager)**
+```bash
+1. Navigate to Risk Assessment
+2. Confirm the restricted access notice instructs users to switch to Admin/ISO for register changes
 ```
 
 #### **System Health Checks**
@@ -679,15 +693,15 @@ CLI deploy (alternative):
 - `npm run deploy:netlify` # deploy production build from `dist`
 
 Notes:
-- Node version 18 is set in `netlify.toml`.
+- Node version 22 is enforced via `.nvmrc` and `netlify.toml`; if you see Netlify errors about unsupported engines, confirm the site is using Node 22.
 - SPA redirects are already configured to avoid 404 on refresh.
 - If using external APIs, ensure required `VITE_*` env vars are defined in Netlify.
 
 ## 🚀 Local Installation
 
 ### Prerequisites
-- Node.js 18+
-- npm 9+
+- Node.js 22+
+- npm 10+
 
 ### Steps
 - Clone the repository: `git clone https://github.com/yourusername/officeops-platform.git`
@@ -695,6 +709,11 @@ Notes:
 - Install dependencies: `npm install`
 - Start dev server: `npm run dev`
 - Open the app: `http://localhost:4028` (or the port shown in terminal)
+
+### Scripted setup
+
+- Linux/macOS: `./install.sh dev` (set `PACKAGE_MANAGER=pnpm` or `yarn` to use an alternative manager)
+- Windows (PowerShell): `./install.ps1 -Mode dev -PackageManager npm`
 
 ### Production Preview (locally)
 - Build: `npm run build`
