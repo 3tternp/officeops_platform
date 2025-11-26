@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import PDFViewer from '../../../components/ui/PDFViewer';
@@ -17,6 +18,18 @@ const DocumentViewer = ({ document, isOpen, onClose, onAcknowledge }) => {
   const [documentType, setDocumentType] = useState('html');
   const [fileUrl, setFileUrl] = useState(null);
 
+  const sanitizeHtml = (html, options = {}) => {
+    return DOMPurify.sanitize(html || '', {
+      USE_PROFILES: { html: true },
+      ALLOWED_ATTR: ['class', 'style', 'href', 'target', 'rel', ...(options.allowedAttributes || [])],
+      ...options
+    });
+  };
+
+  const sanitizeText = (text) => {
+    return DOMPurify.sanitize(text || '', { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  };
+
   // Load current user and document content
   useEffect(() => {
     if (!isOpen) return;
@@ -30,8 +43,11 @@ const DocumentViewer = ({ document, isOpen, onClose, onAcknowledge }) => {
     // Determine document type and content
     if (document?.fileContent) {
       // Handle uploaded document content
-      const fileExtension = document.fileExtension || document.title.split('.').pop()?.toLowerCase();
-      
+      const fileExtension = document?.fileExtension || document?.title?.split('.')?.pop()?.toLowerCase();
+      const safeTitle = sanitizeText(document?.title);
+      const safeSize = sanitizeText(document.fileSize || 'Unknown');
+      const safeUploadDate = sanitizeText(new Date(document.uploadDate || Date.now()).toLocaleDateString());
+
       if (fileExtension === 'pdf') {
         setDocumentType('pdf');
         setFileUrl(document.fileContent);
@@ -42,25 +58,29 @@ const DocumentViewer = ({ document, isOpen, onClose, onAcknowledge }) => {
         setDocumentContent('');
       } else if (['doc', 'docx', 'ppt', 'pptx'].includes(fileExtension)) {
         setDocumentType('office');
-        setDocumentContent(`
+        const officeContent = `
           <div class="text-center py-8">
-            <h3 class="text-lg font-semibold mb-4">${document.title}</h3>
+            <h3 class="text-lg font-semibold mb-4">${safeTitle}</h3>
             <p class="text-muted-foreground mb-6">This document type requires special handling.</p>
-            <p class="text-sm text-muted-foreground">File: ${document.title}</p>
-            <p class="text-sm text-muted-foreground">Size: ${document.fileSize || 'Unknown'}</p>
-            <p class="text-sm text-muted-foreground">Uploaded: ${new Date(document.uploadDate || Date.now()).toLocaleDateString()}</p>
+            <p class="text-sm text-muted-foreground">File: ${safeTitle}</p>
+            <p class="text-sm text-muted-foreground">Size: ${safeSize}</p>
+            <p class="text-sm text-muted-foreground">Uploaded: ${safeUploadDate}</p>
           </div>
-        `);
+        `;
+        setDocumentContent(sanitizeHtml(officeContent));
       } else {
         setDocumentType('text');
-        setDocumentContent(`
-          <div class="whitespace-pre-wrap font-mono text-sm">${document.fileContent}</div>
-        `);
+        const safeTextContent = sanitizeText(document.fileContent);
+        setDocumentContent(
+          sanitizeHtml(`
+            <div class="whitespace-pre-wrap font-mono text-sm">${safeTextContent}</div>
+          `)
+        );
       }
     } else {
       // Use default policy content as fallback
       setDocumentType('html');
-      setDocumentContent(getDefaultContent(document));
+      setDocumentContent(sanitizeHtml(getDefaultContent(document)));
     }
     
     setIsLoading(false);

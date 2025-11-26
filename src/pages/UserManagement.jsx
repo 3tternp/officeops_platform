@@ -153,26 +153,31 @@ const UserManagement = () => {
   };
 
   const handleSubmitUser = async (userData, isEdit = false) => {
+    const payload = { ...userData };
+
+    if (payload.password) {
+      try {
+        const passwordSalt = securityUtils.generateSalt();
+        payload.passwordSalt = passwordSalt;
+        payload.passwordHash = await securityUtils.derivePasswordHash(payload.password, passwordSalt);
+        payload.passwordUpdatedAt = new Date().toISOString();
+      } catch (e) {
+        console.error('Password hashing failed', e);
+      }
+      delete payload.password;
+      delete payload.confirmPassword;
+    }
+
     if (isEdit) {
       // Update in DataService
-      const updatedUser = dataService.updateUser(userData.id, userData);
+      const updatedUser = dataService.updateUser(payload.id, payload);
       // Update local state
-      setUsers(prev => prev.map(user => 
-        user.id === userData.id ? updatedUser : user
+      setUsers(prev => prev.map(user =>
+        user.id === payload.id ? updatedUser : user
       ));
       alert('User updated successfully!');
     } else {
       // Add to DataService with hashed password
-      const payload = { ...userData };
-      if (payload.password) {
-        try {
-          payload.passwordHash = await securityUtils.hashData(payload.password);
-        } catch (e) {
-          console.error('Password hashing failed', e);
-        }
-        delete payload.password;
-        delete payload.confirmPassword;
-      }
       const newUser = dataService.addUser(payload);
       // Update local state
       setUsers(prev => [...prev, newUser]);

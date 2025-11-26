@@ -60,8 +60,9 @@ const InitialSetup = () => {
 
     setIsSubmitting(true);
     try {
-      // Hash password client-side (simple SHA-256 for demo; use server auth in production)
-      const passwordHash = await securityUtils.hashData(password);
+      // Harden credentials with per-user salt + optional environment pepper
+      const passwordSalt = securityUtils.generateSalt();
+      const passwordHash = await securityUtils.derivePasswordHash(password, passwordSalt);
 
       const adminUser = {
         id: `admin_${Date.now()}`,
@@ -72,7 +73,9 @@ const InitialSetup = () => {
         avatar: null,
         createdDate: new Date().toISOString(),
         lastLogin: null,
-        passwordHash
+        passwordSalt,
+        passwordHash,
+        passwordUpdatedAt: new Date().toISOString()
       };
 
       const users = JSON.parse(localStorage.getItem('allUsers') || '[]');

@@ -148,22 +148,36 @@ const Login = () => {
       // For demo purposes, any email/password combination will work
       const users = JSON.parse(localStorage.getItem('allUsers') || '[]');
       const existingUser = users.find(user => user.email === formData.email);
-      
+
       let userToLogin;
-      
+
       if (existingUser) {
-        // Validate password (hash preferred, fallback to plaintext for demo)
-        if (existingUser.passwordHash) {
-          const enteredHash = await securityUtils.hashData(formData.password);
-          if (existingUser.passwordHash !== enteredHash) {
-            throw new Error('Invalid email or password');
-          }
-        } else if (existingUser.password) {
-          if (existingUser.password !== formData.password) {
-            throw new Error('Invalid email or password');
-          }
+        const passwordValid = await securityUtils.verifyPassword(formData.password, existingUser);
+        if (!passwordValid) {
+          throw new Error('Invalid email or password');
         }
-        userToLogin = existingUser;
+
+        // Upgrade legacy credentials with a salted hash after successful login
+        if (!existingUser.passwordSalt) {
+          const upgradedSalt = securityUtils.generateSalt();
+          const upgradedHash = await securityUtils.derivePasswordHash(formData.password, upgradedSalt);
+          const updatedUsers = users.map(user =>
+            user.id === existingUser.id
+              ? {
+                  ...user,
+                  passwordSalt: upgradedSalt,
+                  passwordHash: upgradedHash,
+                  passwordUpdatedAt: new Date().toISOString(),
+                  password: undefined
+                }
+              : user
+          );
+          localStorage.setItem('allUsers', JSON.stringify(updatedUsers));
+          const refreshed = updatedUsers.find(u => u.id === existingUser.id);
+          userToLogin = refreshed;
+        } else {
+          userToLogin = existingUser;
+        }
       } else {
         // Create a default user only when mock data is enabled
         if (!enableMock) {
