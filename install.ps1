@@ -3,7 +3,9 @@ Param(
   [string]$Mode = "dev",
   [int]$Port = 4028,
   [int]$NetlifyPort = 8888,
-  [switch]$DockerDb
+  [switch]$DockerDb,
+  [ValidateSet("npm","pnpm","yarn","auto")]
+  [string]$PackageManager = "npm"
 )
 
 function Write-Info($Message) { Write-Host "[INFO] $Message" -ForegroundColor Cyan }
@@ -15,12 +17,66 @@ function Test-Command($cmd) {
 }
 
 function Ensure-Node {
-  if (-not (Test-Command 'node')) { Write-Err "Node.js not found. Please install Node.js 20+ from https://nodejs.org"; exit 1 }
-  if (-not (Test-Command 'npm')) { Write-Err "npm not found. Ensure your Node.js installation includes npm"; exit 1 }
+  if (-not (Test-Command 'node')) { Write-Err "Node.js not found. Please install Node.js 22+ from https://nodejs.org"; exit 1 }
   $versionStr = (& node -v) -replace '^v',''
   $major = [int]($versionStr.Split('.')[0])
-  if ($major -lt 20) { Write-Err "Node.js $versionStr detected; require >= 20"; exit 1 }
+  if ($major -lt 22) { Write-Err "Node.js $versionStr detected; require >= 22"; exit 1 }
   Write-Ok "Node.js $versionStr detected"
+}
+
+function Resolve-PackageManager {
+  param([string]$Preference)
+  if ($Preference -eq 'auto') {
+    if (Test-Command 'pnpm') { return 'pnpm' }
+    if (Test-Command 'yarn') { return 'yarn' }
+    return 'npm'
+  }
+  return $Preference
+}
+
+function Ensure-PackageManager {
+  param([string]$Pm)
+  if (-not (Test-Command $Pm)) { Write-Err "$Pm not found. Please install it or choose a different package manager."; exit 1 }
+}
+
+function Install-Deps {
+  param([string]$Pm)
+  switch ($Pm) {
+    'npm' {
+      if (Test-Path "package-lock.json") {
+        Write-Info "Installing dependencies (npm ci)..."
+        npm ci
+        if ($LASTEXITCODE -ne 0) {
+          Write-Info "npm ci failed; falling back to npm install"
+          npm install
+        }
+      } else {
+        Write-Info "Installing dependencies (npm install)..."
+        npm install
+      }
+    }
+    'pnpm' {
+      Write-Info "Installing dependencies (pnpm)..."
+      if (Test-Path "pnpm-lock.yaml") { pnpm install --frozen-lockfile } else { pnpm install }
+    }
+    'yarn' {
+      Write-Info "Installing dependencies (yarn)..."
+      if (Test-Path "yarn.lock") { yarn install --frozen-lockfile } else { yarn install }
+    }
+  }
+}
+
+function Run-Script {
+  param(
+    [string]$Pm,
+    [string]$Script,
+    [string[]]$Args
+  )
+  switch ($Pm) {
+    'npm'  { npm run $Script -- @Args }
+    'pnpm' { pnpm run $Script -- @Args }
+    'yarn' { yarn $Script -- @Args }
+  }
 }
 
 function Start-DockerDb {
@@ -43,6 +99,8 @@ Set-Location -Path (Split-Path -Parent $MyInvocation.MyCommand.Path)
 
 Write-Info "Ensuring prerequisites..."
 Ensure-Node
+$pm = Resolve-PackageManager -Preference $PackageManager
+Ensure-PackageManager -Pm $pm
 
 if ($DockerDb) { Start-DockerDb }
 
@@ -71,37 +129,27 @@ if ($Mode -eq "dev-netlify") {
   }
 }
 
-# Install dependencies
-if (Test-Path "package-lock.json") {
-  Write-Info "Installing dependencies (npm ci)..."
-  npm ci
-  if ($LASTEXITCODE -ne 0) {
-    Write-Info "npm ci failed; falling back to npm install"
-    npm install
-  }
-} else {
-  Write-Info "Installing dependencies (npm install)..."
-  npm install
-}
+Install-Deps -Pm $pm
 
 switch ($Mode) {
   "dev" {
     Write-Info "Starting Vite dev server on port $Port..."
-    npm run dev -- --host 0.0.0.0 --port $Port
+    Run-Script -Pm $pm -Script "dev" -Args @("--host","0.0.0.0","--port",$Port)
   }
   "dev-netlify" {
     Write-Info "Starting Netlify dev (functions + proxy) on port $NetlifyPort and Vite on $Port..."
-    npx netlify dev --functions netlify/functions -c "npm run dev -- --host 0.0.0.0 --port $Port" --port $NetlifyPort
+    npx netlify dev --functions netlify/functions -c "$pm run dev -- --host 0.0.0.0 --port $Port" --port $NetlifyPort
   }
   "preview" {
     Write-Info "Building production bundle..."
-    npm run build
+    Run-Script -Pm $pm -Script "build"
     Write-Info "Starting preview server on port $Port..."
-    npm run preview -- --host 0.0.0.0 --port $Port
+    Run-Script -Pm $pm -Script "preview" -Args @("--host","0.0.0.0","--port",$Port)
   }
   "build" {
     Write-Info "Building production bundle..."
-    npm run build
+    Run-Script -Pm $pm -Script "build"
     Write-Ok "Build complete. See dist/"
   }
 }
+

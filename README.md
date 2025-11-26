@@ -1,61 +1,54 @@
 # OfficeOps Platform
 
-> A comprehensive enterprise office operations management platform built with React and modern web technologies.
+> Modern operations control for secure, compliant, and productive teams.
 
 ![Version](https://img.shields.io/badge/version-3.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![React](https://img.shields.io/badge/react-18.3.1-blue.svg)
-![Features](https://img.shields.io/badge/features-fully_functional-green.svg)
-![Last Updated](https://img.shields.io/badge/updated-January_2025-blue.svg)
+![React](https://img.shields.io/badge/react-19.2-blue.svg)
+![Node](https://img.shields.io/badge/node-22.x-43853d.svg)
+![Features](https://img.shields.io/badge/features-enterprise_ready-green.svg)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/7e3010cf-8613-4481-b143-2df4e9f6c307/deploy-status)](https://app.netlify.com/sites/officeops-platform/deploys)
 [![CI](https://github.com/3tternp/officeops_platform/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/3tternp/officeops_platform/actions/workflows/ci-cd.yml)
 
-## 📋 Table of Contents
+**OfficeOps** centralizes user, risk, access, learning, asset, and document programs into one React/Vite workspace. Clean UI, strong RBAC, and seeded demo data make it perfect for quick evaluations and training.
+
+## ✨ Fast Links
 
 - [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Quick Start](#quick-start)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Application Workflows](#application-workflows)
-- [Screenshots](#screenshots)
-- [RBAC Permissions](#rbac-permissions)
-- [Demo Accounts](#demo-accounts)
-- [API Documentation](#api-documentation)
-- [Docker Deployment](#docker-deployment)
-- [Netlify Deployment](#netlify-deployment)
-- [CI/CD](#cicd)
-- [Contributing](#contributing)
-- [Troubleshooting](#troubleshooting)
-- [Support](#support)
-- [License](#license)
+- [Security Defaults](#-security-defaults)
+- [Tech Stack](#-tech-stack)
+- [Quick Start](#-quick-start)
+- [Docker](#docker-deployment) · [Netlify](#netlify-deployment) · [CI/CD](#cicd)
 
 ## 🌟 Overview
 
-OfficeOps Platform is a modern, **fully functional** enterprise management system designed to streamline office operations, enhance security compliance, and improve organizational efficiency. Built with React 18 and featuring a clean, intuitive interface, it provides comprehensive solutions for user management, asset tracking, document control, risk assessment, and learning management.
+OfficeOps is built for enterprise teams that need **security-first workflows** without sacrificing speed. Modules cover user/department management, access approvals, document distribution, risk assessment, learning management, and analytics—all backed by maker-checker guardrails.
 
 ### Key Highlights
 
-- **🏢 Enterprise-Ready**: Scalable architecture supporting multi-department organizations
-- **🔐 Security-First**: Role-based access control (RBAC) with comprehensive permission management
-- **📱 Responsive Design**: Modern UI that works seamlessly across all devices
-- **🚀 High Performance**: Optimized for speed with efficient data management
-- **🔧 Configurable**: Highly customizable to meet specific organizational needs
-- **✅ Production-Ready**: All major features are fully implemented and functional
-- **🎯 Demo-Friendly**: Complete with sample data and multiple user roles for testing
+- **🏢 Enterprise-Ready**: Multi-department architecture with role isolation and approvals
+- **🔐 Security-First**: RBAC, rate limits, hashed credentials, and sanitized document rendering
+- **📈 GRC Coverage**: Access reviews, risk registers, treatment plans, and policy acknowledgments
+- **🧠 Guided UX**: Wizards, checklists, and AI-powered learning content for faster onboarding
+- **🎯 Demo-Friendly**: Curated seed data plus scripts for Linux/macOS/Windows and Docker
+- **🚀 Performance**: Vite + React 19 + Tailwind with modern bundling defaults
+
+## 🔒 Security Defaults
+
+- **Seeded safely**: Demo credentials are hashed (no plaintext secrets) and audit logs are enabled for login flows.
+- **Per-user salts**: All demo/admin credentials ship with salted hashes and optionally use a `VITE_AUTH_PEPPER`; legacy hashes auto-upgrade after a successful login.
+- **Document hygiene**: Uploaded document previews are sanitized to neutralize embedded scripts and malicious markup.
+- **Defence-in-depth**: Input validation, file-type enforcement, rate limiting, and MFA-ready login paths are built in.
+- **RBAC everywhere**: Maker-checker patterns for risk, access, and learning modules prevent unauthorized edits.
+- **Environment parity**: Node.js 22 baseline across Netlify, Docker, and local scripts to avoid engine drift.
 
 ## 🚀 What's New in 3.0
 
-- Ticketing system added: create, assign, approve, and resolve tickets end-to-end.
-- New My Tickets page with filters for status and assignment.
-- Dashboard now includes a Personal Tickets card for quick triage.
-- Navigation refresh: improved Sidebar structure and Breadcrumbs for clarity.
-- Settings, Profile, Department and User Management pages refined for consistency.
-- Responsiveness and accessibility improvements across forms, tables, and modals.
-- Documentation updates: installers import schema/seeds; README/INSTALL reflect SQL-based init.
+- Ticketing system: create, assign, approve, and resolve tickets end-to-end
+- Personal triage: My Tickets page and dashboard card for assigned work
+- Navigation refresh: improved sidebar hierarchy and breadcrumbs
+- Governance polish: consistent settings, profile, department, and user management flows
+- Security hardening: hashed demo credentials, sanitized document previews, and RBAC-aligned makers/checkers
 
 
 ## ✨ Features
@@ -125,13 +118,13 @@ OfficeOps Platform is a modern, **fully functional** enterprise management syste
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 18.2** - Modern UI library with hooks and concurrent features
-- **Vite 5.4** - Fast build tool and development server
+- **React 19.2** - Modern UI library with hooks and concurrent features
+- **Vite 7.2** - Fast build tool and development server
 - **Tailwind CSS 3.4** - Utility-first CSS framework
 - **Lucide React** - Beautiful icons and illustrations
-- **React Router DOM 7.8** - Client-side routing
-- **Recharts 2.15** - Responsive chart library
-- **React Hook Form 7.55** - Performant forms with validation
+- **React Router DOM 7.9** - Client-side routing
+- **Recharts 3.4** - Responsive chart library
+- **React Hook Form 7.66** - Performant forms with validation
 - **Date-fns 4.1** - Modern date utility library
 
 ### Backend (Planned)
@@ -153,7 +146,7 @@ OfficeOps Platform is a modern, **fully functional** enterprise management syste
 
 Before you begin, ensure you have the following installed on your development machine:
 
-- **Node.js** (v20.0.0 or higher)
+- **Node.js** (v22.0.0 or higher)
 - **npm** (v10.0.0 or higher) or **yarn** (v1.22.0 or higher)
 - **Docker** (v20.0.0 or higher) - for containerized deployment
 - **Docker Compose** (v2.0.0 or higher) - for multi-container setup
@@ -305,6 +298,7 @@ DB_PASSWORD=your_password
 # Security
 JWT_SECRET=your_jwt_secret
 SESSION_SECRET=your_session_secret
+VITE_AUTH_PEPPER=optional_client_side_pepper
 
 # Features
 VITE_ENABLE_MOCK_DATA=true
@@ -522,17 +516,31 @@ The platform includes several pre-configured demo accounts for comprehensive tes
 6. Verify real-time updates in asset catalog
 ```
 
-#### **Risk Assessment Testing (All Users)**
+#### **Risk Assessment Testing (Maker-Checker Roles)**
+
+**Admin / ISO (creator & checker)**
 ```bash
-# Login with any demo account
+# Login as admin@demo.com / admin123 or iso@demo.com / iso123
 1. Navigate to Risk Assessment
-2. Create new risk assessment using 4-step wizard
-3. Edit existing risk using edit button in register table
-4. View risk details and analytics in dashboard
-5. Download CSV template and test bulk upload
-6. Filter and sort risks in register table
-7. View interactive heat map visualization
-8. Test treatment planning and progress tracking
+2. Create a new risk assessment using the 4-step wizard (maker)
+3. Edit existing risks or treatment plans (checker) and save updates
+4. Download CSV template and test bulk upload/import
+5. Filter and sort risks in the register table
+6. View interactive heat map visualization and analytics
+```
+
+**CRO viewer (risk_officer)**
+```bash
+# Login as a CRO viewer account
+1. Navigate to Risk Assessment
+2. Verify the register is view-only (no create/edit/delete actions)
+3. Open risk details, analytics, and heat map for oversight
+```
+
+**Unauthorized roles (e.g., employee/manager)**
+```bash
+1. Navigate to Risk Assessment
+2. Confirm the restricted access notice instructs users to switch to Admin/ISO for register changes
 ```
 
 #### **System Health Checks**
@@ -679,15 +687,15 @@ CLI deploy (alternative):
 - `npm run deploy:netlify` # deploy production build from `dist`
 
 Notes:
-- Node version 18 is set in `netlify.toml`.
+- Node version 22 is enforced via `.nvmrc` and `netlify.toml`; if you see Netlify errors about unsupported engines, confirm the site is using Node 22.
 - SPA redirects are already configured to avoid 404 on refresh.
 - If using external APIs, ensure required `VITE_*` env vars are defined in Netlify.
 
 ## 🚀 Local Installation
 
 ### Prerequisites
-- Node.js 18+
-- npm 9+
+- Node.js 22+
+- npm 10+
 
 ### Steps
 - Clone the repository: `git clone https://github.com/yourusername/officeops-platform.git`
@@ -695,6 +703,11 @@ Notes:
 - Install dependencies: `npm install`
 - Start dev server: `npm run dev`
 - Open the app: `http://localhost:4028` (or the port shown in terminal)
+
+### Scripted setup
+
+- Linux/macOS: `./install.sh dev` (set `PACKAGE_MANAGER=pnpm` or `yarn` to use an alternative manager)
+- Windows (PowerShell): `./install.ps1 -Mode dev -PackageManager npm`
 
 ### Production Preview (locally)
 - Build: `npm run build`

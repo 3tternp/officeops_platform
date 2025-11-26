@@ -83,7 +83,10 @@ class DataService {
       id: 'admin001',
       name: 'Demo Administrator',
       email: 'admin@demo.com',
-      password: 'admin123', // Demo password for testing
+      // Pre-hashed with salt to avoid storing plaintext demo credentials
+      passwordSalt: 'd4e5c6f7a8b9c0d1',
+      passwordHash: '037198422099746855a01d0f3c480e65cd040f65e1ed1fe29caf11dd9ffa2aef',
+      passwordUpdatedAt: new Date().toISOString(),
       role: 'admin',
       department: 'Information Technology',
       status: 'active',
@@ -99,7 +102,9 @@ class DataService {
         id: 'iso001',
         name: 'Security Officer',
         email: 'iso@demo.com',
-        password: 'iso123',
+        passwordSalt: 'f1e2d3c4b5a69788',
+        passwordHash: '3460182ead9756d298ba68a85a9663a998ea330228ae718537b1e23d016f1fd6',
+        passwordUpdatedAt: new Date().toISOString(),
         role: 'iso',
         department: 'Information Technology',
         status: 'active',
@@ -110,7 +115,9 @@ class DataService {
         id: 'mgr001',
         name: 'Department Manager',
         email: 'manager@demo.com',
-        password: 'mgr123',
+        passwordSalt: 'a1b2c3d4e5f60718',
+        passwordHash: 'bd6b4610a7d8b04c7f1bdb19a7e4cf79e9a1689246668319e5aaec32d894beb7',
+        passwordUpdatedAt: new Date().toISOString(),
         role: 'manager',
         department: 'Human Resources',
         status: 'active',
@@ -121,7 +128,9 @@ class DataService {
         id: 'emp001',
         name: 'John Employee',
         email: 'employee@demo.com',
-        password: 'emp123',
+        passwordSalt: '8899aabbccddeeff',
+        passwordHash: '9f7ee4cb16143c01f92c4acaee2413f842715ac4043b8eaae5161eff1f0c7af1',
+        passwordUpdatedAt: new Date().toISOString(),
         role: 'employee',
         department: 'Finance',
         status: 'active',
@@ -1110,8 +1119,12 @@ class DataService {
 
   addRisk(risk) {
     const risks = this.getRisks();
+    const owner = risk.owner || risk.riskOwner || risk.ownerName || risk.riskOwnerName || '';
+    const riskOwner = risk.riskOwner || owner;
     const newRisk = {
       ...risk,
+      owner,
+      riskOwner,
       id: `risk${Date.now()}`,
       createdDate: new Date().toISOString(),
       status: risk.status || 'Open'
@@ -1123,8 +1136,15 @@ class DataService {
 
   updateRisk(riskId, updates) {
     const risks = this.getRisks();
-    const updatedRisks = risks.map(risk => 
-      risk.id === riskId ? { ...risk, ...updates } : risk
+    const updatedRisks = risks.map(risk =>
+      risk.id === riskId
+        ? {
+            ...risk,
+            ...updates,
+            owner: updates.owner || updates.riskOwner || risk.owner || risk.riskOwner || '',
+            riskOwner: updates.riskOwner || updates.owner || risk.riskOwner || risk.owner || ''
+          }
+        : risk
     );
     this.saveRisks(updatedRisks);
     return updatedRisks.find(risk => risk.id === riskId);
@@ -1498,8 +1518,15 @@ class DataService {
   // User management methods
   addUser(user) {
     const users = this.getUsers();
-    const newUser = {
+    const sanitizedUser = {
       ...user,
+      email: user.email?.trim().toLowerCase() || '',
+    };
+    delete sanitizedUser.password;
+    delete sanitizedUser.confirmPassword;
+
+    const newUser = {
+      ...sanitizedUser,
       id: `user${Date.now()}`,
       createdDate: new Date().toISOString(),
       status: 'active',
@@ -1512,8 +1539,14 @@ class DataService {
 
   updateUser(userId, updates) {
     const users = this.getUsers();
-    const updatedUsers = users.map(user => 
-      user.id === userId ? { ...user, ...updates } : user
+    const sanitizedUpdates = {
+      ...updates,
+      ...(updates.email ? { email: updates.email.trim().toLowerCase() } : {}),
+    };
+    delete sanitizedUpdates.password;
+    delete sanitizedUpdates.confirmPassword;
+    const updatedUsers = users.map(user =>
+      user.id === userId ? { ...user, ...sanitizedUpdates } : user
     );
     this.saveUsers(updatedUsers);
     return updatedUsers.find(user => user.id === userId);
