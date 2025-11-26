@@ -557,6 +557,42 @@ const LearningManagement = () => {
     }
   ];
 
+  const normalizeCourse = (course) => {
+    const isCyberCourse = course.id === 'course002' || course.title?.toLowerCase()?.includes('cybersecurity');
+    const hydratedModules = isCyberCourse
+      ? ((course.content?.modules?.length ? course.content.modules : cyberModules) || [])
+      : (course.content?.modules || []);
+
+    const moduleCount = course.settings?.moduleCount || hydratedModules.length || 4;
+    const quizzes = hydratedModules.flatMap(m => m.quiz?.questions || []);
+
+    return {
+      ...course,
+      settings: {
+        moduleCount,
+        passingScore: course.settings?.passingScore || 80,
+        allowRetakes: course.settings?.allowRetakes ?? true,
+        certificateEnabled: course.settings?.certificateEnabled ?? true,
+        prerequisites: course.settings?.prerequisites || [],
+        sequentialUnlock: course.settings?.sequentialUnlock ?? true,
+        minimumQuestionCount: course.settings?.minimumQuestionCount || defaultQuizBank.length,
+        targetRoles: course.settings?.targetRoles || ['manager', 'employee']
+      },
+      content: {
+        ...course.content,
+        modules: hydratedModules,
+        materials: [
+          { type: 'video', title: `${course.title} overview` },
+          { type: 'document', format: 'pdf', title: `${course.title} reference guide` },
+          { type: 'document', format: 'ppt', title: `${course.title} presentation` }
+        ],
+        quizzes: (quizzes.length ? quizzes : defaultQuizBank),
+        aiGenerated: course.content?.aiGenerated || isCyberCourse
+      }
+    };
+  };
+
+  const initialMockCourses = baseCourses.map(normalizeCourse);
   const initialMockCourses = baseCourses.map(course => ({
     ...course,
     settings: {
@@ -585,12 +621,15 @@ const LearningManagement = () => {
   // State for managing courses
   const [courses, setCourses] = useState([]);
 
-  // Load courses from localStorage or use initial mock data
+  // Load courses from localStorage or use initial mock data (with hydration so quizzes/modules never disappear)
   useEffect(() => {
     const savedCourses = localStorage.getItem('lms_courses');
     if (savedCourses) {
       try {
-        setCourses(JSON.parse(savedCourses));
+        const parsed = JSON.parse(savedCourses);
+        const hydrated = Array.isArray(parsed) ? parsed.map(normalizeCourse) : initialMockCourses;
+        setCourses(hydrated);
+        localStorage.setItem('lms_courses', JSON.stringify(hydrated));
       } catch (error) {
         console.error('Error loading saved courses:', error);
         setCourses(initialMockCourses);
