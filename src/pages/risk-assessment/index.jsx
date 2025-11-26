@@ -270,20 +270,25 @@ const RiskAssessment = () => {
       setUploadRegisterModalOpen(false);
       return;
     }
-    console.log('Uploading risk register:', uploadData);
-    // Add imported risks based on merge strategy
-    if (uploadData.mergeStrategy === 'replace') {
-      setRisks(uploadData.risks);
-    } else if (uploadData.mergeStrategy === 'append') {
-      setRisks(prev => [...prev, ...uploadData.risks]);
-    } else {
-      // Update existing, add new
-      setRisks(prev => {
-        const existingIds = prev.map(r => r.id);
-        const newRisks = uploadData.risks.filter(r => !existingIds.includes(r.id));
-        return [...prev, ...newRisks];
-      });
-    }
+
+    const nextRisks = (() => {
+      if (uploadData.mergeStrategy === 'replace') {
+        return uploadData.risks;
+      }
+
+      if (uploadData.mergeStrategy === 'append') {
+        return [...risks, ...uploadData.risks];
+      }
+
+      const existingIds = new Set(risks.map(r => r.id));
+      const newRisks = uploadData.risks.filter(r => !existingIds.has(r.id));
+      return [...risks, ...newRisks];
+    })();
+
+    setRisks(nextRisks);
+    dataService.saveRisks(nextRisks);
+    setUploadRegisterModalOpen(false);
+    toast.success('Risk register updated from upload.');
   };
 
   const handleExportReport = () => {
