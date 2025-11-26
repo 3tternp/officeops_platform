@@ -74,6 +74,297 @@ const LearningManagement = () => {
 
   // AI-generated cybersecurity pathway (10 sequential modules with per-module quizzes)
   const cyberModuleTopics = [
+    {
+      title: 'Password Hygiene & MFA',
+      focus: 'strong authentication',
+      duration: '20m',
+      objectives: [
+        'Build unique, complex passwords and rotate them on schedule.',
+        'Turn on multi-factor authentication for every supported app.',
+        'Use password managers instead of reusing credentials.'
+      ],
+      outline: ['Password strength checklist', 'Configuring MFA on SSO', 'Emergency recovery steps'],
+      resources: ['Credential vault setup guide', 'MFA enrollment FAQ'],
+      quizQuestions: [
+        {
+          question: 'Which practice most reduces credential reuse risk?',
+          options: ['Using a password manager with random generation', 'Reusing a password but adding symbols', 'Writing passwords on paper', 'Sharing an admin account with teammates'],
+          correctAnswer: 0
+        },
+        {
+          question: 'When is it acceptable to disable MFA on business apps?',
+          options: ['Never—MFA stays on for all supported apps', 'During travel only', 'When working on the corporate network', 'When using a hardware token'],
+          correctAnswer: 0
+        },
+        {
+          question: 'What should you do if your password manager alerts to a breach?',
+          options: ['Rotate the password immediately and confirm MFA is active', 'Ignore the alert until quarterly review', 'Share the alert in a public channel', 'Disable the breached account'],
+          correctAnswer: 0
+        }
+      ]
+    },
+    {
+      title: 'Phishing & Social Engineering',
+      focus: 'threat recognition',
+      duration: '25m',
+      objectives: [
+        'Spot malicious links, spoofed domains, and urgent language.',
+        'Verify sender identity before sharing information.',
+        'Report suspected phishing using the company workflow.'
+      ],
+      outline: ['Red flags checklist', 'Reporting flow', 'Safe link previewing'],
+      resources: ['Phishing triage playbook', 'Suspicious email escalation template'],
+      quizQuestions: [
+        {
+          question: 'What is the safest response to an unexpected MFA prompt?',
+          options: ['Deny the prompt and report it', 'Approve to avoid account lockout', 'Change devices and approve', 'Ignore it because it will expire'],
+          correctAnswer: 0
+        },
+        {
+          question: 'Which URL detail most likely indicates a phishing site?',
+          options: ['Misspelled domain or extra characters', 'Use of HTTPS', 'Presence of a logo', 'A long URL'],
+          correctAnswer: 0
+        },
+        {
+          question: 'How should you handle a “CEO urgent payment” request via email?',
+          options: ['Pause, verify via a known channel, and report if suspicious', 'Send payment to avoid escalation', 'Forward to peers for opinions', 'Reply asking for bank details'],
+          correctAnswer: 0
+        }
+      ]
+    },
+    {
+      title: 'Secure Remote Work',
+      focus: 'endpoint hardening',
+      duration: '18m',
+      objectives: [
+        'Keep devices encrypted and locked when unattended.',
+        'Use VPN plus endpoint protection when offsite.',
+        'Avoid public Wi‑Fi without a secure tunnel.'
+      ],
+      outline: ['Remote work checklist', 'VPN hygiene', 'Physical security while traveling'],
+      resources: ['Travel security one-pager', 'VPN troubleshooting guide'],
+      quizQuestions: [
+        {
+          question: 'What is the safest way to work from a café?',
+          options: ['Use company VPN, avoid public printers, and lock your screen', 'Connect to open Wi‑Fi without VPN', 'Disable disk encryption to improve speed', 'Share your hotspot with strangers'],
+          correctAnswer: 0
+        },
+        {
+          question: 'Which action protects data if a laptop is stolen?',
+          options: ['Full-disk encryption with strong passcode', 'Leaving the device unlocked for convenience', 'Using only browser-based MFA', 'Keeping passwords in a spreadsheet'],
+          correctAnswer: 0
+        },
+        {
+          question: 'When should you bypass endpoint protection?',
+          options: ['Never—open a ticket instead of disabling controls', 'When Wi‑Fi is slow', 'When software prompts you to disable it', 'During presentations'],
+          correctAnswer: 0
+        }
+      ]
+    },
+    {
+      title: 'Data Classification',
+      focus: 'handling sensitive data',
+      duration: '20m',
+      objectives: [
+        'Label and store data according to confidentiality tiers.',
+        'Share sensitive data only through approved systems.',
+        'Escalate if data is sent to the wrong party.'
+      ],
+      outline: ['Classification tiers', 'Secure sharing', 'Data disposal rules'],
+      resources: ['Classification matrix', 'Secure file sharing SOP'],
+      quizQuestions: [
+        {
+          question: 'How should confidential data be shared internally?',
+          options: ['Through approved encrypted channels only', 'Via personal email for speed', 'Through public chat rooms', 'By printing and mailing'],
+          correctAnswer: 0
+        },
+        {
+          question: 'What is the correct response to a misdirected email containing PII?',
+          options: ['Recall/notify, report the incident, and delete the message', 'Ignore if the recipient is friendly', 'Forward it to the right person without reporting', 'Post it in team chat'],
+          correctAnswer: 0
+        },
+        {
+          question: 'Which label fits customer payment data?',
+          options: ['Confidential or Restricted depending on policy', 'Public', 'Unclassified', 'Marketing only'],
+          correctAnswer: 0
+        }
+      ]
+    },
+    {
+      title: 'Device & Patch Management',
+      focus: 'reducing vulnerabilities',
+      duration: '22m',
+      objectives: [
+        'Install security updates within the defined SLA.',
+        'Restart to complete patching before using critical apps.',
+        'Report devices that cannot be patched.'
+      ],
+      outline: ['Patch cadence', 'Change windows', 'Escalation for failed patches'],
+      resources: ['Patch SLA table', 'Device health checklist'],
+      quizQuestions: [
+        {
+          question: 'Why are timely patches critical?',
+          options: ['They close known vulnerabilities before attackers exploit them', 'They only improve UI', 'They are optional unless traveling', 'They reduce battery life'],
+          correctAnswer: 0
+        },
+        {
+          question: 'What should you do if a patch fails repeatedly?',
+          options: ['Open an IT ticket with error details', 'Ignore it until quarter end', 'Disable antivirus to force it', 'Uninstall the OS update'],
+          correctAnswer: 0
+        },
+        {
+          question: 'When should devices be rebooted to finalize patches?',
+          options: ['As soon as prompted, within the maintenance window', 'Only once a month', 'Never, reboots are optional', 'During critical presentations'],
+          correctAnswer: 0
+        }
+      ]
+    },
+    {
+      title: 'Cloud Security Basics',
+      focus: 'shared responsibility',
+      duration: '24m',
+      objectives: [
+        'Understand the shared responsibility model.',
+        'Secure cloud credentials and API keys.',
+        'Use least-privilege roles for cloud access.'
+      ],
+      outline: ['IAM roles', 'Key rotation', 'Logging and monitoring'],
+      resources: ['IAM least-privilege guide', 'API key rotation SOP'],
+      quizQuestions: [
+        {
+          question: 'What does shared responsibility mean in cloud security?',
+          options: ['The provider secures infrastructure; we secure data/configuration', 'The provider owns all security', 'Security is optional for SaaS', 'Only network team cares'],
+          correctAnswer: 0
+        },
+        {
+          question: 'How should API keys be stored?',
+          options: ['In a secrets manager with rotation', 'Committed to source control', 'Shared via chat', 'Stored on sticky notes'],
+          correctAnswer: 0
+        },
+        {
+          question: 'Which access model best fits cloud consoles?',
+          options: ['Role-based least privilege with temporary elevation', 'Permanent admin rights', 'Shared root account', 'No MFA if on VPN'],
+          correctAnswer: 0
+        }
+      ]
+    },
+    {
+      title: 'Incident Reporting',
+      focus: 'early escalation',
+      duration: '15m',
+      objectives: [
+        'Report anomalies quickly with required evidence.',
+        'Know the on-call and communications flow.',
+        'Avoid tampering with potential evidence.'
+      ],
+      outline: ['What to report', 'Who to notify', 'Evidence handling'],
+      resources: ['Incident intake form', 'Bridge etiquette tips'],
+      quizQuestions: [
+        {
+          question: 'What is the first step after detecting suspicious activity?',
+          options: ['Report it via the incident channel/form immediately', 'Attempt to remediate silently', 'Delete logs to free space', 'Wait for a second alert'],
+          correctAnswer: 0
+        },
+        {
+          question: 'Why avoid modifying affected systems during triage?',
+          options: ['To preserve evidence for investigation', 'To reduce CPU usage', 'To hide the issue', 'Because backups are slow'],
+          correctAnswer: 0
+        },
+        {
+          question: 'Who should be notified for a potential breach?',
+          options: ['Follow the on-call/IR contact list', 'Only your peers', 'No one until confirmed', 'Post publicly'],
+          correctAnswer: 0
+        }
+      ]
+    },
+    {
+      title: 'Ransomware Readiness',
+      focus: 'containment and backups',
+      duration: '20m',
+      objectives: [
+        'Isolate infected devices immediately.',
+        'Validate backups and immutable storage options.',
+        'Follow the legal and communications plan.'
+      ],
+      outline: ['Isolation steps', 'Backup testing cadence', 'Comms plan'],
+      resources: ['Ransomware runbook', 'Backup validation checklist'],
+      quizQuestions: [
+        {
+          question: 'What is the first action if ransomware is suspected?',
+          options: ['Disconnect the device from networks and report', 'Pay the ransom quickly', 'Restart repeatedly', 'Disable antivirus'],
+          correctAnswer: 0
+        },
+        {
+          question: 'Why are immutable backups valuable?',
+          options: ['They cannot be altered by attackers', 'They speed up laptops', 'They reduce licensing', 'They remove MFA needs'],
+          correctAnswer: 0
+        },
+        {
+          question: 'Who directs communication with external parties during ransomware events?',
+          options: ['The incident commander/communications lead', 'Any engineer online', 'Impacted end users', 'No one communicates externally'],
+          correctAnswer: 0
+        }
+      ]
+    },
+    {
+      title: 'Safe Browsing & USB Use',
+      focus: 'preventing malware',
+      duration: '16m',
+      objectives: [
+        'Avoid installing unverified browser extensions.',
+        'Use approved USB devices and scan before use.',
+        'Recognize malicious pop-ups and drive-by downloads.'
+      ],
+      outline: ['Browser hygiene', 'USB approval', 'Malware warning signs'],
+      resources: ['Approved USB list', 'Browser extension review checklist'],
+      quizQuestions: [
+        {
+          question: 'How should USB drives from conferences be handled?',
+          options: ['Do not plug them in; request approved media', 'Use them immediately for backups', 'Plug in after disabling antivirus', 'Share them with colleagues'],
+          correctAnswer: 0
+        },
+        {
+          question: 'Which browser practice is safest?',
+          options: ['Install extensions only from approved lists', 'Install any extension with many reviews', 'Ignore extension permissions', 'Use outdated browsers to avoid updates'],
+          correctAnswer: 0
+        },
+        {
+          question: 'What should you do if a website automatically downloads a file?',
+          options: ['Delete the file, scan the device, and report if suspicious', 'Open it to see contents', 'Upload it to public storage', 'Email it externally'],
+          correctAnswer: 0
+        }
+      ]
+    },
+    {
+      title: 'Zero Trust Mindset',
+      focus: 'continuous verification',
+      duration: '25m',
+      objectives: [
+        'Assume breach and verify every request.',
+        'Grant least privilege with short-lived access.',
+        'Continuously monitor device and user posture.'
+      ],
+      outline: ['Identity-first security', 'Micro-segmentation', 'Continuous verification'],
+      resources: ['Zero Trust quickstart', 'Just-in-time access SOP'],
+      quizQuestions: [
+        {
+          question: 'What best describes Zero Trust?',
+          options: ['Never trust, always verify identity, device, and context', 'Trust internal traffic by default', 'Only external users require verification', 'VPN use alone is sufficient'],
+          correctAnswer: 0
+        },
+        {
+          question: 'How should privileged access be granted?',
+          options: ['Just-in-time with approvals and expiration', 'Permanent admin roles', 'Shared admin accounts', 'Based on seniority alone'],
+          correctAnswer: 0
+        },
+        {
+          question: 'Which signal is most relevant to continuous verification?',
+          options: ['Device health and user risk scores', 'Office location', 'Laptop color', 'Number of monitors'],
+          correctAnswer: 0
+        }
+      ]
+    }
+  ];
     { title: 'Password Hygiene & MFA', focus: 'strong authentication', duration: '20m' },
     { title: 'Phishing & Social Engineering', focus: 'threat recognition', duration: '25m' },
     { title: 'Secure Remote Work', focus: 'endpoint hardening', duration: '18m' },
@@ -126,6 +417,17 @@ const LearningManagement = () => {
     index: idx,
     title: `${idx + 1}. ${topic.title}`,
     objective: `AI-generated guidance focused on ${topic.focus}.`,
+    learningObjectives: topic.objectives,
+    outline: topic.outline,
+    aiGeneratedSummary: `This module was auto-generated to reinforce ${topic.focus} with practical guardrails, walkthroughs, and checklists.`,
+    estimatedDuration: topic.duration,
+    quiz: {
+      questions: (topic.quizQuestions || []).map((q, qIdx) => ({
+        id: `cyber-${idx + 1}-q${qIdx + 1}`,
+        ...q
+      }))
+    },
+    resources: (topic.resources || []).map((res) => ({ type: 'resource', title: res })),
     aiGeneratedSummary: `This module was auto-generated to reinforce ${topic.focus} with practical, employee-friendly guardrails, walkthroughs, and checklists.`,
     estimatedDuration: topic.duration,
     quiz: {

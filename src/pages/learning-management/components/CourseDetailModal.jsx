@@ -197,6 +197,33 @@ const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQu
                   {mod.definition?.objective && (
                     <p className="text-sm text-foreground mb-3">{mod.definition.objective}</p>
                   )}
+                  {Array.isArray(mod.definition?.learningObjectives) && mod.definition.learningObjectives.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Learning objectives</p>
+                      <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                        {mod.definition.learningObjectives.map((obj, objIdx) => (
+                          <li key={objIdx}>{obj}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {Array.isArray(mod.definition?.outline) && mod.definition.outline.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">What you'll cover</p>
+                      <div className="flex flex-wrap gap-2">
+                        {mod.definition.outline.map((item, outlineIdx) => (
+                          <Badge key={outlineIdx} variant="outline" className="text-xs">{item}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {mod.definition?.aiGeneratedSummary || 'Complete module content and pass the quiz to unlock the next module.'}
+                  </p>
+                  {mod.definition?.objective && (
+                    <p className="text-sm text-foreground mb-3">{mod.definition.objective}</p>
+                  )}
                   <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-3">
                     {mod.definition?.estimatedDuration && (
                       <span className="inline-flex items-center gap-1">
