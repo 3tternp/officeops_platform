@@ -10,7 +10,15 @@ const QuizModal = ({ course, moduleIndex, isOpen, onClose }) => {
 
   if (!isOpen || !course) return null;
 
-  const questions = Array.isArray(course?.content?.quizzes) ? course.content.quizzes : [];
+  const moduleDefinition = typeof moduleIndex === 'number'
+    ? course?.content?.modules?.[moduleIndex]
+    : null;
+
+  const questions = Array.isArray(moduleDefinition?.quiz?.questions) && moduleDefinition.quiz.questions.length
+    ? moduleDefinition.quiz.questions
+    : Array.isArray(course?.content?.quizzes)
+      ? course.content.quizzes
+      : [];
   const passingScore = course?.settings?.passingScore ?? 80;
   const allowRetakes = course?.settings?.allowRetakes ?? true;
 
@@ -114,8 +122,13 @@ const QuizModal = ({ course, moduleIndex, isOpen, onClose }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div>
-            <h2 className="text-xl font-semibold text-popover-foreground">Assessment — Module {typeof moduleIndex === 'number' ? moduleIndex + 1 : 'N/A'}</h2>
+            <h2 className="text-xl font-semibold text-popover-foreground">Assessment — {moduleDefinition?.title || `Module ${typeof moduleIndex === 'number' ? moduleIndex + 1 : 'N/A'}`}</h2>
             <p className="text-sm text-muted-foreground mt-1">{course.title} — Multiple Choice Quiz</p>
+            {moduleDefinition?.aiGenerated && (
+              <p className="text-xs text-muted-foreground mt-1 inline-flex items-center gap-1">
+                <Icon name="Sparkles" size={14} /> AI-generated training pathway
+              </p>
+            )}
           </div>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <Icon name="X" size={20} />
@@ -138,6 +151,14 @@ const QuizModal = ({ course, moduleIndex, isOpen, onClose }) => {
         {/* Body */}
         {canTakeQuiz && (
           <div className="p-6">
+            {(moduleDefinition?.aiGeneratedSummary || moduleDefinition?.objective) && (
+              <div className="p-4 mb-4 rounded-lg bg-muted border border-border">
+                <p className="text-sm text-foreground font-medium">{moduleDefinition?.aiGeneratedSummary || 'Module objective'}</p>
+                {moduleDefinition?.objective && (
+                  <p className="text-sm text-muted-foreground mt-1">{moduleDefinition.objective}</p>
+                )}
+              </div>
+            )}
             {isEmpty ? (
               <div className="text-center p-8 border-2 border-dashed border-border rounded-lg">
                 <Icon name="HelpCircle" size={40} className="text-muted-foreground mx-auto mb-4" />
