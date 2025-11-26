@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Image from '../../../components/AppImage';
@@ -8,9 +8,29 @@ import { useUser } from '../../../contexts/UserContext';
 
 const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQuiz, canEdit = false, canAssign = false }) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [modules, setModules] = useState([]);
   const { currentUser } = useUser();
 
   if (!isOpen || !course) return null;
+
+  useEffect(() => {
+    if (!isOpen || !course || !currentUser?.id) return;
+
+    const moduleDefinitions = course?.content?.modules || [];
+    const moduleCount = moduleDefinitions.length || course?.settings?.moduleCount || 4;
+    const passingScore = course?.settings?.passingScore ?? 80;
+
+    dataService.initializeCourseModuleProgress(currentUser.id, course.id, moduleCount, passingScore);
+    const cp = dataService.getCourseModuleProgress(currentUser.id, course.id);
+
+    const hydratedModules = Array.from({ length: moduleCount }, (_, idx) => {
+      const mod = cp?.modules?.[idx] || { index: idx, unlocked: idx === 0, passed: false };
+      const definition = moduleDefinitions?.[idx];
+      return { ...mod, definition };
+    });
+
+    setModules(hydratedModules);
+  }, [course, currentUser?.id, isOpen]);
 
   const getContentTypeIcon = (type) => {
     switch (type) {
@@ -135,69 +155,117 @@ const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQu
           <div className="space-y-6">
             <h3 className="font-semibold">Course Content</h3>
             <div className="space-y-4">
-              {(() => {
-                const moduleCount = course?.settings?.moduleCount ?? 4;
-                const passingScore = course?.settings?.passingScore ?? 80;
-                dataService.initializeCourseModuleProgress(currentUser?.id, course.id, moduleCount, passingScore);
-                const cp = dataService.getCourseModuleProgress(currentUser?.id, course.id);
-                const modules = Array.from({ length: moduleCount }, (_, idx) => {
-                  const m = cp?.modules?.[idx] || { index: idx, unlocked: idx === 0, passed: false };
-                  return m;
-                });
-                return modules.map((mod, index) => (
-                  <div key={index} className="border border-border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium">Module {index + 1}: {course.title}</h4>
-                      <div className="flex items-center gap-2">
-                        {mod.passed ? (
-                          <Badge variant="secondary">
-                            <Icon name="CheckCircle" size={12} className="mr-1 text-green-600" />
-                            Passed
-                          </Badge>
-                        ) : mod.unlocked ? (
-                          <Badge variant="outline">
-                            <Icon name="Unlock" size={12} className="mr-1" />
-                            Unlocked
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline">
-                            <Icon name="Lock" size={12} className="mr-1" />
-                            Locked
-                          </Badge>
-                        )}
-                      </div>
+              {modules.length === 0 && (
+                <div className="border border-dashed border-border rounded-lg p-4 text-sm text-muted-foreground">
+                  Module details are loading or not yet configured for this course.
+                </div>
+              )}
+              {modules.map((mod, index) => (
+                <div key={index} className="border border-border rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-medium">{mod.definition?.title || `Module ${index + 1}: ${course.title}`}</h4>
+                      {mod.definition?.aiGenerated && (
+                        <Badge variant="outline" className="text-xs">
+                          <Icon name="Sparkles" size={12} className="mr-1" />
+                          AI-generated
+                        </Badge>
+                      )}
                     </div>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Complete module content and pass the quiz to unlock the next module.
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                          <Icon name="Video" size={12} />
-                          <span>3 Videos</span>
-                        </div>
-                        <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                          <Icon name="FileText" size={12} />
-                          <span>2 Documents</span>
-                        </div>
-                        <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                          <Icon name="HelpCircle" size={12} />
-                          <span>Quiz</span>
-                        </div>
-                      </div>
-                      <Button
-                        variant={mod.unlocked ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => onTakeQuiz && mod.unlocked ? onTakeQuiz(course, index) : undefined}
-                        disabled={!mod.unlocked}
-                        iconName="HelpCircle"
-                      >
-                        {mod.passed ? 'Completed' : 'Take Quiz'}
-                      </Button>
+                    <div className="flex items-center gap-2">
+                      {mod.passed ? (
+                        <Badge variant="secondary">
+                          <Icon name="CheckCircle" size={12} className="mr-1 text-green-600" />
+                          Passed
+                        </Badge>
+                      ) : mod.unlocked ? (
+                        <Badge variant="outline">
+                          <Icon name="Unlock" size={12} className="mr-1" />
+                          Unlocked
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline">
+                          <Icon name="Lock" size={12} className="mr-1" />
+                          Locked
+                        </Badge>
+                      )}
                     </div>
                   </div>
-                ));
-              })()}
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {mod.definition?.aiGeneratedSummary || 'Complete module content and pass the quiz to unlock the next module.'}
+                  </p>
+                  {mod.definition?.objective && (
+                    <p className="text-sm text-foreground mb-3">{mod.definition.objective}</p>
+                  )}
+                  {Array.isArray(mod.definition?.learningObjectives) && mod.definition.learningObjectives.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Learning objectives</p>
+                      <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                        {mod.definition.learningObjectives.map((obj, objIdx) => (
+                          <li key={objIdx}>{obj}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {Array.isArray(mod.definition?.outline) && mod.definition.outline.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">What you'll cover</p>
+                      <div className="flex flex-wrap gap-2">
+                        {mod.definition.outline.map((item, outlineIdx) => (
+                          <Badge key={outlineIdx} variant="outline" className="text-xs">{item}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-3">
+                    {mod.definition?.estimatedDuration && (
+                      <span className="inline-flex items-center gap-1">
+                        <Icon name="Clock" size={12} />
+                        {mod.definition.estimatedDuration}
+                      </span>
+                    )}
+                    <span className="inline-flex items-center gap-1">
+                      <Icon name="HelpCircle" size={12} />
+                      {mod.definition?.quiz?.questions?.length || course.content?.quizzes?.length || 0} Questions
+                    </span>
+                  </div>
+                  {mod.definition?.resources?.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2 mb-4">
+                      {mod.definition.resources.map((res, idx) => (
+                        <Badge key={idx} variant="outline" className="text-xs capitalize">
+                          <Icon name="FileText" size={12} className="mr-1" />
+                          {res.title}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                        <Icon name="Video" size={12} />
+                        <span>3 Videos</span>
+                      </div>
+                      <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                        <Icon name="FileText" size={12} />
+                        <span>2 Documents</span>
+                      </div>
+                      <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                        <Icon name="HelpCircle" size={12} />
+                        <span>Quiz</span>
+                      </div>
+                    </div>
+                    <Button
+                      variant={mod.unlocked ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => onTakeQuiz && mod.unlocked ? onTakeQuiz(course, index) : undefined}
+                      disabled={!mod.unlocked}
+                      iconName="HelpCircle"
+                    >
+                      {mod.passed ? 'Completed' : 'Take Quiz'}
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         );
@@ -297,7 +365,7 @@ const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQu
             <h1 className="text-xl font-semibold text-foreground">Course Details</h1>
             <p className="text-sm text-muted-foreground">View and manage course information</p>
           </div>
-        <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
             {canEdit && (
               <Button variant="outline" size="sm" onClick={() => onEdit(course)} iconName="Edit">
                 Edit
@@ -308,11 +376,10 @@ const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQu
                 Assign
               </Button>
             )}
-
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <Icon name="X" size={20} />
-          </Button>
-        </div>
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <Icon name="X" size={20} />
+            </Button>
+          </div>
         </div>
 
         <div className="flex h-[calc(90vh-8rem)]">
