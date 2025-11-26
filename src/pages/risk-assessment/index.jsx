@@ -16,6 +16,8 @@ import UploadRiskRegisterModal from './components/UploadRiskRegisterModal';
 import dataService from '../../services/DataService';
 import { generateRiskRegisterTemplate } from '../../utils/riskRegisterTemplate';
 import { toast } from 'react-hot-toast';
+import { useUser } from '../../contexts/UserContext';
+import { PERMISSIONS, hasPermission } from '../../utils/permissions';
 
 const RiskAssessment = () => {
   const navigate = useNavigate();
@@ -33,6 +35,13 @@ const RiskAssessment = () => {
   const [aiSources, setAiSources] = useState({ assets: true, documents: true, access: true, users: true, departments: true });
   const [aiGeneratedRisks, setAiGeneratedRisks] = useState([]);
   const [aiGenerating, setAiGenerating] = useState(false);
+
+  const { currentUser } = useUser();
+  const userRole = currentUser?.role || 'employee';
+  const canViewRisks = hasPermission(userRole, PERMISSIONS.RISK_VIEW);
+  const canCreateRisks = hasPermission(userRole, PERMISSIONS.RISK_CREATE);
+  const canManageRisks = hasPermission(userRole, PERMISSIONS.RISK_MANAGE);
+  const canDeleteRisks = hasPermission(userRole, PERMISSIONS.RISK_DELETE);
 
   const [risks, setRisks] = useState([]);
   const [filteredRisks, setFilteredRisks] = useState([]);
@@ -131,11 +140,19 @@ const RiskAssessment = () => {
   };
 
   const handleEditRisk = (risk) => {
+    if (!canManageRisks) {
+      toast.error('Only Admin or ISO users can modify risk assessments.');
+      return;
+    }
     setRiskToEdit(risk);
     setEditRiskModalOpen(true);
   };
 
   const handleDeleteRisk = (risk) => {
+    if (!canDeleteRisks) {
+      toast.error('Only Admin or ISO users can delete risk assessments.');
+      return;
+    }
     if (window.confirm(`Are you sure you want to delete risk "${risk?.title}"?`)) {
       // Delete from DataService
       dataService.deleteRisk(risk?.id);
@@ -145,6 +162,10 @@ const RiskAssessment = () => {
   };
 
   const handleTreatmentSave = (updatedRisk) => {
+    if (!canManageRisks) {
+      toast.error('Only Admin or ISO users can update treatment plans.');
+      return;
+    }
     // Update in DataService
     dataService.updateRisk(updatedRisk?.id, updatedRisk);
     // Update local state
@@ -154,6 +175,11 @@ const RiskAssessment = () => {
   };
 
   const handleEditRiskSave = (updatedRisk) => {
+    if (!canManageRisks) {
+      toast.error('Only Admin or ISO users can modify risk assessments.');
+      setEditRiskModalOpen(false);
+      return;
+    }
     try {
       // Update in DataService
       dataService.updateRisk(updatedRisk?.id, updatedRisk);
@@ -173,14 +199,26 @@ const RiskAssessment = () => {
   };
 
   const handleCreateAssessment = () => {
+    if (!canCreateRisks) {
+      toast.error('Only Admin or ISO users can create risk assessments.');
+      return;
+    }
     setCreateAssessmentModalOpen(true);
   };
 
   const handleUploadRegister = () => {
+    if (!canManageRisks) {
+      toast.error('Only Admin or ISO users can upload or modify the risk register.');
+      return;
+    }
     setUploadRegisterModalOpen(true);
   };
 
   const handleAIGenerateSelected = async () => {
+    if (!canCreateRisks) {
+      toast.error('Only Admin or ISO users can generate AI-assisted risks.');
+      return;
+    }
     try {
       setAiGenerating(true);
       const generated = dataService.aiGenerateRisksFromSystem(aiSources);
@@ -195,6 +233,10 @@ const RiskAssessment = () => {
   };
 
   const handleAIAddAll = () => {
+    if (!canCreateRisks) {
+      toast.error('Only Admin or ISO users can add AI-generated risks.');
+      return;
+    }
     const toAdd = aiGeneratedRisks || [];
     if (!toAdd.length) {
       toast.error('No AI risks to add');
@@ -209,6 +251,11 @@ const RiskAssessment = () => {
   };
 
   const handleSubmitNewRisk = async (riskData) => {
+    if (!canCreateRisks) {
+      toast.error('Only Admin or ISO users can create risk assessments.');
+      setCreateAssessmentModalOpen(false);
+      return;
+    }
     console.log('Creating new risk assessment:', riskData);
     // Save to DataService
     const newRisk = dataService.addRisk(riskData);
@@ -218,20 +265,30 @@ const RiskAssessment = () => {
   };
 
   const handleSubmitUpload = async (uploadData) => {
-    console.log('Uploading risk register:', uploadData);
-    // Add imported risks based on merge strategy
-    if (uploadData.mergeStrategy === 'replace') {
-      setRisks(uploadData.risks);
-    } else if (uploadData.mergeStrategy === 'append') {
-      setRisks(prev => [...prev, ...uploadData.risks]);
-    } else {
-      // Update existing, add new
-      setRisks(prev => {
-        const existingIds = prev.map(r => r.id);
-        const newRisks = uploadData.risks.filter(r => !existingIds.includes(r.id));
-        return [...prev, ...newRisks];
-      });
+    if (!canManageRisks) {
+      toast.error('Only Admin or ISO users can modify the risk register.');
+      setUploadRegisterModalOpen(false);
+      return;
     }
+
+    const nextRisks = (() => {
+      if (uploadData.mergeStrategy === 'replace') {
+        return uploadData.risks;
+      }
+
+      if (uploadData.mergeStrategy === 'append') {
+        return [...risks, ...uploadData.risks];
+      }
+
+      const existingIds = new Set(risks.map(r => r.id));
+      const newRisks = uploadData.risks.filter(r => !existingIds.has(r.id));
+      return [...risks, ...newRisks];
+    })();
+
+    setRisks(nextRisks);
+    dataService.saveRisks(nextRisks);
+    setUploadRegisterModalOpen(false);
+    toast.success('Risk register updated from upload.');
   };
 
   const handleExportReport = () => {
@@ -332,6 +389,44 @@ const RiskAssessment = () => {
     { id: 'metrics', label: 'Analytics', icon: 'BarChart3' }
   ];
 
+  if (!canViewRisks) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header
+          onSidebarToggle={handleSidebarToggle}
+          sidebarCollapsed={sidebarCollapsed}
+        />
+        <Sidebar
+          isCollapsed={sidebarCollapsed}
+          onToggle={handleSidebarToggle}
+          isMobileOpen={mobileMenuOpen}
+          onMobileClose={handleMobileMenuClose}
+        />
+        <main className={`transition-all duration-300 ${
+          sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-72'
+        } pt-16`}>
+          <div className="p-6">
+            <Breadcrumb />
+            <div className="bg-card border border-border rounded-lg p-8 text-center space-y-4">
+              <Icon name="Lock" size={36} className="mx-auto text-muted-foreground" />
+              <h2 className="text-xl font-semibold text-foreground">Risk register is restricted</h2>
+              <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
+                Only Admin or ISO users can create and maintain the risk register under the maker-checker control. CRO/ISO viewers can still review the register maintained by those roles.
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <Button variant="outline" onClick={() => navigate('/')}>Back to Home</Button>
+                <Button onClick={() => navigate('/login')}>
+                  <Icon name="LogIn" size={16} className="mr-2" />
+                  Switch Account
+                </Button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header 
@@ -371,23 +466,29 @@ const RiskAssessment = () => {
                 <Icon name="FileDown" size={16} className="mr-2" />
                 Download Template
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 onClick={handleUploadRegister}
+                disabled={!canManageRisks}
+                title={canManageRisks ? '' : 'Only Admin or ISO users can modify the register'}
               >
                 <Icon name="Upload" size={16} className="mr-2" />
                 Upload Risk Register
               </Button>
               <Button
                 onClick={handleCreateAssessment}
+                disabled={!canCreateRisks}
+                title={canCreateRisks ? '' : 'Only Admin or ISO users can create risk assessments'}
               >
                 <Icon name="Plus" size={16} className="mr-2" />
                 Create Risk Assessment
               </Button>
               <div className="relative">
-                <Button 
+                <Button
                   variant="outline"
                   onClick={() => setAiMenuOpen(v => !v)}
+                  disabled={!canCreateRisks}
+                  title={canCreateRisks ? '' : 'Only Admin or ISO users can generate AI risks'}
                 >
                   <Icon name="Sparkles" size={16} className="mr-2" />
                   AI Create Risk
@@ -420,11 +521,11 @@ const RiskAssessment = () => {
                     <div className="mt-3 flex items-center justify-between">
                       <Button variant="outline" onClick={() => setAiMenuOpen(false)}>Cancel</Button>
                       <div className="flex items-center gap-2">
-                        <Button variant="secondary" onClick={handleAIGenerateSelected} disabled={aiGenerating}>
+                        <Button variant="secondary" onClick={handleAIGenerateSelected} disabled={aiGenerating || !canCreateRisks}>
                           <Icon name={aiGenerating ? 'LoaderCircle' : 'Sparkles'} size={16} className="mr-2" />
                           {aiGenerating ? 'Generating…' : 'Generate'}
                         </Button>
-                        <Button onClick={handleAIAddAll} disabled={!aiGeneratedRisks.length}>
+                        <Button onClick={handleAIAddAll} disabled={!aiGeneratedRisks.length || !canCreateRisks}>
                           <Icon name="Check" size={16} className="mr-2" />
                           Add {aiGeneratedRisks.length || ''}
                         </Button>
@@ -544,8 +645,12 @@ const RiskAssessment = () => {
             <RiskRegisterTable
               risks={filteredRisks}
               onRiskClick={handleRiskClick}
-              onEditRisk={handleEditRisk}
-              onDeleteRisk={handleDeleteRisk}
+              onEditRisk={canManageRisks ? handleEditRisk : null}
+              onDeleteRisk={canDeleteRisks ? handleDeleteRisk : null}
+              onAddRisk={canCreateRisks ? handleCreateAssessment : null}
+              canManage={canManageRisks}
+              canDelete={canDeleteRisks}
+              canCreate={canCreateRisks}
             />
           )}
 
@@ -621,7 +726,17 @@ const RiskAssessment = () => {
               <Button variant="ghost" onClick={() => setSelectedRisk(null)}>
                 Close
               </Button>
-              <Button onClick={() => setShowTreatmentPlanning(true)}>
+              <Button
+                onClick={() => {
+                  if (!canManageRisks) {
+                    toast.error('Only Admin or ISO users can update treatment plans.');
+                    return;
+                  }
+                  setShowTreatmentPlanning(true);
+                }}
+                disabled={!canManageRisks}
+                title={canManageRisks ? '' : 'Treatment updates are restricted to Admin/ISO'}
+              >
                 <Icon name="Settings" size={16} className="mr-2" />
                 Treatment Planning
               </Button>
