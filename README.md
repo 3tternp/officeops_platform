@@ -522,17 +522,31 @@ The platform includes several pre-configured demo accounts for comprehensive tes
 6. Verify real-time updates in asset catalog
 ```
 
-#### **Risk Assessment Testing (All Users)**
+#### **Risk Assessment Testing (Maker-Checker Roles)**
+
+**Admin / ISO (creator & checker)**
 ```bash
-# Login with any demo account
+# Login as admin@demo.com / admin123 or iso@demo.com / iso123
 1. Navigate to Risk Assessment
-2. Create new risk assessment using 4-step wizard
-3. Edit existing risk using edit button in register table
-4. View risk details and analytics in dashboard
-5. Download CSV template and test bulk upload
-6. Filter and sort risks in register table
-7. View interactive heat map visualization
-8. Test treatment planning and progress tracking
+2. Create a new risk assessment using the 4-step wizard (maker)
+3. Edit existing risks or treatment plans (checker) and save updates
+4. Download CSV template and test bulk upload/import
+5. Filter and sort risks in the register table
+6. View interactive heat map visualization and analytics
+```
+
+**CRO viewer (risk_officer)**
+```bash
+# Login as a CRO viewer account
+1. Navigate to Risk Assessment
+2. Verify the register is view-only (no create/edit/delete actions)
+3. Open risk details, analytics, and heat map for oversight
+```
+
+**Unauthorized roles (e.g., employee/manager)**
+```bash
+1. Navigate to Risk Assessment
+2. Confirm the restricted access notice instructs users to switch to Admin/ISO for register changes
 ```
 
 #### **System Health Checks**
