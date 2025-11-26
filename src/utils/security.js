@@ -223,14 +223,79 @@ export const generateSecureRandom = (length = 32) => {
  */
 export const hashData = async (data) => {
   if (!data) return '';
-  
+
   const encoder = new TextEncoder();
   const dataBuffer = encoder.encode(data);
   const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  
+
   return hashHex;
+};
+
+// Convert ArrayBuffer to hex string
+const bufferToHex = (buffer) => {
+  const hashArray = Array.from(new Uint8Array(buffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+};
+
+// Retrieve pepper from environment (kept outside localStorage)
+const getAuthPepper = () => {
+  const pepper = import.meta?.env?.VITE_AUTH_PEPPER;
+  return typeof pepper === 'string' ? pepper : '';
+};
+
+/**
+ * Generate a cryptographically strong salt for credentials
+ * @param {number} bytes - number of random bytes
+ * @returns {string} - hex-encoded salt
+ */
+export const generateSalt = (bytes = 16) => {
+  const random = crypto.getRandomValues(new Uint8Array(bytes));
+  return Array.from(random).map(b => b.toString(16).padStart(2, '0')).join('');
+};
+
+/**
+ * Derive a salted + peppered password hash using SHA-256
+ * @param {string} password
+ * @param {string} salt - hex encoded salt
+ * @returns {Promise<string>} - derived hash
+ */
+export const derivePasswordHash = async (password, salt) => {
+  if (!password || !salt) return '';
+  const encoder = new TextEncoder();
+  const pepper = getAuthPepper();
+  const payload = `${salt}:${password}:${pepper}`;
+  const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(payload));
+  return bufferToHex(hashBuffer);
+};
+
+/**
+ * Verify password against salted hash with legacy fallback support
+ * @param {string} password
+ * @param {object} user - user record containing credential fields
+ * @returns {Promise<boolean>}
+ */
+export const verifyPassword = async (password, user) => {
+  if (!password || !user) return false;
+
+  if (user.passwordSalt && user.passwordHash) {
+    const hashed = await derivePasswordHash(password, user.passwordSalt);
+    if (hashed === user.passwordHash) return true;
+  }
+
+  // Legacy SHA-256 only hash
+  if (user.passwordHash && !user.passwordSalt) {
+    const legacyHash = await hashData(password);
+    if (legacyHash === user.passwordHash) return true;
+  }
+
+  // Legacy plaintext fallback (should be phased out)
+  if (user.password) {
+    return user.password === password;
+  }
+
+  return false;
 };
 
 /**
@@ -635,7 +700,12 @@ const securityUtilsObj = {
   validatePassword: (password) => {
     return validatePasswordStrength(password);
   },
-  
+
+  // Credential hashing helpers
+  generateSalt: (bytes = 16) => generateSalt(bytes),
+  derivePasswordHash: (password, salt) => derivePasswordHash(password, salt),
+  verifyPassword: (password, user) => verifyPassword(password, user),
+
   // Secure API requests
   secureRequest: (url, options = {}) => {
     return secureApiRequest(url, options);
@@ -661,6 +731,9 @@ const securityUtilsObj = {
   secureRetrieve,
   generateSecureRandom,
   hashData,
+  generateSalt,
+  derivePasswordHash,
+  verifyPassword,
   createAuditLog,
   checkSuspiciousActivity,
   SessionSecurity,

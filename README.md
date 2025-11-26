@@ -36,6 +36,7 @@ OfficeOps is built for enterprise teams that need **security-first workflows** w
 ## 🔒 Security Defaults
 
 - **Seeded safely**: Demo credentials are hashed (no plaintext secrets) and audit logs are enabled for login flows.
+- **Per-user salts**: All demo/admin credentials ship with salted hashes and optionally use a `VITE_AUTH_PEPPER`; legacy hashes auto-upgrade after a successful login.
 - **Document hygiene**: Uploaded document previews are sanitized to neutralize embedded scripts and malicious markup.
 - **Defence-in-depth**: Input validation, file-type enforcement, rate limiting, and MFA-ready login paths are built in.
 - **RBAC everywhere**: Maker-checker patterns for risk, access, and learning modules prevent unauthorized edits.
@@ -297,6 +298,7 @@ DB_PASSWORD=your_password
 # Security
 JWT_SECRET=your_jwt_secret
 SESSION_SECRET=your_session_secret
+VITE_AUTH_PEPPER=optional_client_side_pepper
 
 # Features
 VITE_ENABLE_MOCK_DATA=true

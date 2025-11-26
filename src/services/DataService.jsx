@@ -83,8 +83,10 @@ class DataService {
       id: 'admin001',
       name: 'Demo Administrator',
       email: 'admin@demo.com',
-      // Pre-hashed to avoid storing plaintext demo credentials
-      passwordHash: '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9',
+      // Pre-hashed with salt to avoid storing plaintext demo credentials
+      passwordSalt: 'd4e5c6f7a8b9c0d1',
+      passwordHash: '037198422099746855a01d0f3c480e65cd040f65e1ed1fe29caf11dd9ffa2aef',
+      passwordUpdatedAt: new Date().toISOString(),
       role: 'admin',
       department: 'Information Technology',
       status: 'active',
@@ -100,7 +102,9 @@ class DataService {
         id: 'iso001',
         name: 'Security Officer',
         email: 'iso@demo.com',
-        passwordHash: '51ceb57f6f6372e02d830901d47f654e1e5a3d46009c8f7f3d6146b4880335f3',
+        passwordSalt: 'f1e2d3c4b5a69788',
+        passwordHash: '3460182ead9756d298ba68a85a9663a998ea330228ae718537b1e23d016f1fd6',
+        passwordUpdatedAt: new Date().toISOString(),
         role: 'iso',
         department: 'Information Technology',
         status: 'active',
@@ -111,7 +115,9 @@ class DataService {
         id: 'mgr001',
         name: 'Department Manager',
         email: 'manager@demo.com',
-        passwordHash: '49a0ac18e26df0b0724f5ac5837e436b336527485fc0a388f578913d6ee70e67',
+        passwordSalt: 'a1b2c3d4e5f60718',
+        passwordHash: 'bd6b4610a7d8b04c7f1bdb19a7e4cf79e9a1689246668319e5aaec32d894beb7',
+        passwordUpdatedAt: new Date().toISOString(),
         role: 'manager',
         department: 'Human Resources',
         status: 'active',
@@ -122,7 +128,9 @@ class DataService {
         id: 'emp001',
         name: 'John Employee',
         email: 'employee@demo.com',
-        passwordHash: 'e03d3ec8d5035f8721f5dc64546e59ed790dbcb3b7b598fe57057ccd7b683b00',
+        passwordSalt: '8899aabbccddeeff',
+        passwordHash: '9f7ee4cb16143c01f92c4acaee2413f842715ac4043b8eaae5161eff1f0c7af1',
+        passwordUpdatedAt: new Date().toISOString(),
         role: 'employee',
         department: 'Finance',
         status: 'active',
@@ -1510,8 +1518,12 @@ class DataService {
   // User management methods
   addUser(user) {
     const users = this.getUsers();
+    const sanitizedUser = { ...user };
+    delete sanitizedUser.password;
+    delete sanitizedUser.confirmPassword;
+
     const newUser = {
-      ...user,
+      ...sanitizedUser,
       id: `user${Date.now()}`,
       createdDate: new Date().toISOString(),
       status: 'active',
@@ -1524,8 +1536,11 @@ class DataService {
 
   updateUser(userId, updates) {
     const users = this.getUsers();
-    const updatedUsers = users.map(user => 
-      user.id === userId ? { ...user, ...updates } : user
+    const sanitizedUpdates = { ...updates };
+    delete sanitizedUpdates.password;
+    delete sanitizedUpdates.confirmPassword;
+    const updatedUsers = users.map(user =>
+      user.id === userId ? { ...user, ...sanitizedUpdates } : user
     );
     this.saveUsers(updatedUsers);
     return updatedUsers.find(user => user.id === userId);
