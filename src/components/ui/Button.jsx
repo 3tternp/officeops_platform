@@ -5,19 +5,19 @@ import { cn } from "../../utils/cn";
 import Icon from '../AppIcon';
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95 transform hover:shadow-lg",
+    "inline-flex items-center justify-center whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95 transform",
     {
         variants: {
             variant: {
-                default: "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg hover:from-blue-700 hover:to-blue-800 hover:shadow-xl focus-visible:ring-blue-500/50 border-0",
-                destructive: "bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg hover:from-red-700 hover:to-red-800 hover:shadow-xl focus-visible:ring-red-500/50 border-0",
-                outline: "border-2 border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md focus-visible:ring-gray-500/30",
-                secondary: "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 border border-gray-300 focus-visible:ring-gray-500/30",
-                ghost: "text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-gray-500/30",
-                link: "text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline focus-visible:ring-blue-500/30 shadow-none hover:shadow-none",
-                success: "bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg hover:from-green-700 hover:to-green-800 hover:shadow-xl focus-visible:ring-green-500/50 border-0",
-                warning: "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-lg hover:from-yellow-600 hover:to-yellow-700 hover:shadow-xl focus-visible:ring-yellow-500/50 border-0",
-                danger: "bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg hover:from-red-700 hover:to-red-800 hover:shadow-xl focus-visible:ring-red-500/50 border-0",
+                default: "bg-primary text-primary-foreground hover:bg-primary/90 border-0",
+                destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 border-0",
+                outline: "border border-border bg-background text-foreground hover:bg-muted",
+                secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/90",
+                ghost: "text-foreground hover:bg-muted",
+                link: "text-primary underline-offset-4 hover:underline",
+                success: "bg-success text-success-foreground hover:bg-success/90 border-0",
+                warning: "bg-warning text-warning-foreground hover:bg-warning/90 border-0",
+                danger: "bg-error text-error-foreground hover:bg-error/90 border-0",
             },
             size: {
                 default: "h-11 px-6 py-2.5 rounded-xl",

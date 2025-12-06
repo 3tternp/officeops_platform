@@ -32,11 +32,11 @@ const Input = React.forwardRef(({
 
     // Base input classes with modern styling
     const baseInputClasses = cn(
-        "flex w-full border transition-all duration-200 bg-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+        "flex w-full border transition-all duration-200 bg-background text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
         sizeClasses[size] || sizeClasses.default,
-        error ? "border-red-300 bg-red-50/50 focus-visible:ring-2 focus-visible:ring-red-500/20 focus-visible:border-red-500" :
-        success ? "border-green-300 bg-green-50/50 focus-visible:ring-2 focus-visible:ring-green-500/20 focus-visible:border-green-500" :
-        "border-gray-200 focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:border-blue-500"
+        error ? "border-error/50 bg-error/5 focus-visible:ring-2 focus-visible:ring-error/30 focus-visible:border-error" :
+        success ? "border-success/50 bg-success/5 focus-visible:ring-2 focus-visible:ring-success/30 focus-visible:border-success" :
+        "border-input focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-transparent"
     );
 
     // Checkbox-specific styles
@@ -76,7 +76,7 @@ const Input = React.forwardRef(({
         <div className="relative">
             {leftIcon && (
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <Icon name={leftIcon} size={18} className="text-gray-400" />
+                    <Icon name={leftIcon} size={18} className="text-muted-foreground" />
                 </div>
             )}
             
@@ -105,11 +105,11 @@ const Input = React.forwardRef(({
                 <div 
                     className={cn(
                         "absolute inset-y-0 right-0 flex items-center pr-3",
-                        onRightIconClick ? "cursor-pointer hover:text-gray-600" : "pointer-events-none"
+                        onRightIconClick ? "cursor-pointer hover:text-foreground" : "pointer-events-none"
                     )}
                     onClick={onRightIconClick}
                 >
-                    <Icon name={rightIcon} size={18} className="text-gray-400" />
+                    <Icon name={rightIcon} size={18} className="text-muted-foreground" />
                 </div>
             )}
         </div>
@@ -123,13 +123,13 @@ const Input = React.forwardRef(({
                     htmlFor={inputId}
                     className={cn(
                         "block text-sm font-semibold transition-colors duration-200",
-                        isFocused ? "text-blue-600" : "text-gray-700",
-                        error && "text-red-600",
-                        success && "text-green-600"
+                        isFocused ? "text-primary" : "text-foreground",
+                        error && "text-error",
+                        success && "text-success"
                     )}
                 >
                     {label}
-                    {required && <span className="text-red-500 ml-1">*</span>}
+                    {required && <span className="text-error ml-1">*</span>}
                 </label>
             )}
 
@@ -149,7 +149,7 @@ const Input = React.forwardRef(({
                     )}
                     <p className={cn(
                         "text-sm",
-                        error ? "text-red-600" : success ? "text-green-600" : "text-gray-500"
+                        error ? "text-error" : success ? "text-success" : "text-muted-foreground"
                     )}>
                         {error || success || description}
                     </p>

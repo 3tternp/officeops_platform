@@ -32,21 +32,22 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dompurify": "^3.2.5",
-    "framer-motion": "^12.23.24",
+    "framer-motion": "^12.23.25",
     "jspdf": "^3.0.4",
     "jszip": "^3.10.1",
-    "lucide-react": "^0.554.0",
-    "nodemailer": "^7.0.10",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-hook-form": "^7.66.1",
+    "lucide-react": "^0.556.0",
+    "nodemailer": "^7.0.11",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "react-hook-form": "^7.68.0",
     "react-hot-toast": "^2.6.0",
-    "react-router-dom": "^7.9.6",
-    "recharts": "^3.4.1",
+    "react-router-dom": "^7.10.1",
+    "recharts": "^3.5.1",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7"
   },
   "scripts": {
+    "preinstall": "npx --yes npm-force-resolutions",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -60,6 +61,9 @@
     "deps:update": "npx npm-check-updates -u",
     "deps:audit": "npm audit fix",
     "deps:reinstall": "npm run reinstall"
+  },
+  "resolutions": {
+    "jws": "3.2.3"
   },
   "eslintConfig": {
     "extends": [
@@ -83,15 +87,20 @@
     "@tailwindcss/postcss": "^4.1.17",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.22",
-    "netlify-cli": "^23.11.1",
+    "netlify-cli": "^23.12.3",
     "postcss": "^8.5.6",
     "postcss-nesting": "^13.0.2",
-    "rimraf": "^6.1.0",
-    "tailwindcss": "^3.4.14",
-    "vite": "^7.2.2"
+    "rimraf": "^6.1.2",
+    "tailwindcss": "^4.1.17",
+    "vite": "^7.2.6"
   },
   "engines": {
     "node": ">=22",
     "npm": ">=10"
+  },
+  "overrides": {
+    "netlify-cli": {
+      "jsonwebtoken": "9.0.3"
+    }
   }
 }

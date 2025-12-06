@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Icon from '../components/AppIcon';
 import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
 import { useUser } from '../contexts/UserContext';
 import { securityUtils } from '../utils/security';
 import { AlertCircle } from 'lucide-react';
@@ -333,7 +334,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-3 sm:p-4 md:p-6">
+    <div className="min-h-screen bg-background relative flex items-center justify-center p-3 sm:p-4 md:p-6">
       {/* Background image or brand-tinted gradient */}
       <div
         className="absolute inset-0"
@@ -347,7 +348,7 @@ const Login = () => {
               backgroundImage: `linear-gradient(135deg, ${(branding?.primaryColor || '#3b82f6')}11, #ffffff, ${(branding?.secondaryColor || '#6366f1')}11)`,
             }}
       />
-      <div className="absolute inset-0 bg-white/70" />
+      <div className="absolute inset-0 bg-background/70" />
       <div className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg">
         {/* Logo and Title */}
         <div className="text-center mb-6 sm:mb-8">
@@ -367,42 +368,39 @@ const Login = () => {
               <Icon name="Building2" size={32} color="white" />
             </div>
           )}
-          <h1
-            className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent mb-2"
-            style={{ backgroundImage: 'linear-gradient(90deg, #111827, #374151)' }}
-          >
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
             {branding?.companyName || 'OfficeOps'} Platform
           </h1>
-          <p className="text-gray-600 font-medium text-sm sm:text-base">Welcome back! Sign in to your account</p>
+          <p className="text-muted-foreground font-medium text-sm sm:text-base">Welcome back! Sign in to your account</p>
         </div>
 
         {/* Login Form */}
-        <div className="bg-white/85 backdrop-blur-xl border border-gray-200/80 rounded-2xl shadow-2xl p-6 sm:p-8 relative overflow-hidden">
+        <div className="bg-card border border-border rounded-2xl shadow-enterprise-lg p-6 sm:p-8 relative overflow-hidden">
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-16 -translate-y-8">
-            <div className="w-full h-full bg-gradient-to-br from-blue-100/30 to-transparent rounded-full" />
+            <div className="w-full h-full bg-primary/10 rounded-full" />
           </div>
           <div className="relative z-10">
           
 
           {/* Error Display */}
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className="mb-4 p-3 bg-error/10 border border-error/20 rounded-lg">
               <div className="flex items-center space-x-2">
-                <AlertCircle className="h-4 w-4 text-red-600" />
-                <span className="text-sm text-red-600">{error}</span>
+                <AlertCircle className="h-4 w-4 text-error" />
+                <span className="text-sm text-error">{error}</span>
               </div>
             </div>
           )}
 
           {/* Lockout Notice */}
           {isLocked && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="mb-4 p-4 bg-error/10 border border-error/20 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
-                <AlertCircle className="h-5 w-5 text-red-600" />
-                <span className="font-medium text-red-700">Account Temporarily Locked</span>
+                <AlertCircle className="h-5 w-5 text-error" />
+                <span className="font-medium text-error">Account Temporarily Locked</span>
               </div>
-              <p className="text-sm text-red-600">
+              <p className="text-sm text-error">
                 Too many failed login attempts. Your account is locked for security reasons.
                 Please try again in 15 minutes.
               </p>
@@ -410,71 +408,37 @@ const Login = () => {
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Icon name="Mail" size={18} className="text-gray-400" />
-                </div>
-                <input
-                  type="email"
-                  required
-                  disabled={isLocked || isLoading || mfaPending}
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="Enter your email address"
-                  className={`w-full pl-11 pr-4 py-3 border rounded-xl text-sm transition-all duration-200 ${
-                    isLocked || isLoading 
-                      ? 'border-gray-200 bg-gray-50 cursor-not-allowed'
-                      : 'border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white hover:border-gray-300'
-                  }`}
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Icon name="Lock" size={18} className="text-gray-400" />
-                </div>
-                <input
-                  type="password"
-                  required
-                  disabled={isLocked || isLoading || mfaPending}
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder="Enter your password"
-                  className={`w-full pl-11 pr-4 py-3 border rounded-xl text-sm transition-all duration-200 ${
-                    isLocked || isLoading 
-                      ? 'border-gray-200 bg-gray-50 cursor-not-allowed'
-                      : 'border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white hover:border-gray-300'
-                  }`}
-                />
-              </div>
-            </div>
+            <Input
+              label="Email Address"
+              required
+              type="email"
+              placeholder="Enter your email address"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              leftIcon="Mail"
+              disabled={isLocked || isLoading || mfaPending}
+            />
+            <Input
+              label="Password"
+              required
+              type="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={(e) => handleInputChange('password', e.target.value)}
+              leftIcon="Lock"
+              disabled={isLocked || isLoading || mfaPending}
+            />
             
             {mfaPending && (
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Verification Code
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Icon name="ShieldCheck" size={18} className="text-gray-400" />
-                  </div>
-                  <input
-                    type="text"
-                    value={otpInput}
-                    onChange={(e) => setOtpInput(e.target.value)}
-                    placeholder="Enter 6-digit code"
-                    className="w-full pl-11 pr-4 py-3 border rounded-xl text-sm transition-all duration-200 border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white hover:border-gray-300"
-                  />
-                </div>
+                <Input
+                  label="Verification Code"
+                  type="text"
+                  value={otpInput}
+                  onChange={(e) => setOtpInput(e.target.value)}
+                  placeholder="Enter 6-digit code"
+                  leftIcon="ShieldCheck"
+                />
                 <p className="text-xs text-muted-foreground">We sent a code to {formData.email}. Check your inbox.</p>
               </div>
             )}
@@ -491,8 +455,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => navigate('/forgot-password')}
-                className="text-sm hover:underline disabled:opacity-50"
-                style={{ color: branding?.primaryColor || undefined }}
+                className="text-sm text-primary hover:underline disabled:opacity-50"
                 disabled={isLocked || isLoading || mfaPending}
               >
                 Forgot password?
@@ -503,8 +466,7 @@ const Login = () => {
               <Button 
                 type="button" 
                 onClick={handleVerifyOtp}
-                className="w-full h-12 text-base font-semibold shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-white rounded-xl" 
-                style={{ background: branding?.primaryColor || undefined }}
+                className="w-full h-12 text-base font-semibold"
                 disabled={isLocked || isLoading}
               >
                 <div className="flex items-center space-x-2">
@@ -515,8 +477,7 @@ const Login = () => {
             ) : (
               <Button 
                 type="submit" 
-                className="w-full h-12 text-base font-semibold shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-white rounded-xl" 
-                style={{ background: branding?.primaryColor || undefined }}
+                className="w-full h-12 text-base font-semibold"
                 disabled={isLocked || isLoading}
               >
                 {isLoading ? (
@@ -533,7 +494,7 @@ const Login = () => {
               </Button>
             )}
             {branding?.footerText && (
-              <p className="text-xs text-gray-500 text-center mt-6">{branding.footerText}</p>
+              <p className="text-xs text-muted-foreground text-center mt-6">{branding.footerText}</p>
             )}
           </form>
           </div>

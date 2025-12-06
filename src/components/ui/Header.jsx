@@ -97,7 +97,7 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-b border-gray-200/80 shadow-sm"
+      className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border shadow-sm"
       style={branding?.loginBackgroundImage ? {
         backgroundImage: `url(${branding.loginBackgroundImage})`,
         backgroundSize: 'cover',
@@ -118,7 +118,7 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
           </Button>
           
           <div className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl shadow-lg overflow-hidden bg-gradient-to-br from-blue-600 to-blue-700">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl shadow-lg overflow-hidden bg-primary">
               {branding?.companyLogo ? (
                 <img src={branding.companyLogo} alt="Logo" className="w-full h-full object-cover" />
               ) : (
@@ -126,8 +126,8 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
               )}
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">{branding?.companyName || 'OfficeOps'}</h1>
-              <p className="text-xs font-medium text-gray-500 tracking-wide">PLATFORM</p>
+              <h1 className="text-xl font-bold text-foreground">{branding?.companyName || 'OfficeOps'}</h1>
+              <p className="text-xs font-medium text-muted-foreground tracking-wide">PLATFORM</p>
             </div>
           </div>
         </div>
@@ -139,17 +139,17 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
               <Icon 
                 name="Search" 
                 size={18} 
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" 
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground" 
               />
               <input
                 type="text"
                 placeholder="Search across modules, documents, users..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e?.target?.value)}
-                className="w-full pl-12 pr-4 py-3 text-sm bg-gray-50/80 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all duration-200 placeholder-gray-400"
+                className="w-full pl-12 pr-4 py-3 text-sm bg-muted border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent focus:bg-background transition-all duration-200 placeholder:text-muted-foreground"
               />
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <kbd className="hidden sm:inline-flex items-center px-2 py-1 text-xs font-medium text-gray-500 bg-white border border-gray-200 rounded shadow-sm">⌘K</kbd>
+                <kbd className="hidden sm:inline-flex items-center px-2 py-1 text-xs font-medium text-muted-foreground bg-background border border-border rounded shadow-sm">⌘K</kbd>
               </div>
             </div>
           </form>
@@ -169,21 +169,21 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
           <div className="relative">
             <button
               onClick={() => setNotificationOpen(!notificationOpen)}
-              className="relative p-2.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="relative p-2.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <Icon name="Bell" size={20} />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-full flex items-center justify-center font-medium shadow-lg animate-pulse">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-error text-error-foreground text-xs rounded-full flex items-center justify-center font-medium shadow-lg animate-pulse">
                   {unreadCount}
                 </span>
               )}
             </button>
 
             {notificationOpen && (
-              <div className="absolute right-0 top-full mt-3 w-80 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
-                <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-gray-200">
-                  <h3 className="font-semibold text-gray-900">Notifications</h3>
-                  <p className="text-sm text-gray-500 mt-0.5">{unreadCount} unread messages</p>
+              <div className="absolute right-0 top-full mt-3 w-80 bg-popover border border-border rounded-2xl shadow-2xl z-50 overflow-hidden">
+                <div className="p-4 bg-muted border-b border-border">
+                  <h3 className="font-semibold text-popover-foreground">Notifications</h3>
+                  <p className="text-sm text-muted-foreground mt-0.5">{unreadCount} unread messages</p>
                 </div>
                 <div className="max-h-96 overflow-y-auto">
                   {notifications?.map((notification) => (
@@ -233,9 +233,9 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
           <div className="relative">
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="flex items-center space-x-3 px-3 py-2 text-foreground hover:bg-muted rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+              <div className="w-9 h-9 bg-primary rounded-full flex items-center justify-center shadow-lg overflow-hidden">
                 {currentUser?.profilePicture ? (
                   <img 
                     src={currentUser.profilePicture} 
@@ -247,17 +247,17 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
                 )}
               </div>
               <div className="hidden sm:block text-left">
-                <p className="text-sm font-semibold text-gray-900">{currentUser?.name || 'User'}</p>
-                <p className="text-xs text-gray-500 font-medium">{currentUser?.role?.toUpperCase() || 'ROLE'}</p>
+                <p className="text-sm font-semibold text-foreground">{currentUser?.name || 'User'}</p>
+                <p className="text-xs text-muted-foreground font-medium">{currentUser?.role?.toUpperCase() || 'ROLE'}</p>
               </div>
-              <Icon name="ChevronDown" size={16} className="hidden sm:block text-gray-400" />
+              <Icon name="ChevronDown" size={16} className="hidden sm:block text-muted-foreground" />
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 top-full mt-3 w-64 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
-                <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-gray-200">
+              <div className="absolute right-0 top-full mt-3 w-64 bg-popover border border-border rounded-2xl shadow-2xl z-50 overflow-hidden">
+                <div className="p-4 bg-muted border-b border-border">
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg overflow-hidden">
                       {currentUser?.profilePicture ? (
                         <img 
                           src={currentUser.profilePicture} 
@@ -269,9 +269,9 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
                       )}
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">{currentUser?.name || 'User'}</p>
-                      <p className="text-sm text-gray-600">{currentUser?.email || 'email@company.com'}</p>
-                      <p className="text-xs font-medium text-blue-600 mt-0.5">{currentUser?.role === 'admin' ? 'Administrator' : currentUser?.role === 'manager' ? 'Manager' : 'Employee'}</p>
+                      <p className="font-semibold text-popover-foreground">{currentUser?.name || 'User'}</p>
+                      <p className="text-sm text-muted-foreground">{currentUser?.email || 'email@company.com'}</p>
+                      <p className="text-xs font-medium text-primary mt-0.5">{currentUser?.role === 'admin' ? 'Administrator' : currentUser?.role === 'manager' ? 'Manager' : 'Employee'}</p>
                     </div>
                   </div>
                 </div>

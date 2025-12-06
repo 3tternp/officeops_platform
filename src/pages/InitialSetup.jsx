@@ -112,7 +112,7 @@ const InitialSetup = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-3 sm:p-4 md:p-6">
+    <div className="min-h-screen bg-background relative flex items-center justify-center p-3 sm:p-4 md:p-6">
       {/* Background image or brand-tinted gradient */}
       <div
         className="absolute inset-0"
@@ -123,39 +123,34 @@ const InitialSetup = () => {
               backgroundPosition: 'center',
             }
           : {
-              backgroundImage: `linear-gradient(135deg, ${(branding?.primaryColor || '#3b82f6')}11, #ffffff, ${(branding?.secondaryColor || '#6366f1')}11)`,
+              backgroundImage: 'linear-gradient(135deg, #dcfce7, #ffffff, #bbf7d0)',
             }}
       />
-      <div className="absolute inset-0 bg-white/70" />
+      <div className="absolute inset-0 bg-emerald-50/60" />
 
       <div className="relative z-10 w-full max-w-sm sm:max-w-md md:max-w-lg">
-        <div className="text-center mb-6 sm:mb-8">
+        <div className="flex flex-col items-center text-center mb-6 sm:mb-8">
           {branding?.companyLogo ? (
             <img
               src={branding.companyLogo}
               alt={`${branding?.companyName || 'Company'} logo`}
-              className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-2xl shadow-2xl mx-auto mb-4"
+              className="block w-24 h-24 sm:w-28 sm:h-28 object-contain rounded-2xl shadow-2xl mx-auto mb-6 sm:mb-8"
             />
           ) : (
             <div
-              className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-2xl shadow-2xl mx-auto mb-4"
+              className="flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28 rounded-2xl shadow-2xl mx-auto mb-6 sm:mb-8"
               style={{
-                backgroundImage: `linear-gradient(135deg, ${branding?.primaryColor || '#3b82f6'}, ${branding?.secondaryColor || '#6366f1'})`,
+                backgroundImage: 'linear-gradient(135deg, #10b981, #34d399)',
               }}
             >
-              <Icon name="Shield" size={32} color="white" />
+              <Icon name="Shield" size={40} color="white" />
             </div>
           )}
-          <h1
-            className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent mb-1"
-            style={{ backgroundImage: 'linear-gradient(90deg, #111827, #374151)' }}
-          >
-            Initial Setup
-          </h1>
-          <p className="text-gray-600">Create your first administrator account</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">Initial Setup</h1>
+          <p className="text-muted-foreground">Create your first administrator account</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white/90 backdrop-blur rounded-2xl p-4 sm:p-6 shadow-xl border border-gray-200">
+        <form onSubmit={handleSubmit} className="bg-card border border-emerald-200 rounded-2xl p-4 sm:p-6 shadow-enterprise-lg">
           <div className="space-y-4">
             <Input
               label="Organization Name (optional)"
@@ -163,6 +158,7 @@ const InitialSetup = () => {
               value={orgName}
               onChange={(e) => setOrgName(e.target.value)}
               leftIcon="Building2"
+              className="focus-visible:ring-emerald-500/25 focus-visible:border-emerald-500"
             />
             <Input
               label="Admin Full Name"
@@ -171,6 +167,7 @@ const InitialSetup = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               leftIcon="User"
+              className="focus-visible:ring-emerald-500/25 focus-visible:border-emerald-500"
             />
             <Input
               label="Admin Email"
@@ -180,6 +177,7 @@ const InitialSetup = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               leftIcon="Mail"
+              className="focus-visible:ring-emerald-500/25 focus-visible:border-emerald-500"
             />
             <Input
               label="Password"
@@ -189,6 +187,7 @@ const InitialSetup = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               leftIcon="Lock"
+              className="focus-visible:ring-emerald-500/25 focus-visible:border-emerald-500"
             />
             <Input
               label="Confirm Password"
@@ -198,28 +197,29 @@ const InitialSetup = () => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               leftIcon="Lock"
+              className="focus-visible:ring-emerald-500/25 focus-visible:border-emerald-500"
             />
 
             {error && (
-              <div className="flex items-center gap-2 text-red-600 text-sm">
+              <div className="flex items-center gap-2 text-error text-sm">
                 <Icon name="AlertCircle" size={16} />
                 <span>{error}</span>
               </div>
             )}
             {success && (
-              <div className="flex items-center gap-2 text-green-600 text-sm">
+              <div className="flex items-center gap-2 text-success text-sm">
                 <Icon name="CheckCircle" size={16} />
                 <span>{success}</span>
               </div>
             )}
 
             <div className="pt-2">
-              <Button type="submit" disabled={isSubmitting} className="w-full">
+              <Button type="submit" disabled={isSubmitting} className="w-full" variant="success">
                 {isSubmitting ? 'Setting up...' : 'Create Admin Account'}
               </Button>
             </div>
 
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-muted-foreground mt-2">
               This setup is only shown on first install when demo data is disabled.
             </p>
           </div>
