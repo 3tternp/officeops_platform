@@ -25,7 +25,15 @@ const domainAllowed = (email, allowedDomains) => {
     const domain = parts[1];
     if (!domain) return false;
     if (!allowedDomains || allowedDomains.length === 0) return true; // no restriction
-    return allowedDomains.includes(domain);
+    return allowedDomains.some((allowedDomain) => {
+      const normalized = String(allowedDomain || '').toLowerCase();
+      if (!normalized) return false;
+      if (normalized === '*') return true;
+      if (normalized.startsWith('.')) {
+        return domain.endsWith(normalized);
+      }
+      return domain === normalized;
+    });
   } catch (e) {
     return false;
   }

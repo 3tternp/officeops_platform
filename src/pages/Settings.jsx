@@ -312,7 +312,7 @@ const Settings = () => {
                         label="Allowed Email Domains (comma-separated)"
                         value={emailAllowedDomainsInput}
                         onChange={(e) => setEmailAllowedDomainsInput(e.target.value)}
-                        placeholder="example.com, company.org"
+                        placeholder="example.com, .company.org, *"
                       />
                       <div className="flex justify-end">
                         <Button onClick={() => {
@@ -352,7 +352,7 @@ const Settings = () => {
                         </div>
                       </div>
                       <p className="text-xs text-muted-foreground mt-2">
-                        SMTP env vars required: SMTP_HOST, SMTP_PORT, SMTP_SECURE (true|false), SMTP_USER, SMTP_PASS, SMTP_FROM. Optional: ALLOWED_EMAIL_DOMAIN(S).
+                        SMTP env vars required: SMTP_HOST, SMTP_PORT, SMTP_SECURE (true|false), SMTP_USER, SMTP_PASS, SMTP_FROM. Optional: ALLOWED_EMAIL_DOMAIN(S). Use a leading dot to allow subdomains.
                       </p>
                     </div>
                   </div>
