@@ -681,14 +681,18 @@ const RiskAssessment = () => {
       )}
       {/* Risk Detail Modal */}
       {selectedRisk && !showTreatmentPlanning && (
-        <div className="fixed inset-0 z-100 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-card rounded-lg border border-border w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+          <div 
+            className="absolute inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
+            onClick={() => setSelectedRisk(null)}
+          />
+          <div className="relative bg-white dark:bg-slate-900 border border-border rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-white dark:bg-slate-900 z-10">
               <div>
-                <h2 className="text-xl font-semibold text-foreground">{selectedRisk?.title}</h2>
-                <p className="text-sm text-muted-foreground">Risk ID: {selectedRisk?.id}</p>
+                <h2 className="text-xl font-bold text-foreground">{selectedRisk?.title}</h2>
+                <p className="text-sm text-muted-foreground mt-1">Risk ID: {selectedRisk?.id}</p>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setSelectedRisk(null)}>
+              <Button variant="ghost" size="icon" onClick={() => setSelectedRisk(null)} className="hover:bg-muted rounded-full">
                 <Icon name="X" size={20} />
               </Button>
             </div>

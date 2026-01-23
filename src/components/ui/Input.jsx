@@ -25,9 +25,9 @@ const Input = React.forwardRef(({
 
     // Size variants
     const sizeClasses = {
-        sm: "h-9 px-3 py-2 text-sm rounded-lg",
-        default: "h-11 px-4 py-2.5 text-sm rounded-xl",
-        lg: "h-12 px-5 py-3 text-base rounded-xl"
+        sm: "h-8 sm:h-9 px-3 py-1.5 sm:py-2 text-sm rounded-lg",
+        default: "h-9 sm:h-11 px-4 py-2 sm:py-2.5 text-sm rounded-lg sm:rounded-xl",
+        lg: "h-10 sm:h-12 px-5 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg sm:rounded-xl"
     };
 
     // Base input classes with modern styling

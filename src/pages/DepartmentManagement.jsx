@@ -21,6 +21,41 @@ const DepartmentManagement = () => {
   const [editDepartmentModalOpen, setEditDepartmentModalOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
 
+  const handleExportDepartments = () => {
+    // Define CSV headers
+    const headers = ['ID', 'Name', 'Description', 'Head', 'Employee Count', 'Status', 'Created Date'];
+    
+    // Map department data to rows
+    const rows = departments.map(dept => [
+      dept.id,
+      dept.name,
+      dept.description || '',
+      dept.head || 'Unassigned',
+      dept.employeeCount || 0,
+      dept.status,
+      dept.createdDate
+    ]);
+    
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+    
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `departments_export_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   useEffect(() => {
     // Check if user is admin
     if (currentUser?.role !== 'admin') {
@@ -108,7 +143,7 @@ const DepartmentManagement = () => {
             <div className="flex items-center space-x-3 mt-4 sm:mt-0">
               <Button
                 variant="outline"
-                onClick={() => alert('Export functionality will be implemented')}
+                onClick={handleExportDepartments}
               >
                 <Icon name="Download" size={16} className="mr-2" />
                 Export Departments
@@ -310,6 +345,7 @@ const DepartmentModal = ({ isOpen, onClose, onSubmit, department, isEdit }) => {
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const statusOptions = [
     { value: 'active', label: 'Active' },
@@ -328,6 +364,23 @@ const DepartmentModal = ({ isOpen, onClose, onSubmit, department, isEdit }) => {
     setIsSubmitting(true);
 
     try {
+      const validationErrors = {};
+      if (!formData.name?.trim()) {
+        validationErrors.name = 'Please enter a department name';
+      }
+      if (!formData.description?.trim()) {
+        validationErrors.description = 'Please enter a short description';
+      }
+      if (!formData.status) {
+        validationErrors.status = 'Please select a status';
+      }
+
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        setIsSubmitting(false);
+        return;
+      }
+
       const departmentData = {
         ...formData,
         id: department?.id,
@@ -348,51 +401,54 @@ const DepartmentModal = ({ isOpen, onClose, onSubmit, department, isEdit }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
       {/* Overlay */}
       <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-xs"
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
       {/* Modal */}
-      <div className="relative bg-popover border border-border rounded-lg shadow-enterprise-lg w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white dark:bg-slate-900 border border-border rounded-xl shadow-2xl w-full max-w-xl sm:max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-white dark:bg-slate-900 z-10">
           <div>
-            <h2 className="text-xl font-semibold text-popover-foreground">
+            <h2 className="text-xl font-bold text-foreground">
               {isEdit ? 'Edit Department' : 'Add New Department'}
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
               {isEdit ? 'Update department information' : 'Create a new organizational department'}
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-muted rounded-full">
             <Icon name="X" size={20} />
           </Button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <Input
             label="Department Name"
-            required
             value={formData.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
             placeholder="e.g., Information Technology"
+            error={errors.name}
           />
           
-          <div>
-            <label className="block text-sm font-medium text-popover-foreground mb-2">
-              Description *
+          <div className="space-y-1">
+            <label className="block text-sm font-semibold text-popover-foreground">
+              Description
+              <span className="text-error ml-1">*</span>
             </label>
             <textarea
-              required
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               placeholder="Enter department description and responsibilities..."
-              className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent resize-none"
+              className="w-full px-3 py-2 text-sm border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent resize-none placeholder:text-muted-foreground"
               rows={3}
             />
+            <p className={`text-sm ${errors.description ? 'text-error' : 'text-muted-foreground'}`}>
+              {errors.description || 'Provide a brief overview of the department and its responsibilities.'}
+            </p>
           </div>
 
           <Input
@@ -405,10 +461,10 @@ const DepartmentModal = ({ isOpen, onClose, onSubmit, department, isEdit }) => {
 
           <Select
             label="Status"
-            required
             options={statusOptions}
             value={formData.status}
             onChange={(value) => handleInputChange('status', value)}
+            error={errors.status}
           />
 
           {/* Actions */}

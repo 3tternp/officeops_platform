@@ -19,8 +19,8 @@ import AddAssetModal from './components/AddAssetModal';
 import EditAssetModal from './components/EditAssetModal';
 import DeleteConfirmationModal from './components/DeleteConfirmationModal';
 import dataService from '../../services/DataService';
+import { useUser } from '../../contexts/UserContext';
 import { hasPermission, PERMISSIONS, getRolePermissions } from '../../utils/permissions';
-import { ensureDemoUser } from '../../utils/demoUser';
 
 const AssetManagement = () => {
   const navigate = useNavigate();
@@ -56,40 +56,15 @@ const AssetManagement = () => {
   
   // Watch for user changes
   useEffect(() => {
-    const updateUser = () => {
-      const user = ensureDemoUser();
-      
-      // Debug logging
-      console.log('🔧 Asset Management Debug Info:');
-      console.log('- Current User:', user);
-      console.log('- User Role:', user?.role);
-      console.log('- ASSET_CREATE permission:', hasPermission(user?.role, PERMISSIONS.ASSET_CREATE));
-      console.log('- ASSET_REQUEST permission:', hasPermission(user?.role, PERMISSIONS.ASSET_REQUEST));
-      console.log('- ASSET_VIEW permission:', hasPermission(user?.role, PERMISSIONS.ASSET_VIEW));
-      console.log('- Available permissions for role:', user?.role ? getRolePermissions(user.role) : 'No role');
-      
-      setCurrentUser(user);
-    };
-
-    updateUser();
-
-    // Listen for localStorage changes (role switching)
-    const handleStorageChange = (e) => {
-      if (e.key === 'currentUser' || e.key === 'user') {
-        updateUser();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Also check for user changes periodically in case role was switched in same tab
-    const interval = setInterval(updateUser, 1000);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
-    };
-  }, []);
+    // Debug logging
+    console.log('🔧 Asset Management Debug Info:');
+    console.log('- Current User:', currentUser);
+    console.log('- User Role:', currentUser?.role);
+    console.log('- ASSET_CREATE permission:', hasPermission(currentUser?.role, PERMISSIONS.ASSET_CREATE));
+    console.log('- ASSET_REQUEST permission:', hasPermission(currentUser?.role, PERMISSIONS.ASSET_REQUEST));
+    console.log('- ASSET_VIEW permission:', hasPermission(currentUser?.role, PERMISSIONS.ASSET_VIEW));
+    console.log('- Available permissions for role:', currentUser?.role ? getRolePermissions(currentUser.role) : 'No role');
+  }, [currentUser]);
   
   useEffect(() => {
     // Get assets from DataService

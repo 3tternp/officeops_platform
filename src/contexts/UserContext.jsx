@@ -64,24 +64,8 @@ export const UserProvider = ({ children }) => {
       
       return updatedUser;
     } else {
-      // For demo purposes, create a temporary user
-      const tempUser = {
-        id: userData.id || `temp${Date.now()}`,
-        name: userData.name || 'Demo User',
-        email: userData.email,
-        role: userData.role || 'employee',
-        department: userData.department || 'General',
-        avatar: userData.avatar || null,
-        loginTime: new Date().toISOString()
-      };
-      
-      setCurrentUser(tempUser);
-      setIsAuthenticated(true);
-      
-      localStorage.setItem('authToken', 'demo-token');
-      localStorage.setItem('user', JSON.stringify(tempUser));
-      
-      return tempUser;
+      console.error('Login failed: User not found');
+      throw new Error('Invalid credentials');
     }
   };
 

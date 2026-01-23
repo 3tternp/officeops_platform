@@ -134,47 +134,43 @@ const Sidebar = ({ isCollapsed = false, onToggle, isMobileOpen = false, onMobile
 
   return (
     <>
-      {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 z-60 bg-black/50 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
           onClick={onMobileClose}
         />
       )}
-      {/* Sidebar */}
       <aside
         className={`
-          fixed top-16 left-0 z-70 h-[calc(100vh-4rem)] bg-gradient-to-b from-white to-gray-50/80 border-r border-gray-200/80 shadow-xl backdrop-blur-xl
+          fixed top-14 sm:top-16 left-0 z-50 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] bg-gradient-to-b from-card/95 via-card/90 to-muted/90 border-r border-border/60 shadow-enterprise-lg backdrop-blur-2xl
           transition-all duration-300 ease-in-out
-          ${isCollapsed ? 'w-16' : 'w-72'}
+          ${isCollapsed ? 'w-16 lg:w-20' : 'w-64 lg:w-72'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         <div className="flex flex-col h-full">
-          {/* Sidebar Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200/60">
+          <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border/60">
             {!isCollapsed && (
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
-                  <Icon name="Navigation" size={16} className="text-white" />
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center shadow-enterprise-md">
+                  <Icon name="Navigation" size={14} className="sm:w-4 sm:h-4" />
                 </div>
-                <span className="font-semibold text-gray-800">Navigation</span>
+                <span className="font-medium text-sm sm:text-base text-foreground">Navigation</span>
               </div>
             )}
             <button
               onClick={onToggle}
-              className="hidden lg:flex p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200"
+              className="hidden lg:flex p-1 sm:p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200"
             >
-              <Icon name={isCollapsed ? "ChevronRight" : "ChevronLeft"} size={16} />
+              <Icon name={isCollapsed ? "ChevronRight" : "ChevronLeft"} size={14} className="sm:w-4 sm:h-4" />
             </button>
           </div>
 
-          {/* Navigation Items */}
-          <nav className="flex-1 p-4 space-y-6 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+          <nav className="flex-1 p-2 sm:p-4 space-y-4 sm:space-y-6 overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
             {filteredNavigationGroups?.map((group, groupIndex) => (
               <div key={groupIndex} className="space-y-2">
                 {!isCollapsed && (
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-3">
+                  <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.16em] px-2 sm:px-3 mb-1.5 sm:mb-2">
                     {group.label}
                   </h3>
                 )}
@@ -187,61 +183,58 @@ const Sidebar = ({ isCollapsed = false, onToggle, isMobileOpen = false, onMobile
                         <button
                           onClick={() => handleNavigation(item?.path)}
                           className={`
-                            w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-left relative overflow-hidden
-                            transition-all duration-200 ease-out transform hover:scale-[1.02] active:scale-[0.98]
+                            w-full flex items-center space-x-2 sm:space-x-3 px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-left relative overflow-hidden
+                            transition-enterprise transform hover:-translate-y-0.5
                             ${isActive 
-                              ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25' 
-                              : 'text-gray-700 hover:bg-gray-100/80 hover:text-gray-900'
+                              ? 'bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-enterprise-lg ring-1 ring-primary/20' 
+                              : 'text-foreground/80 hover:bg-muted/80 hover:text-foreground'
                             }
-                            ${isCollapsed ? 'justify-center' : ''}
+                            ${isCollapsed ? 'justify-center px-2' : ''}
                           `}
                         >
                           <Icon 
                             name={item?.icon} 
-                            size={20} 
-                            className={`flex-shrink-0 z-10 relative ${isActive ? 'text-white' : 'text-gray-600'}`}
+                            size={16}
+                            className={`flex-shrink-0 z-10 relative w-4 h-4 sm:w-5 sm:h-5 ${isActive ? 'text-primary-foreground' : 'text-muted-foreground'}`}
                           />
                           {!isCollapsed && (
                             <div className="flex-1 min-w-0 z-10 relative">
                               <div className="flex items-center justify-between">
-                                <p className={`font-semibold text-sm truncate ${
-                                  isActive ? 'text-white' : 'text-gray-800'
+                                <p className={`font-medium text-xs sm:text-sm truncate ${
+                                  isActive ? 'text-primary-foreground' : 'text-foreground'
                                 }`}>
                                   {item?.label}
                                 </p>
                                 {item.badge && (
-                                  <span className="px-1.5 py-0.5 text-xs font-bold bg-red-500 text-white rounded uppercase tracking-wider">
+                                  <span className="px-1 py-0.5 text-xs font-bold bg-red-500 text-white rounded uppercase tracking-wider">
                                     {item.badge}
                                   </span>
                                 )}
                               </div>
                               <p className={`text-xs truncate mt-0.5 ${
-                                isActive ? 'text-white/80' : 'text-gray-500'
+                                isActive ? 'text-primary-foreground/80' : 'text-muted-foreground'
                               }`}>
                                 {item?.description}
                               </p>
                             </div>
                           )}
-                          {/* Active indicator */}
                           {isActive && (
-                            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-500/20 rounded-xl" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl" />
                           )}
                         </button>
                         
-                        {/* Tooltip for collapsed state */}
                         {isCollapsed && (
-                          <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-3 px-3 py-2 bg-gray-900 text-white rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-80 whitespace-nowrap">
+                          <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-3 px-3 py-2 bg-popover text-popover-foreground border border-border rounded-lg shadow-enterprise-lg opacity-0 group-hover:opacity-100 transition-enterprise pointer-events-none z-50 whitespace-nowrap">
                             <div className="flex items-center space-x-2">
-                              <p className="font-semibold text-sm">{item?.label}</p>
+                              <p className="font-medium text-sm">{item?.label}</p>
                               {item.badge && (
-                                <span className="px-1.5 py-0.5 text-xs font-bold bg-red-500 text-white rounded uppercase">
+                                <span className="px-1.5 py-0.5 text-xs font-semibold bg-error text-error-foreground rounded uppercase">
                                   {item.badge}
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-gray-300 mt-1">{item?.description}</p>
-                            {/* Arrow */}
-                            <div className="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+                            <p className="text-xs text-muted-foreground mt-1">{item?.description}</p>
+                            <div className="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-popover" />
                           </div>
                         )}
                       </div>

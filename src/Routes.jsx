@@ -1,7 +1,8 @@
 import React, { Suspense } from "react";
-import { HashRouter, Routes as RouterRoutes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes as RouterRoutes, Route, Navigate, useLocation } from "react-router-dom";
 import { useUser } from "./contexts/UserContext";
 import { LoadingSpinner } from './components/ui/LoadingStates';
+import { AnimatePresence, motion } from 'framer-motion';
 
 // Lazily import pages for route-based code splitting
 const AccessManagement = React.lazy(() => import('./pages/access-management'));
@@ -59,6 +60,109 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
   return children;
 };
 
+const AnimatedRoutes = () => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="min-h-screen"
+      >
+        <RouterRoutes location={location}>
+          {/* Public Routes */}
+          <Route path="/setup" element={<InitialSetup />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/password-reset" element={
+            <ProtectedRoute>
+              <PasswordReset />
+            </ProtectedRoute>
+          } />
+          
+          {/* Protected Routes */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/access-management" element={
+            <ProtectedRoute>
+              <AccessManagement />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/learning-management" element={
+            <ProtectedRoute>
+              <LearningManagement />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/document-management" element={
+            <ProtectedRoute>
+              <DocumentManagement />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/asset-management" element={
+            <ProtectedRoute>
+              <AssetManagement />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/risk-assessment" element={
+            <ProtectedRoute>
+              <RiskAssessment />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/ticketing" element={
+            <ProtectedRoute>
+              <Ticketing />
+            </ProtectedRoute>
+          } />
+          
+          {/* Admin-only Routes */}
+          <Route path="/user-management" element={
+            <ProtectedRoute requiredRole="admin">
+              <UserManagement />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/department-management" element={
+            <ProtectedRoute requiredRole="admin">
+              <DepartmentManagement />
+            </ProtectedRoute>
+          } />
+          
+          {/* User Profile and Settings */}
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/settings" element={
+            <ProtectedRoute requiredRole="admin">
+              <Settings />
+            </ProtectedRoute>
+          } />
+          
+          {/* 404 Route */}
+          <Route path="*" element={<NotFound />} />
+        </RouterRoutes>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 const Routes = () => {
   try {
     return (
@@ -68,91 +172,7 @@ const Routes = () => {
             <LoadingSpinner size="lg" text="Loading page..." />
           </div>
         )}>
-          <RouterRoutes>
-        {/* Public Routes */}
-        <Route path="/setup" element={<InitialSetup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/password-reset" element={
-          <ProtectedRoute>
-            <PasswordReset />
-          </ProtectedRoute>
-        } />
-        
-        {/* Protected Routes */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/access-management" element={
-          <ProtectedRoute>
-            <AccessManagement />
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/learning-management" element={
-          <ProtectedRoute>
-            <LearningManagement />
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/document-management" element={
-          <ProtectedRoute>
-            <DocumentManagement />
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/asset-management" element={
-          <ProtectedRoute>
-            <AssetManagement />
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/risk-assessment" element={
-          <ProtectedRoute>
-            <RiskAssessment />
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/ticketing" element={
-          <ProtectedRoute>
-            <Ticketing />
-          </ProtectedRoute>
-        } />
-        
-        {/* Admin-only Routes */}
-        <Route path="/user-management" element={
-          <ProtectedRoute requiredRole="admin">
-            <UserManagement />
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/department-management" element={
-          <ProtectedRoute requiredRole="admin">
-            <DepartmentManagement />
-          </ProtectedRoute>
-        } />
-        
-        {/* User Profile and Settings */}
-        <Route path="/profile" element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        } />
-        
-        <Route path="/settings" element={
-          <ProtectedRoute requiredRole="admin">
-            <Settings />
-          </ProtectedRoute>
-        } />
-        
-        {/* 404 Route */}
-        <Route path="*" element={<NotFound />} />
-          </RouterRoutes>
+          <AnimatedRoutes />
         </Suspense>
       </HashRouter>
     );

@@ -4,23 +4,23 @@ import { cn } from '../../utils/cn';
 import Icon from '../AppIcon';
 
 const cardVariants = cva(
-  "rounded-xl border transition-all duration-200 ease-out",
+  "rounded-2xl border transition-enterprise bg-card text-card-foreground",
   {
     variants: {
       variant: {
-        default: "bg-white border-gray-200 shadow-sm hover:shadow-lg hover:shadow-gray-100/50",
-        elevated: "bg-white border-gray-200 shadow-lg hover:shadow-xl hover:shadow-gray-100/60",
-        gradient: "bg-gradient-to-br from-white to-gray-50/50 border-gray-200 shadow-md hover:shadow-lg hover:shadow-gray-100/50",
-        outline: "bg-transparent border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50/50",
-        ghost: "bg-transparent border-transparent hover:bg-gray-50/80 hover:border-gray-200",
-        success: "bg-gradient-to-br from-green-50 to-green-100/50 border-green-200 shadow-sm hover:shadow-md hover:shadow-green-100/50",
-        warning: "bg-gradient-to-br from-yellow-50 to-yellow-100/50 border-yellow-200 shadow-sm hover:shadow-md hover:shadow-yellow-100/50",
-        error: "bg-gradient-to-br from-red-50 to-red-100/50 border-red-200 shadow-sm hover:shadow-md hover:shadow-red-100/50",
+        default: "bg-card border-border/70 shadow-enterprise hover:shadow-enterprise-md",
+        elevated: "bg-card border-border shadow-enterprise-md hover:shadow-enterprise-lg",
+        gradient: "bg-gradient-to-br from-primary/5 via-card to-accent/5 border-border shadow-enterprise-md hover:shadow-enterprise-lg",
+        outline: "bg-background/40 border-dashed border-border hover:border-solid hover:bg-muted/40",
+        ghost: "bg-transparent border-transparent hover:bg-muted/60 hover:border-border",
+        success: "bg-gradient-to-br from-success/10 via-card to-success/5 border-success/30 shadow-enterprise",
+        warning: "bg-gradient-to-br from-warning/10 via-card to-warning/5 border-warning/30 shadow-enterprise",
+        error: "bg-gradient-to-br from-error/10 via-card to-error/5 border-error/30 shadow-enterprise",
       },
       size: {
-        sm: "p-4",
-        default: "p-6",
-        lg: "p-8",
+        sm: "p-3 sm:p-4",
+        default: "p-4 sm:p-6",
+        lg: "p-6 sm:p-8",
       },
       interactive: {
         true: "cursor-pointer transform hover:scale-[1.02] active:scale-[0.98]",
@@ -57,7 +57,7 @@ Card.displayName = "Card";
 const CardHeader = React.forwardRef(({ className, children, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 pb-4", className)}
+    className={cn("flex flex-col space-y-1 pb-4", className)}
     {...props}
   >
     {children}
@@ -75,24 +75,16 @@ const CardTitle = React.forwardRef(({
   ...props 
 }, ref) => {
   const sizeClasses = {
-    sm: "text-lg font-semibold",
-    default: "text-xl font-bold",
-    lg: "text-2xl font-bold",
-  };
-
-  const iconColorClasses = {
-    primary: "text-blue-600",
-    success: "text-green-600", 
-    warning: "text-yellow-600",
-    error: "text-red-600",
-    gray: "text-gray-600",
+    sm: "text-base sm:text-lg font-semibold",
+    default: "text-lg sm:text-xl font-semibold",
+    lg: "text-xl sm:text-2xl font-semibold",
   };
 
   return (
     <h3
       ref={ref}
       className={cn(
-        "leading-none tracking-tight text-gray-900 flex items-center space-x-3",
+        "leading-snug tracking-tight text-foreground flex items-center space-x-3",
         sizeClasses[size],
         className
       )}
@@ -100,12 +92,12 @@ const CardTitle = React.forwardRef(({
     >
       {icon && (
         <div className={cn(
-          "p-2 rounded-lg bg-gradient-to-br shadow-sm",
-          iconColor === 'primary' && "from-blue-500 to-blue-600",
-          iconColor === 'success' && "from-green-500 to-green-600",
-          iconColor === 'warning' && "from-yellow-500 to-yellow-600",
-          iconColor === 'error' && "from-red-500 to-red-600",
-          iconColor === 'gray' && "from-gray-500 to-gray-600"
+          "p-2 rounded-xl bg-gradient-to-br shadow-enterprise-md",
+          iconColor === 'primary' && "from-primary to-accent",
+          iconColor === 'success' && "from-success to-success/80",
+          iconColor === 'warning' && "from-warning to-warning/80",
+          iconColor === 'error' && "from-error to-error/80",
+          iconColor === 'gray' && "from-muted-foreground to-foreground"
         )}>
           <Icon name={icon} size={20} className="text-white" />
         </div>
@@ -120,7 +112,7 @@ CardTitle.displayName = "CardTitle";
 const CardDescription = React.forwardRef(({ className, children, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-gray-600 leading-relaxed", className)}
+    className={cn("text-sm text-muted-foreground leading-relaxed", className)}
     {...props}
   >
     {children}

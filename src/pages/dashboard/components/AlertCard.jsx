@@ -2,100 +2,93 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
-const AlertCard = ({ 
-  title, 
-  message, 
-  type = 'info', 
+const AlertCard = ({
+  title,
+  message,
+  type = 'info',
   priority = 'medium',
   timestamp,
   actionLabel,
   onActionClick,
-  onDismiss 
+  onDismiss
 }) => {
   const getAlertStyles = (alertType) => {
     const styles = {
       success: {
-        bg: 'bg-success/10',
-        border: 'border-success/20',
+        bg: 'bg-green-50',
+        border: 'border-green-200',
         icon: 'CheckCircle',
-        iconColor: 'text-success'
+        iconColor: 'text-green-600',
+        text: 'text-green-800'
       },
       warning: {
-        bg: 'bg-warning/10',
-        border: 'border-warning/20',
+        bg: 'bg-yellow-50',
+        border: 'border-yellow-200',
         icon: 'AlertTriangle',
-        iconColor: 'text-warning'
+        iconColor: 'text-yellow-600',
+        text: 'text-yellow-800'
       },
       error: {
-        bg: 'bg-error/10',
-        border: 'border-error/20',
+        bg: 'bg-red-50',
+        border: 'border-red-200',
         icon: 'XCircle',
-        iconColor: 'text-error'
+        iconColor: 'text-red-600',
+        text: 'text-red-800'
       },
       info: {
-        bg: 'bg-accent/10',
-        border: 'border-accent/20',
+        bg: 'bg-blue-50',
+        border: 'border-blue-200',
         icon: 'Info',
-        iconColor: 'text-accent'
+        iconColor: 'text-blue-600',
+        text: 'text-blue-800'
       }
     };
     return styles?.[alertType] || styles?.info;
   };
 
-  const getPriorityIndicator = (priorityLevel) => {
-    const indicators = {
-      high: 'bg-error',
-      medium: 'bg-warning',
-      low: 'bg-success'
-    };
-    return indicators?.[priorityLevel] || indicators?.medium;
-  };
-
   const alertStyles = getAlertStyles(type);
 
   return (
-    <div className={`${alertStyles?.bg} ${alertStyles?.border} border rounded-lg p-4 shadow-enterprise`}>
+    <div className={`border-l-4 ${alertStyles.border} ${alertStyles.bg} rounded-r-xl p-5 hover:shadow-md transition-shadow duration-200`}>
       <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0 flex items-center space-x-2">
-          <Icon name={alertStyles?.icon} size={20} className={alertStyles?.iconColor} />
-          <div className={`w-2 h-2 rounded-full ${getPriorityIndicator(priority)}`} />
-        </div>
-        
+        <Icon name={alertStyles.icon} size={22} className={`${alertStyles.iconColor} flex-shrink-0 mt-0.5`} />
+
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h4 className="text-sm font-semibold text-foreground">{title}</h4>
-              <p className="text-sm text-muted-foreground mt-1">{message}</p>
+          <h4 className={`text-base font-semibold ${alertStyles.text} mb-2`}>{title}</h4>
+          <p className="text-gray-700 text-sm mb-3 leading-relaxed">{message}</p>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
               {timestamp && (
-                <p className="text-xs text-muted-foreground mt-2">{timestamp}</p>
+                <div className="flex items-center space-x-1 text-xs text-gray-500">
+                  <Icon name="Clock" size={12} />
+                  <span>{timestamp}</span>
+                </div>
               )}
             </div>
-            
-            {onDismiss && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onDismiss}
-                className="h-6 w-6 -mt-1 -mr-1"
-              >
-                <Icon name="X" size={14} />
-              </Button>
-            )}
-          </div>
-          
-          {actionLabel && onActionClick && (
-            <div className="mt-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onActionClick}
-                iconName="ArrowRight"
-                iconPosition="right"
-              >
-                {actionLabel}
-              </Button>
+
+            <div className="flex items-center space-x-2">
+              {actionLabel && onActionClick && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onActionClick}
+                  className="text-xs"
+                >
+                  {actionLabel}
+                </Button>
+              )}
+
+              {onDismiss && (
+                <button
+                  onClick={onDismiss}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white/50 rounded-md transition-colors duration-200"
+                >
+                  <Icon name="X" size={16} />
+                </button>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

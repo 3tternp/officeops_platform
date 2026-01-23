@@ -225,24 +225,24 @@ const AssignmentPanel = ({ courses, onAssign, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-card border border-border rounded-lg shadow-enterprise-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10">
           <div>
-            <h2 className="text-xl font-semibold text-foreground">Bulk Course Assignment</h2>
-            <p className="text-sm text-muted-foreground">Assign courses to users, teams, or roles</p>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Bulk Course Assignment</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Assign courses to users, teams, or roles</p>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
             <Icon name="X" size={20} />
           </Button>
         </div>
 
         <div className="flex h-[calc(90vh-8rem)]">
           {/* Course Selection */}
-          <div className="w-1/2 border-r border-border p-6 overflow-y-auto">
+          <div className="w-1/2 border-r border-slate-100 dark:border-slate-800 p-6 overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium text-foreground">Select Courses</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white">Select Courses</h3>
               <Button
                 variant="outline"
                 size="sm"

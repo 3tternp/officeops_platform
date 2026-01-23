@@ -7,11 +7,13 @@ import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { useUser } from '../../contexts/UserContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import dataService from '../../services/DataService';
 
 const ProfileSettings = () => {
   const navigate = useNavigate();
   const { currentUser, updateUser } = useUser();
+  const { theme, setThemeMode } = useTheme();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
@@ -447,7 +449,11 @@ const ProfileSettings = () => {
                     <p className="font-medium text-foreground">Theme</p>
                     <p className="text-sm text-muted-foreground">Choose your preferred theme</p>
                   </div>
-                  <select className="px-3 py-2 border border-input rounded-lg bg-background text-foreground">
+                  <select
+                    value={theme}
+                    onChange={(e) => setThemeMode(e.target.value)}
+                    className="px-3 py-2 border border-input rounded-lg bg-background text-foreground"
+                  >
                     <option value="system">System Default</option>
                     <option value="light">Light</option>
                     <option value="dark">Dark</option>

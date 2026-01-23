@@ -2,6 +2,7 @@ import React from "react";
 import Routes from "./Routes";
 import { UserProvider } from "./contexts/UserContext";
 import { BrandingProvider } from "./contexts/BrandingContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 // Simple Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -80,11 +81,13 @@ class ErrorBoundary extends React.Component {
 function App() {
   return (
     <ErrorBoundary>
-      <UserProvider>
-        <BrandingProvider>
-          <Routes />
-        </BrandingProvider>
-      </UserProvider>
+      <ThemeProvider>
+        <UserProvider>
+          <BrandingProvider>
+            <Routes />
+          </BrandingProvider>
+        </UserProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }

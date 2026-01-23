@@ -257,18 +257,22 @@ const DocumentViewer = ({ document, isOpen, onClose, onAcknowledge }) => {
   if (!isOpen || !document) return null;
 
   return (
-    <div className="fixed inset-0 z-100 bg-black/50 backdrop-blur-sm">
-      <div className={`bg-card border border-border shadow-enterprise-lg ${
-        isFullscreen ? 'fixed inset-0' : 'fixed inset-4 rounded-lg'
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div 
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
+      />
+      <div className={`relative bg-white dark:bg-slate-900 border border-border shadow-2xl flex flex-col ${
+        isFullscreen ? 'fixed inset-0 w-full h-full' : 'w-full max-w-6xl h-[90vh] rounded-xl'
       }`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border bg-muted/30">
+        <div className="flex items-center justify-between p-4 border-b border-border bg-white dark:bg-slate-900 z-10 sticky top-0">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
               <Icon name="FileText" size={16} className="text-primary" />
             </div>
             <div>
-              <h2 className="font-semibold text-foreground">{document?.title}</h2>
+              <h2 className="font-bold text-foreground">{document?.title}</h2>
               <p className="text-sm text-muted-foreground">
                 Version {document?.version} • {document?.fileSize} • {formatTime(timeSpent)} reading time
               </p>
@@ -277,23 +281,25 @@ const DocumentViewer = ({ document, isOpen, onClose, onAcknowledge }) => {
 
           <div className="flex items-center space-x-2">
             {/* Zoom Controls */}
-            <div className="flex items-center space-x-1 bg-background rounded-lg p-1">
+            <div className="flex items-center space-x-1 bg-muted/50 rounded-lg p-1">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setZoom(Math.max(50, zoom - 25))}
                 disabled={zoom <= 50}
+                className="hover:bg-white dark:hover:bg-slate-800 rounded-md h-7 w-7 p-0"
               >
-                <Icon name="ZoomOut" size={16} />
+                <Icon name="ZoomOut" size={14} />
               </Button>
-              <span className="text-sm font-medium px-2">{zoom}%</span>
+              <span className="text-sm font-medium px-2 min-w-[3rem] text-center">{zoom}%</span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setZoom(Math.min(200, zoom + 25))}
                 disabled={zoom >= 200}
+                className="hover:bg-white dark:hover:bg-slate-800 rounded-md h-7 w-7 p-0"
               >
-                <Icon name="ZoomIn" size={16} />
+                <Icon name="ZoomIn" size={14} />
               </Button>
             </div>
 
@@ -302,14 +308,15 @@ const DocumentViewer = ({ document, isOpen, onClose, onAcknowledge }) => {
               variant="ghost"
               size="sm"
               onClick={() => setIsFullscreen(!isFullscreen)}
+              className="hover:bg-muted rounded-full w-8 h-8 p-0"
             >
-              <Icon name={isFullscreen ? "Minimize2" : "Maximize2"} size={16} />
+              <Icon name={isFullscreen ? "Minimize2" : "Maximize2"} size={18} />
             </Button>
 
 
             {/* Close */}
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <Icon name="X" size={16} />
+            <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-muted rounded-full w-8 h-8 p-0">
+              <Icon name="X" size={18} />
             </Button>
           </div>
         </div>

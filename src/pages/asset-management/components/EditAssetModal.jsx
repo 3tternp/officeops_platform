@@ -121,30 +121,29 @@ const EditAssetModal = ({ isOpen, onClose, onSubmit, asset }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
       {/* Overlay */}
       <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-xs"
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
       {/* Modal */}
-      <div className="relative bg-popover border border-border rounded-lg shadow-enterprise-lg w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden">
+      <div className="relative bg-white dark:bg-slate-900 border border-border rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-white dark:bg-slate-900 z-10">
           <div>
-            <h2 className="text-xl font-semibold text-popover-foreground">Edit Asset</h2>
+            <h2 className="text-xl font-bold text-foreground">Edit Asset</h2>
             <p className="text-sm text-muted-foreground mt-1">
               Update asset information and specifications
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-muted rounded-full">
             <Icon name="X" size={20} />
           </Button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[70vh]">
-          <div className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {/* Basic Information */}
             <div>
               <h3 className="text-lg font-medium text-foreground mb-4">Basic Information</h3>
@@ -335,36 +334,25 @@ const EditAssetModal = ({ isOpen, onClose, onSubmit, asset }) => {
                 </div>
               )}
             </div>
-          </div>
 
           {/* Actions */}
-          <div className="flex justify-between items-center p-6 border-t border-border bg-muted/30">
+          <div className="flex justify-end space-x-3 pt-4 border-t border-border mt-6">
             <Button
               type="button"
-              variant="ghost"
-              onClick={resetForm}
+              variant="outline"
+              onClick={onClose}
               disabled={isSubmitting}
             >
-              Reset Changes
+              Cancel
             </Button>
-            
-            <div className="flex space-x-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                loading={isSubmitting}
-              >
-                <Icon name="Save" size={16} className="mr-2" />
-                Update Asset
-              </Button>
-            </div>
+            <Button
+              type="submit"
+              loading={isSubmitting}
+              iconName="Save"
+              iconPosition="left"
+            >
+              Save Changes
+            </Button>
           </div>
         </form>
       </div>

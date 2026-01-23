@@ -571,21 +571,30 @@ import { FileSecurityValidator } from '../../../utils/fileSecurityValidator';
       console.error('Error saving course:', error);
       // Show a user-friendly error message
       const errorDialog = document.createElement('div');
-      errorDialog.className = 'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4';
+      errorDialog.className = 'fixed inset-0 z-50 bg-black/75 backdrop-blur-sm transition-opacity flex items-center justify-center p-4';
       errorDialog.innerHTML = `
-        <div class="bg-card border border-border rounded-lg shadow-enterprise-lg p-6 max-w-md w-full">
-          <div class="flex items-center space-x-3 mb-4">
-            <div class="p-2 bg-error/10 rounded-full">
-              <svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl w-full max-w-md flex flex-col">
+          <div class="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-t-xl">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-red-100 dark:bg-red-900/20 rounded-full">
+                <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Error Creating Course</h3>
             </div>
-            <h3 class="text-lg font-semibold text-foreground">Error Creating Course</h3>
+            <button onclick="this.closest('.fixed').remove()" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
           </div>
-          <p class="text-muted-foreground mb-6">There was an error creating your course. Please check your data and try again.</p>
-          <button onclick="this.closest('.fixed').remove()" class="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg font-medium transition-colors">
-            OK
-          </button>
+          <div class="p-6">
+            <p class="text-slate-600 dark:text-slate-300">There was an error creating your course. Please check your data and try again.</p>
+          </div>
+          <div class="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 rounded-b-xl flex justify-end">
+            <button onclick="this.closest('.fixed').remove()" class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 px-4 py-2 rounded-lg font-medium transition-colors">
+              OK
+            </button>
+          </div>
         </div>
       `;
       document.body.appendChild(errorDialog);
@@ -1319,28 +1328,28 @@ import { FileSecurityValidator } from '../../../utils/fileSecurityValidator';
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-card border border-border rounded-lg shadow-enterprise-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
           <div>
-            <h2 className="text-xl font-semibold text-foreground">Create New Course</h2>
-            <p className="text-sm text-muted-foreground">Step {currentStep} of {steps?.length}</p>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Create New Course</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Step {currentStep} of {steps?.length}</p>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
             <Icon name="X" size={20} />
           </Button>
         </div>
 
         {/* Progress Steps */}
-        <div className="px-6 py-4 border-b border-border">
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
           <div className="flex items-center justify-between">
             {steps?.map((step, index) => (
               <div key={step?.id} className="flex items-center">
-                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
+                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors ${
                   currentStep >= step?.id 
-                    ? 'bg-primary border-primary text-primary-foreground' 
-                    : 'border-border text-muted-foreground'
+                    ? 'bg-primary border-primary text-white' 
+                    : 'border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500'
                 }`}>
                   {currentStep > step?.id ? (
                     <Icon name="Check" size={16} />
@@ -1349,15 +1358,15 @@ import { FileSecurityValidator } from '../../../utils/fileSecurityValidator';
                   )}
                 </div>
                 <div className="ml-3 hidden sm:block">
-                  <p className={`text-sm font-medium ${
-                    currentStep >= step?.id ? 'text-foreground' : 'text-muted-foreground'
+                  <p className={`text-sm font-medium transition-colors ${
+                    currentStep >= step?.id ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-500'
                   }`}>
                     {step?.title}
                   </p>
                 </div>
                 {index < steps?.length - 1 && (
-                  <div className={`w-12 h-0.5 mx-4 ${
-                    currentStep > step?.id ? 'bg-primary' : 'bg-border'
+                  <div className={`w-12 h-0.5 mx-4 transition-colors ${
+                    currentStep > step?.id ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-700'
                   }`} />
                 )}
               </div>
@@ -1366,12 +1375,12 @@ import { FileSecurityValidator } from '../../../utils/fileSecurityValidator';
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-16rem)]">
+        <div className="p-6 overflow-y-auto flex-1 bg-white dark:bg-slate-900">
           {renderStepContent()}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-border">
+        <div className="flex items-center justify-between p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
           <Button
             variant="outline"
             onClick={handlePrevious}

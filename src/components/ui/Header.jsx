@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Button from './Button';
+import Tooltip from './Tooltip';
 import { useUser } from '../../contexts/UserContext';
-import UserRoleSwitcher from "../debug/UserRoleSwitcher";
+import { useTheme } from '../../contexts/ThemeContext';
 import { useBranding } from '../../contexts/BrandingContext';
 import dataService from '../../services/DataService';
 
@@ -14,6 +15,7 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, logout } = useUser();
+  const { theme, toggleTheme } = useTheme();
   const { branding } = useBranding();
 
   const [notifications, setNotifications] = useState([]);
@@ -97,16 +99,19 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border shadow-sm"
-      style={branding?.loginBackgroundImage ? {
-        backgroundImage: `url(${branding.loginBackgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundBlendMode: 'overlay'
-      } : undefined}
+      className="fixed top-0 left-0 right-0 z-50 border-b border-border/60 bg-gradient-to-r from-background/95 via-background/90 to-background/95 backdrop-blur-xl shadow-enterprise-md"
+      style={
+        branding?.loginBackgroundImage
+          ? {
+              backgroundImage: `linear-gradient(to right, rgba(15,23,42,0.85), rgba(15,23,42,0.75)), url(${branding.loginBackgroundImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }
+          : undefined
+      }
     >
-      <div className="flex items-center justify-between h-16 px-6">
-        {/* Left Section - Logo and Sidebar Toggle */}
+      <div className="flex items-center justify-between h-14 sm:h-16 px-4 sm:px-6">
         <div className="flex items-center space-x-4">
           <Button
             variant="ghost"
@@ -118,7 +123,7 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
           </Button>
           
           <div className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl shadow-lg overflow-hidden bg-primary">
+            <div className="flex items-center justify-center w-10 h-10 rounded-2xl shadow-enterprise-lg overflow-hidden bg-gradient-to-br from-primary to-accent">
               {branding?.companyLogo ? (
                 <img src={branding.companyLogo} alt="Logo" className="w-full h-full object-cover" />
               ) : (
@@ -126,30 +131,34 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
               )}
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-foreground">{branding?.companyName || 'OfficeOps'}</h1>
-              <p className="text-xs font-medium text-muted-foreground tracking-wide">PLATFORM</p>
+              <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+                {branding?.companyName || 'OfficeOps'}
+              </h1>
+              <p className="text-[11px] sm:text-xs font-medium text-muted-foreground tracking-[0.18em] uppercase">
+                Operations Platform
+              </p>
             </div>
           </div>
         </div>
 
         {/* Center Section - Search */}
-        <div className="hidden md:flex flex-1 max-w-lg mx-8">
+        <div className="hidden md:flex flex-1 max-w-lg mx-4 lg:mx-8">
           <form onSubmit={handleSearch} className="relative w-full">
             <div className="relative">
               <Icon 
                 name="Search" 
-                size={18} 
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground" 
+                size={16} 
+                className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground" 
               />
               <input
                 type="text"
-                placeholder="Search across modules, documents, users..."
+                placeholder="Search across modules..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e?.target?.value)}
-                className="w-full pl-12 pr-4 py-3 text-sm bg-muted border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent focus:bg-background transition-all duration-200 placeholder:text-muted-foreground"
+                className="w-full pl-9 sm:pl-12 pr-4 py-2 sm:py-3 text-sm bg-muted border border-input rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent focus:bg-background transition-all duration-200 placeholder:text-muted-foreground"
               />
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <kbd className="hidden sm:inline-flex items-center px-2 py-1 text-xs font-medium text-muted-foreground bg-background border border-border rounded shadow-sm">⌘K</kbd>
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 hidden lg:block">
+                <kbd className="px-2 py-1 text-xs font-medium text-muted-foreground bg-background border border-border rounded shadow-sm">⌘K</kbd>
               </div>
             </div>
           </form>
@@ -157,8 +166,6 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
 
         {/* Right Section - Actions */}
         <div className="flex items-center space-x-2">
-          {/* Role Switcher for Testing */}
-          <UserRoleSwitcher />
           
           {/* Mobile Search */}
           <Button variant="ghost" size="icon" className="md:hidden">
@@ -228,6 +235,18 @@ const Header = ({ onSidebarToggle, sidebarCollapsed = false }) => {
               </div>
             )}
           </div>
+
+          {/* Theme Toggle */}
+          <Tooltip content={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Icon name={theme === 'light' ? 'Moon' : 'Sun'} size={20} />
+            </Button>
+          </Tooltip>
 
           {/* Profile Menu */}
           <div className="relative">

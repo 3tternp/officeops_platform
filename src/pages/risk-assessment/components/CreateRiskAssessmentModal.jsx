@@ -320,18 +320,18 @@ const CreateRiskAssessmentModal = ({ isOpen, onClose, onSubmit }) => {
   const riskLevel = getRiskLevel(riskScore);
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
       {/* Overlay */}
       <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-xs"
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
       {/* Modal */}
-      <div className="relative bg-popover border border-border rounded-lg shadow-enterprise-lg w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white dark:bg-slate-900 border border-border rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-white dark:bg-slate-900 z-10">
           <div>
-            <h2 className="text-xl font-semibold text-popover-foreground">Create Risk Assessment</h2>
+            <h2 className="text-xl font-bold text-foreground">Create Risk Assessment</h2>
             <p className="text-sm text-muted-foreground mt-1">
               Create a new risk assessment sheet for evaluation and monitoring
             </p>
@@ -341,7 +341,7 @@ const CreateRiskAssessmentModal = ({ isOpen, onClose, onSubmit }) => {
               <Icon name="Sparkles" size={16} className="mr-2" />
               AI Suggest
             </Button>
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-muted rounded-full">
               <Icon name="X" size={20} />
             </Button>
           </div>

@@ -266,37 +266,42 @@ const Ticketing = () => {
 
         {/* Create Ticket Modal */}
         {createTicketOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="bg-card border rounded-xl shadow-xl w-full max-w-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">New Ticket</h2>
-                <button className="text-muted-foreground hover:text-foreground" onClick={() => setCreateTicketOpen(false)}>
-                  <Icon name="X" />
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 transition-opacity">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
+              <div className="sticky top-0 z-10 flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-t-xl">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">New Ticket</h2>
+                <button 
+                  className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+                  onClick={() => setCreateTicketOpen(false)}
+                >
+                  <Icon name="X" className="w-5 h-5" />
                 </button>
               </div>
-              <form onSubmit={handleCreateSubmit} className="space-y-4">
-                <Input label="Title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required />
-                <div>
-                  <label className="text-sm text-muted-foreground">Description</label>
-                  <textarea className="mt-1 w-full border rounded-lg p-2" rows={4} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <Select label="Category" options={categories} value={formData.category} onChange={val => setFormData({ ...formData, category: val })} />
-                  <Select label="Priority" options={priorities} value={formData.priority} onChange={val => setFormData({ ...formData, priority: val })} />
-                </div>
-                <Select label="Implementation Status" options={implementationStatuses.filter(o => o.value !== 'all')} value={formData.implementationStatus} onChange={val => setFormData({ ...formData, implementationStatus: val })} />
-                <div>
-                  <label className="text-sm text-muted-foreground">Image Attachment (optional)</label>
-                  <input type="file" accept="image/*" className="mt-1 w-full" onChange={handleAttachmentChange} />
-                  {formData.attachments?.[0]?.dataUrl && (
-                    <img src={formData.attachments[0].dataUrl} alt="preview" className="mt-2 w-24 h-24 object-cover rounded border" />
-                  )}
-                </div>
-                <div className="flex items-center justify-end gap-2">
-                  <Button type="button" variant="outline" onClick={() => setCreateTicketOpen(false)}>Cancel</Button>
-                  <Button type="submit">Create Ticket</Button>
-                </div>
-              </form>
+              <div className="p-6 overflow-y-auto custom-scrollbar">
+                <form id="create-ticket-form" onSubmit={handleCreateSubmit} className="space-y-4">
+                  <Input label="Title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required />
+                  <div>
+                    <label className="text-sm text-muted-foreground">Description</label>
+                    <textarea className="mt-1 w-full border rounded-lg p-2" rows={4} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Select label="Category" options={categories} value={formData.category} onChange={val => setFormData({ ...formData, category: val })} />
+                    <Select label="Priority" options={priorities} value={formData.priority} onChange={val => setFormData({ ...formData, priority: val })} />
+                  </div>
+                  <Select label="Implementation Status" options={implementationStatuses.filter(o => o.value !== 'all')} value={formData.implementationStatus} onChange={val => setFormData({ ...formData, implementationStatus: val })} />
+                  <div>
+                    <label className="text-sm text-muted-foreground">Image Attachment (optional)</label>
+                    <input type="file" accept="image/*" className="mt-1 w-full" onChange={handleAttachmentChange} />
+                    {formData.attachments?.[0]?.dataUrl && (
+                      <img src={formData.attachments[0].dataUrl} alt="preview" className="mt-2 w-24 h-24 object-cover rounded border" />
+                    )}
+                  </div>
+                  <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 p-6 border-t border-slate-100 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-b-xl mt-auto">
+                    <Button type="button" variant="outline" onClick={() => setCreateTicketOpen(false)}>Cancel</Button>
+                    <Button type="submit">Create Ticket</Button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         )}

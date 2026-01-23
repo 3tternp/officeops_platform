@@ -356,57 +356,73 @@ const CourseDetailModal = ({ course, isOpen, onClose, onEdit, onAssign, onTakeQu
     }
   };
 
+  if (!isOpen || !course) return null;
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-card border border-border rounded-lg shadow-enterprise-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+      {/* Overlay */}
+      <div 
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
+      />
+      {/* Modal */}
+      <div className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Course Details</h1>
-            <p className="text-sm text-muted-foreground">View and manage course information</p>
+            <h2 className="text-xl font-bold text-foreground">Course Details</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              View course content and progress
+            </p>
           </div>
           <div className="flex items-center space-x-2">
             {canEdit && (
-              <Button variant="outline" size="sm" onClick={() => onEdit(course)} iconName="Edit">
+              <Button variant="outline" size="sm" onClick={() => onEdit(course)}>
+                <Icon name="Edit" size={16} className="mr-2" />
                 Edit
               </Button>
             )}
-            {canAssign && (
-              <Button variant="outline" size="sm" onClick={() => onAssign(course)} iconName="UserPlus">
-                Assign
-              </Button>
-            )}
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-muted rounded-full">
               <Icon name="X" size={20} />
             </Button>
           </div>
         </div>
-
-        <div className="flex h-[calc(90vh-8rem)]">
-          {/* Tab Navigation */}
-          <div className="w-64 border-r border-border p-4">
-            <nav className="space-y-2">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md text-left transition-colors ${
-                    activeTab === tab.id
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  }`}
-                >
-                  <Icon name={tab.icon} size={16} />
-                  <span className="text-sm font-medium">{tab.label}</span>
-                </button>
-              ))}
-            </nav>
+        
+        <div className="p-6">
+          {/* Tabs */}
+          <div className="flex space-x-1 border-b border-border mb-6 overflow-x-auto scrollbar-hide">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'
+                }`}
+              >
+                <Icon name={tab.icon} size={16} className="mr-2" />
+                {tab.label}
+              </button>
+            ))}
           </div>
 
-          {/* Tab Content */}
-          <div className="flex-1 p-6 overflow-y-auto">
+          {/* Content */}
+          <div className="min-h-[400px]">
             {renderTabContent()}
           </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex justify-end space-x-3 sticky bottom-0 z-10">
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+          {canAssign && (
+            <Button onClick={() => onAssign(course)}>
+              Assign Course
+            </Button>
+          )}
         </div>
       </div>
     </div>

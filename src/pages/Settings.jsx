@@ -8,7 +8,6 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
 import { Checkbox } from '../components/ui/Checkbox';
-import DemoDataReset from '../components/DemoDataReset';
 import { useUser } from '../contexts/UserContext';
 import CompanyBrandingSettings from '../components/admin/CompanyBrandingSettings';
 import { useBranding } from '../contexts/BrandingContext';
@@ -111,8 +110,7 @@ const Settings = () => {
                   { id: 'security', label: 'Security', icon: 'Shield' },
                   { id: 'integrations', label: 'Integrations', icon: 'Zap' },
                   ...(currentUser?.role === 'admin' ? [
-                    { id: 'branding', label: 'Branding', icon: 'Sparkles' },
-                    { id: 'demo', label: 'Demo Data', icon: 'RotateCcw' }
+                    { id: 'branding', label: 'Branding', icon: 'Sparkles' }
                   ] : [])
                 ].map((tab) => (
                   <button
@@ -387,10 +385,6 @@ const Settings = () => {
                   </Button>
                 </div>
               </div>
-            )}
-
-            {activeTab === 'demo' && currentUser?.role === 'admin' && (
-              <DemoDataReset />
             )}
           </div>
         </div>

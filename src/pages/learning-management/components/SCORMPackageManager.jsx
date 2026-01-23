@@ -293,11 +293,12 @@ const SCORMPackageManager = ({ onClose, onDeploy }) => {
 
         {/* Package Preview Modal */}
         {showPreview && selectedPackage && (
-          <div className="fixed inset-0 z-60 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-card border border-border rounded-lg shadow-enterprise-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
-              <div className="flex items-center justify-between p-6 border-b border-border">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">Package Preview</h3>
+        <div className="fixed inset-0 z-60 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Package Preview</h3>
                   <p className="text-sm text-muted-foreground">{selectedPackage.title}</p>
                 </div>
                 <Button

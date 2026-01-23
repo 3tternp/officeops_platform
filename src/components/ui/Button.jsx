@@ -5,27 +5,27 @@ import { cn } from "../../utils/cn";
 import Icon from '../AppIcon';
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95 transform",
+    "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-enterprise focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-60 active:scale-[0.98] transform",
     {
         variants: {
             variant: {
-                default: "bg-primary text-primary-foreground hover:bg-primary/90 border-0",
-                destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 border-0",
-                outline: "border border-border bg-background text-foreground hover:bg-muted",
-                secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/90",
-                ghost: "text-foreground hover:bg-muted",
+                default: "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-enterprise-md hover:shadow-enterprise-lg hover:brightness-110 border-0",
+                destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 border-0 shadow-enterprise",
+                outline: "border border-border bg-background/80 text-foreground hover:bg-muted/80",
+                secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-enterprise",
+                ghost: "text-foreground hover:bg-muted/80",
                 link: "text-primary underline-offset-4 hover:underline",
-                success: "bg-success text-success-foreground hover:bg-success/90 border-0",
-                warning: "bg-warning text-warning-foreground hover:bg-warning/90 border-0",
-                danger: "bg-error text-error-foreground hover:bg-error/90 border-0",
+                success: "bg-success text-success-foreground hover:bg-success/90 border-0 shadow-enterprise",
+                warning: "bg-warning text-warning-foreground hover:bg-warning/90 border-0 shadow-enterprise",
+                danger: "bg-error text-error-foreground hover:bg-error/90 border-0 shadow-enterprise",
             },
             size: {
-                default: "h-11 px-6 py-2.5 rounded-xl",
-                sm: "h-9 px-4 py-2 rounded-lg text-sm",
-                lg: "h-12 px-8 py-3 rounded-xl text-base",
-                icon: "h-10 w-10 rounded-xl",
-                xs: "h-8 px-3 py-1.5 rounded-lg text-xs",
-                xl: "h-14 px-10 py-4 rounded-2xl text-lg font-bold",
+                default: "h-9 sm:h-11 px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-sm",
+                sm: "h-8 sm:h-9 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm",
+                lg: "h-10 sm:h-12 px-5 sm:px-8 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base",
+                icon: "h-9 sm:h-10 w-9 sm:w-10 rounded-lg sm:rounded-xl",
+                xs: "h-7 sm:h-8 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-xs",
+                xl: "h-12 sm:h-14 px-6 sm:px-10 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-lg font-semibold",
             },
         },
         defaultVariants: {

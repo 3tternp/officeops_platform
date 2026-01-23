@@ -386,10 +386,10 @@ const SCORMPlayer = ({ packageData, onClose, onComplete }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm transition-opacity">
       <div className="w-full h-full flex flex-col">
         {/* Header */}
-        <div className="bg-card border-b border-border p-4">
+        <div className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Icon name="Play" size={24} className="text-primary" />
@@ -460,7 +460,7 @@ const SCORMPlayer = ({ packageData, onClose, onComplete }) => {
         </div>
 
         {/* Footer */}
-        <div className="bg-card border-t border-border p-4">
+        <div className="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 p-4">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-6">
               <div>

@@ -2,33 +2,48 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
-const MetricCard = ({ 
-  title, 
-  value, 
-  change, 
-  changeType, 
-  icon, 
+const MetricCard = ({
+  title,
+  value,
+  change,
+  changeType,
+  icon,
   color = 'primary',
   actionLabel,
   onActionClick,
-  loading = false 
+  loading = false
 }) => {
   const getColorClasses = (colorType) => {
     const colors = {
-      primary: 'bg-primary text-primary-foreground',
-      success: 'bg-success text-success-foreground',
-      warning: 'bg-warning text-warning-foreground',
-      error: 'bg-error text-error-foreground',
-      accent: 'bg-accent text-accent-foreground'
+      primary: {
+        icon: 'text-blue-600',
+        border: 'border-blue-200'
+      },
+      success: {
+        icon: 'text-green-600',
+        border: 'border-green-200'
+      },
+      warning: {
+        icon: 'text-yellow-600',
+        border: 'border-yellow-200'
+      },
+      error: {
+        icon: 'text-red-600',
+        border: 'border-red-200'
+      },
+      accent: {
+        icon: 'text-purple-600',
+        border: 'border-purple-200'
+      }
     };
     return colors?.[colorType] || colors?.primary;
   };
 
   const getChangeColor = (type) => {
     switch (type) {
-      case 'positive': return 'text-success';
-      case 'negative': return 'text-error';
-      default: return 'text-muted-foreground';
+      case 'positive': return 'text-green-600';
+      case 'negative': return 'text-red-600';
+      default: return 'text-gray-600';
     }
   };
 
@@ -40,51 +55,38 @@ const MetricCard = ({
     }
   };
 
+  const colorScheme = getColorClasses(color);
+
   return (
-    <div className="bg-card border border-border rounded-lg p-6 shadow-enterprise hover:shadow-enterprise-md transition-enterprise">
-      <div className="flex items-start justify-between">
+    <div className="bg-white border border-gray-200 rounded-lg p-6">
+      <div className="flex items-center justify-between">
         <div className="flex-1">
           <div className="flex items-center space-x-3 mb-4">
-            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${getColorClasses(color)}`}>
-              <Icon name={icon} size={24} />
-            </div>
+            <Icon name={icon} size={24} className={colorScheme.icon} />
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-              {loading ? (
-                <div className="w-16 h-8 bg-muted animate-pulse rounded mt-1" />
-              ) : (
-                <p className="text-2xl font-bold text-foreground">{value}</p>
+              <h3 className="text-sm font-medium text-gray-900">{title}</h3>
+              {change && (
+                <div className={`flex items-center space-x-1 text-xs mt-1 ${getChangeColor(changeType)}`}>
+                  <Icon name={getChangeIcon(changeType)} size={12} />
+                  <span>{change}</span>
+                </div>
               )}
             </div>
           </div>
 
-          {change && !loading && (
-            <div className="flex items-center space-x-2 mb-4">
-              <Icon 
-                name={getChangeIcon(changeType)} 
-                size={16} 
-                className={getChangeColor(changeType)}
-              />
-              <span className={`text-sm font-medium ${getChangeColor(changeType)}`}>
-                {change}
-              </span>
-              <span className="text-sm text-muted-foreground">vs last month</span>
-            </div>
-          )}
-
-          {actionLabel && onActionClick && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onActionClick}
-              iconName="ArrowRight"
-              iconPosition="right"
-              className="mt-2"
-            >
-              {actionLabel}
-            </Button>
-          )}
+          <div className="text-2xl font-semibold text-gray-900">{value}</div>
         </div>
+
+        {actionLabel && onActionClick && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onActionClick}
+            className="text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+          >
+            {actionLabel}
+          </Button>
+        )}
       </div>
     </div>
   );

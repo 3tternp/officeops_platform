@@ -22,8 +22,8 @@ import ReviewNotifications from './components/ReviewNotifications';
 import PasswordResetRequestForm from './components/PasswordResetRequestForm';
 import { createAccessRequest, createResource, AccessRequestStatus } from './utils/entities';
 import dataService from '../../services/DataService';
+import { useUser } from '../../contexts/UserContext';
 import { hasPermission, PERMISSIONS } from '../../utils/permissions';
-import { ensureDemoUser } from '../../utils/demoUser';
 
 const AccessManagement = () => {
   const navigate = useNavigate();
@@ -56,9 +56,6 @@ const AccessManagement = () => {
   const [passwordResetRequests, setPasswordResetRequests] = useState([]);
 
   useEffect(() => {
-    // Ensure demo user is properly set up
-    const user = ensureDemoUser();
-    setCurrentUser(user);
     loadAccessRequests();
   }, []);
 

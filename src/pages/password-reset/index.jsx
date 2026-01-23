@@ -9,13 +9,13 @@ import Select from '../../components/ui/Select';
 import Input from '../../components/ui/Input';
 import TextArea from '../../components/ui/TextArea';
 import dataService from '../../services/DataService';
-import { ensureDemoUser } from '../../utils/demoUser';
+import { useUser } from '../../contexts/UserContext';
 
 const PasswordReset = () => {
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const { currentUser } = useUser();
   const [loading, setLoading] = useState(false);
   const [userPasswordResetRequests, setUserPasswordResetRequests] = useState([]);
 
@@ -30,11 +30,10 @@ const PasswordReset = () => {
   });
 
   useEffect(() => {
-    // Ensure demo user is properly set up
-    const user = ensureDemoUser();
-    setCurrentUser(user);
-    loadUserPasswordResetRequests(user);
-  }, []);
+    if (currentUser) {
+      loadUserPasswordResetRequests(currentUser);
+    }
+  }, [currentUser]);
 
   const loadUserPasswordResetRequests = (user) => {
     if (user) {

@@ -44,11 +44,14 @@ OfficeOps is built for enterprise teams that need **security-first workflows** w
 
 ## 🚀 What's New in 3.0
 
-- Ticketing system: create, assign, approve, and resolve tickets end-to-end
-- Personal triage: My Tickets page and dashboard card for assigned work
-- Navigation refresh: improved sidebar hierarchy and breadcrumbs
-- Governance polish: consistent settings, profile, department, and user management flows
-- Security hardening: hashed demo credentials, sanitized document previews, and RBAC-aligned makers/checkers
+- **Technological Stack Upgrade**: Updated to latest stable versions of React 19, Vite 7, and Tailwind CSS 4.
+- **UI/UX Standardization**: Implemented rigid modal architecture with sticky headers, improved backdrops, and consistent styling across all modules (Ticketing, LMS, Risk Assessment, etc.).
+- **Ticketing System**: Create, assign, approve, and resolve tickets end-to-end with new modal experience.
+- **LMS Enhancements**: Unified error handling and modal interactions in course creation wizards.
+- **Personal Triage**: My Tickets page and dashboard card for assigned work.
+- **Navigation Refresh**: Improved sidebar hierarchy and breadcrumbs.
+- **Governance Polish**: Consistent settings, profile, department, and user management flows.
+- **Security Hardening**: Hashed demo credentials, sanitized document previews, and RBAC-aligned makers/checkers.
 
 
 ## ✨ Features

@@ -204,15 +204,34 @@ export const validateFileUpload = (file, context = 'document') => {
  * @param {number} length - Length of string
  * @returns {string} - Random string
  */
+const getGlobalCrypto = () => {
+  if (typeof globalThis !== 'undefined' && globalThis.crypto) return globalThis.crypto;
+  if (typeof window !== 'undefined' && window.crypto) return window.crypto;
+  if (typeof self !== 'undefined' && self.crypto) return self.crypto;
+  return null;
+};
+
+const getSubtleCrypto = () => {
+  const cryptoObj = getGlobalCrypto();
+  if (cryptoObj && cryptoObj.subtle) return cryptoObj.subtle;
+  return null;
+};
+
 export const generateSecureRandom = (length = 32) => {
   const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
-  const values = crypto.getRandomValues(new Uint8Array(length));
-  
-  for (let i = 0; i < length; i++) {
-    result += charset[values[i] % charset.length];
+  const cryptoObj = getGlobalCrypto();
+  if (cryptoObj && cryptoObj.getRandomValues) {
+    const values = cryptoObj.getRandomValues(new Uint8Array(length));
+    for (let i = 0; i < length; i++) {
+      result += charset[values[i] % charset.length];
+    }
+    return result;
   }
-  
+  for (let i = 0; i < length; i++) {
+    const index = Math.floor(Math.random() * charset.length);
+    result += charset[index];
+  }
   return result;
 };
 
@@ -225,12 +244,19 @@ export const hashData = async (data) => {
   if (!data) return '';
 
   const encoder = new TextEncoder();
-  const dataBuffer = encoder.encode(data);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-  return hashHex;
+  const subtle = getSubtleCrypto();
+  if (subtle) {
+    const dataBuffer = encoder.encode(data);
+    const hashBuffer = await subtle.digest('SHA-256', dataBuffer);
+    return bufferToHex(hashBuffer);
+  }
+  let hash = 0;
+  for (let i = 0; i < data.length; i++) {
+    const code = data.charCodeAt(i);
+    hash = (hash << 5) - hash + code;
+    hash |= 0;
+  }
+  return hash.toString(16);
 };
 
 // Convert ArrayBuffer to hex string
@@ -251,8 +277,17 @@ const getAuthPepper = () => {
  * @returns {string} - hex-encoded salt
  */
 export const generateSalt = (bytes = 16) => {
-  const random = crypto.getRandomValues(new Uint8Array(bytes));
-  return Array.from(random).map(b => b.toString(16).padStart(2, '0')).join('');
+  const cryptoObj = getGlobalCrypto();
+  if (cryptoObj && cryptoObj.getRandomValues) {
+    const random = cryptoObj.getRandomValues(new Uint8Array(bytes));
+    return Array.from(random).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  let salt = '';
+  for (let i = 0; i < bytes; i++) {
+    const value = Math.floor(Math.random() * 256);
+    salt += value.toString(16).padStart(2, '0');
+  }
+  return salt;
 };
 
 /**
@@ -266,8 +301,12 @@ export const derivePasswordHash = async (password, salt) => {
   const encoder = new TextEncoder();
   const pepper = getAuthPepper();
   const payload = `${salt}:${password}:${pepper}`;
-  const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(payload));
-  return bufferToHex(hashBuffer);
+  const subtle = getSubtleCrypto();
+  if (subtle) {
+    const hashBuffer = await subtle.digest('SHA-256', encoder.encode(payload));
+    return bufferToHex(hashBuffer);
+  }
+  return await hashData(payload);
 };
 
 /**
